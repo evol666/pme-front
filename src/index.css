@@ -1,0 +1,67 @@
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-destructive: var(--destructive);
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+
+	/* --- Sovereign Industrial — Tailwind 4 theme extensions --- */
+	--color-industrial-darker: var(--color-industrial-darker);
+	--color-industrial-dark: var(--color-industrial-dark);
+	--color-industrial-steel: var(--color-industrial-steel);
+	--color-industrial-silver: var(--color-industrial-silver);
+	--color-cyber-50: var(--color-cyber-50);
+	--color-cyber-100: var(--color-cyber-100);
+	--color-cyber-200: var(--color-cyber-200);
+	--color-cyber-300: var(--color-cyber-300);
+	--color-cyber-400: var(--color-cyber-400);
+	--color-cyber-500: var(--color-cyber-500);
+	--color-cyber-600: var(--color-cyber-600);
+	--color-cyber-700: var(--color-cyber-700);
+	--color-cyber-800: var(--color-cyber-800);
+	--color-cyber-900: var(--color-cyber-900);
+	--color-cyber-950: var(--color-cyber-950);
+	--color-threat-critical: var(--color-threat-critical);
+	--color-threat-high: var(--color-threat-high);
+	--color-threat-medium: var(--color-threat-medium);
+	--color-threat-low: var(--color-threat-low);
+	--color-threat-info: var(--color-threat-info);
+}
+
+/* Import Sovereign Industrial design system */
+@import "@athanor/design-system/styles/tokens.css";
+@import "@athanor/design-system/styles/typography.css";
+@import "@athanor/design-system/styles/utilities.css";
+@import "@athanor/design-system/styles/animations.css";
+@import "@athanor/design-system/styles/scrollbar.css";
+
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+	}
+	body {
+		@apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
+	}
+}

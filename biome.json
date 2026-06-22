@@ -1,0 +1,73 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
+  "files": {
+    "includes": [
+      "**",
+      "!**/*.test-samples.ts"
+    ]
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
+  "html": {
+    "parser": {
+      "interpolation": true
+    }
+  },
+  "javascript": {
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "a11y": {
+        "noStaticElementInteractions": "off",
+        "useKeyWithClickEvents": "off",
+        "useButtonType": "off",
+        "noSvgWithoutTitle": "off",
+        "noLabelWithoutControl": "off",
+        "useValidAnchor": "off",
+        "useSemanticElements": "off",
+        "useFocusableInteractive": "off",
+        "useAriaPropsForRole": "off",
+        "useAnchorContent": "off",
+        "useAltText": "off",
+        "noRedundantAlt": "off"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off",
+        "noUnknownAtRules": "off",
+        "noExplicitAny": "off",
+        "useIterableCallbackReturn": "off",
+        "noImplicitAnyLet": "off",
+        "noRedeclare": "off",
+        "noDocumentCookie": "off",
+        "noDuplicateTestHooks": "off",
+        "noAssignInExpressions": "off"
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "off",
+        "noInvalidPositionAtImportRule": "off",
+        "noUnusedVariables": "off",
+        "noUnusedImports": "off",
+        "noEmptyPattern": "off",
+        "noUnusedFunctionParameters": "off",
+        "noUnsafeOptionalChaining": "off",
+        "noVoidTypeReturn": "off"
+      },
+      "style": {
+        "noNonNullAssertion": "off"
+      },
+      "complexity": {
+        "noBannedTypes": "off",
+        "noStaticOnlyClass": "off",
+        "noCommaOperator": "off"
+      }
+    }
+  }
+}
