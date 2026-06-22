@@ -92,6 +92,24 @@ const FacturationElectroniquePage = lazy(() => import("@/pages/FacturationElectr
 // Détail agent run : /api/agent-runs/{id} + messages/reasoning/shared-memory (runId.equals).
 const AgentRunDetailPage = lazy(() => import("@/pages/AgentRunDetailPage"));
 
+// Pages onboarding + stratégie (câblées en Phase 4) :
+// Onboarding : /api/onboarding/state + /api/onboarding/steps (wizard 5 étapes).
+const OnboardingPage = lazy(() => import("@/pages/OnboardingPage"));
+// Mode Directeur : /api/proactive-insights + /api/director-* (monitoring IA).
+const ModeDirecteurPage = lazy(() => import("@/pages/ModeDirecteurPage"));
+// Simulation : /api/simulations (CRUD Spring Boot, SSE FastAPI non migré).
+const SimulationPage = lazy(() => import("@/pages/SimulationPage"));
+// Playbooks : /api/playbooks + /api/playbook-steps (CRUD Spring Boot).
+const PlaybooksPage = lazy(() => import("@/pages/PlaybooksPage"));
+// Playbook run : /api/playbook-runs/:id (détail exécution).
+const PlaybookRunPage = lazy(() => import("@/pages/PlaybookRunPage"));
+// Maturité : /api/maturity-assessments + /api/maturity-dimensions (CRUD Spring Boot).
+const MaturityPage = lazy(() => import("@/pages/MaturityPage"));
+// Sauvegarde : /api/export (PDF/DOCX) + /api/kpi-snapshots + /api/timeline-snapshots.
+const SauvegardePage = lazy(() => import("@/pages/SauvegardePage"));
+// Mode démonstration : parcours guidé client-side, toggle mode présentation.
+const DemoModePage = lazy(() => import("@/pages/DemoModePage"));
+
 function PageLoader() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
@@ -123,19 +141,8 @@ function DashboardLayout() {
   );
 }
 
-// Routes canoniques dont la page réelle n'est pas encore migrée (endpoints FastAPI-only).
-const PENDING_ROUTES = [
-  "/onboarding",
-  "/mode-directeur",
-  "/simulation",
-  "/playbooks",
-  "/maturite",
-  "/sauvegarde",
-  "/demo",
-];
-
-// Routes avec paramètre (placeholder tant que la page n'existe pas).
-const PENDING_PARAM_ROUTES = ["/playbooks/:id"];
+// Plus aucune route en attente — toutes les pages sont câblées.
+const PENDING_ROUTES: string[] = [];
 
 function App() {
   const { sessionChecked } = useAppSelector((s) => s.auth);
@@ -455,10 +462,71 @@ function App() {
             </Suspense>
           }
         />
+        <Route
+          path="/onboarding"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <OnboardingPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/mode-directeur"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <ModeDirecteurPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/simulation"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <SimulationPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/playbooks"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <PlaybooksPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/playbooks/:id"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <PlaybookRunPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/maturite"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <MaturityPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/sauvegarde"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <SauvegardePage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/demo"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <DemoModePage />
+            </Suspense>
+          }
+        />
         {PENDING_ROUTES.map((path) => (
-          <Route key={path} path={path} element={<PlaceholderPage />} />
-        ))}
-        {PENDING_PARAM_ROUTES.map((path) => (
           <Route key={path} path={path} element={<PlaceholderPage />} />
         ))}
       </Route>
