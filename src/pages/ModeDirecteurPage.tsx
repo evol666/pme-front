@@ -63,7 +63,7 @@ export default function ModeDirecteurPage() {
           <RefreshCw
             className={`h-3.5 w-3.5 ${recalculate.isPending ? 'animate-spin' : ''}`}
           />
-          {recalculate.isPending ? 'Analyse…' : 'Relancer l'analyse'}
+          {recalculate.isPending ? 'Analyse…' : 'Relancer l\'analyse'}
         </button>
       </div>
 
