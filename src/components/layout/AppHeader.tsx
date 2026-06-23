@@ -9,6 +9,7 @@ import { logout } from "@/api/auth";
 import { usePersonas } from "@/api/personas";
 import { useUnreadNotificationCount } from "@/api/notifications";
 import { usePersonaStore } from "@/stores/personaStore";
+import { EntrepriseSearchBar } from "@/components/recherche/EntrepriseSearchBar";
 import { cn } from "@/lib/utils";
 
 export function AppHeader() {
@@ -33,7 +34,10 @@ export function AppHeader() {
         >
           <Menu className="w-5 h-5" />
         </button>
-        <span className="font-bold text-lg hidden lg:inline-block">Module PME</span>
+        <span className="font-bold text-lg hidden lg:inline-block whitespace-nowrap">Module PME</span>
+        <div className="hidden sm:block">
+          <EntrepriseSearchBar />
+        </div>
       </div>
 
       <div className="flex items-center gap-2 lg:gap-4">

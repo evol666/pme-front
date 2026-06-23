@@ -1,18 +1,12 @@
 import {
   BarChart3,
-  BookOpen,
-  FileText,
+  Briefcase,
   Layout,
   LayoutDashboard,
-  Lightbulb,
-  Network,
-  Package,
   Settings,
   Shield,
   Sparkles,
   Target,
-  TrendingUp,
-  Workflow,
 } from "lucide-react";
 import type React from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -25,24 +19,19 @@ type NavItem = {
   icon: React.ElementType;
 };
 
-// Routes visibles pour tous les users authentifiés (MIGRATION.md Phase 2.1).
+// Navigation principale — architecture company-centric.
+// Recommandations, Documents, Journal, Playbooks sont des onglets dans la fiche entreprise.
 const mainNav: NavItem[] = [
-  { href: "/accueil", label: "Accueil", icon: LayoutDashboard },
-  { href: "/analyses", label: "Analyses", icon: BarChart3 },
-  { href: "/recommandations", label: "Recommandations", icon: Lightbulb },
-  { href: "/documents", label: "Documents", icon: FileText },
-  { href: "/copilote", label: "Copilote IA", icon: Sparkles },
-  { href: "/journal", label: "Journal", icon: BookOpen },
-  { href: "/mode-directeur", label: "Mode Directeur", icon: Target },
-  { href: "/playbooks", label: "Playbooks", icon: Workflow },
-  { href: "/bundles", label: "Bundles métier", icon: Package },
-  { href: "/reseau", label: "Réseau", icon: Network },
+  { href: "/accueil",        label: "Accueil",         icon: LayoutDashboard },
+  { href: "/entreprises",    label: "Entreprises",     icon: Briefcase },
+  { href: "/copilote",       label: "Copilote IA",     icon: Sparkles },
+  { href: "/mode-directeur", label: "Mode Directeur",  icon: Target },
+  { href: "/analyses",       label: "Analyses",        icon: BarChart3 },
 ];
 
 // Routes visibles uniquement pour ROLE_ADMIN.
 const adminNav: NavItem[] = [
-  { href: "/supervision", label: "Supervision", icon: Shield },
-  { href: "/analytics", label: "Analytics", icon: TrendingUp },
+  { href: "/supervision",  label: "Supervision",  icon: Shield },
   { href: "/admin-global", label: "Admin global", icon: Settings },
 ];
 

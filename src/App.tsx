@@ -109,6 +109,11 @@ const MaturityPage = lazy(() => import("@/pages/MaturityPage"));
 const SauvegardePage = lazy(() => import("@/pages/SauvegardePage"));
 // Mode démonstration : parcours guidé client-side, toggle mode présentation.
 const DemoModePage = lazy(() => import("@/pages/DemoModePage"));
+// Portefeuille d'entreprises (CRUD + wizard) et fiche détail tabulaire.
+const EntreprisesPage = lazy(() => import("@/pages/EntreprisesPage"));
+const EntrepriseDetailPage = lazy(() => import("@/pages/EntrepriseDetailPage"));
+// Admin — import base Sirene INSEE complète.
+const AdminSirenePage = lazy(() => import("@/pages/AdminSirenePage"));
 
 function PageLoader() {
   return (
@@ -523,6 +528,30 @@ function App() {
           element={
             <Suspense fallback={<PageLoader />}>
               <DemoModePage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/admin-sirene"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <AdminSirenePage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/entreprises"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <EntreprisesPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/entreprises/:siren"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <EntrepriseDetailPage />
             </Suspense>
           }
         />
