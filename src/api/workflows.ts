@@ -109,6 +109,42 @@ export function useDeleteWorkflowRun() {
   });
 }
 
+export function useRunWorkflow() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (params: { workflowId: string; inputs?: Record<string, unknown> }) => {
+      const { data } = await axiosClient.post<WorkflowRun>(
+        `/api/workflow-runs/${params.workflowId}/run`,
+        { inputs: params.inputs ?? {} },
+      );
+      return data;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: workflowsKeys.all }),
+  });
+}
+
+export function useCancelWorkflowRun() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const { data } = await axiosClient.post<WorkflowRun>(`/api/workflow-runs/${id}/cancel`);
+      return data;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: workflowsKeys.all }),
+  });
+}
+
+export function useRetryWorkflowRun() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const { data } = await axiosClient.post<WorkflowRun>(`/api/workflow-runs/${id}/retry`);
+      return data;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: workflowsKeys.all }),
+  });
+}
+
 // --- Steps (détail d'un run) ---
 
 export function useWorkflowSteps(runId: number | null) {

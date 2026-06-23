@@ -14,6 +14,7 @@ import {
   parseJsonObject,
   useDeleteWorkflowRun,
   useWorkflowRuns,
+  useRunWorkflow,
   type WorkflowRun,
   type WorkflowRunStatus,
 } from "@/api/workflows";
@@ -97,13 +98,28 @@ export default function WorkflowsPage() {
   const [appliedSearch, setAppliedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<WorkflowRunStatus | "">("");
   const [error, setError] = useState<string | null>(null);
+  const [runningId, setRunningId] = useState<string | null>(null);
 
   const { data: runs, isLoading, refetch, isFetching } = useWorkflowRuns(
     appliedSearch || undefined,
     statusFilter || undefined,
   );
   const deleteMutation = useDeleteWorkflowRun();
+  const runMutation = useRunWorkflow();
   const navigate = useNavigate();
+
+  const handleRun = async (workflowId: string) => {
+    setRunningId(workflowId);
+    setError(null);
+    try {
+      const run = await runMutation.mutateAsync({ workflowId });
+      navigate(`/workflows/runs/${run.id}`);
+    } catch (err) {
+      setError(extractBackendError(err));
+    } finally {
+      setRunningId(null);
+    }
+  };
 
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,6 +157,93 @@ export default function WorkflowsPage() {
           expose sa trace d’étapes. Cliquez sur un run pour ouvrir la timeline détaillée.
         </p>
       </header>
+
+      {/* Catalogue de templates */}
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Catalogue de workflows exécutables</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="flex flex-col rounded-2xl border border-border bg-card p-4 shadow-sm">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl" aria-hidden="true">📊</span>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-foreground truncate">Audit financier automatisé</h3>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                  Analyse de la liasse fiscale et des comptes bancaires pour extraire le score de solvabilité.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              disabled={runningId !== null}
+              onClick={() => handleRun("audit-financier")}
+              className="mt-4 w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 disabled:opacity-50"
+            >
+              {runningId === "audit-financier" ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Exécution...
+                </>
+              ) : (
+                "Lancer le workflow"
+              )}
+            </button>
+          </div>
+
+          <div className="flex flex-col rounded-2xl border border-border bg-card p-4 shadow-sm">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl" aria-hidden="true">🤝</span>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-foreground truncate">Onboarding client premium</h3>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                  Génération des documents contractuels et lancement du diagnostic d'onboarding.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              disabled={runningId !== null}
+              onClick={() => handleRun("onboarding-client")}
+              className="mt-4 w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 disabled:opacity-50"
+            >
+              {runningId === "onboarding-client" ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Exécution...
+                </>
+              ) : (
+                "Lancer le workflow"
+              )}
+            </button>
+          </div>
+
+          <div className="flex flex-col rounded-2xl border border-border bg-card p-4 shadow-sm">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl" aria-hidden="true">⚖️</span>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-foreground truncate">Conformité réglementaire</h3>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                  Analyse des textes légaux et validation de la conformité juridique de l'entreprise.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              disabled={runningId !== null}
+              onClick={() => handleRun("compliance-legal")}
+              className="mt-4 w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 disabled:opacity-50"
+            >
+              {runningId === "compliance-legal" ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Exécution...
+                </>
+              ) : (
+                "Lancer le workflow"
+              )}
+            </button>
+          </div>
+        </div>
+      </section>
 
       {/* Filtres */}
       <div className="rounded-2xl border border-border bg-card p-4 shadow-sm space-y-4">

@@ -12,6 +12,8 @@ import {
   parseJsonObject,
   useWorkflowRun,
   useWorkflowSteps,
+  useCancelWorkflowRun,
+  useRetryWorkflowRun,
   type WorkflowRun,
   type WorkflowRunStatus,
   type WorkflowStep,
@@ -114,6 +116,29 @@ export default function WorkflowExecutionPage() {
 
   const runQuery = useWorkflowRun(runId);
   const stepsQuery = useWorkflowSteps(runId);
+  const cancelMutation = useCancelWorkflowRun();
+  const retryMutation = useRetryWorkflowRun();
+
+  const handleCancel = async () => {
+    if (runId == null) return;
+    try {
+      await cancelMutation.mutateAsync(runId);
+      runQuery.refetch();
+      stepsQuery.refetch();
+    } catch (err) {
+      // Ignorer ou gérer l'erreur localement
+    }
+  };
+
+  const handleRetry = async () => {
+    if (runId == null) return;
+    try {
+      const newRun = await retryMutation.mutateAsync(runId);
+      navigate(`/workflows/runs/${newRun.id}`);
+    } catch (err) {
+      // Ignorer ou gérer
+    }
+  };
 
   if (runId == null) {
     return (
@@ -153,19 +178,51 @@ export default function WorkflowExecutionPage() {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-3">
-        <BackLink onBack={() => navigate("/workflows")} />
-        <p className="inline-flex items-center gap-2 text-sm font-medium text-primary">
-          <PlayCircle className="h-4 w-4" />
-          Run #{run.id}
-        </p>
-        <h1 className="font-mono text-2xl font-bold tracking-tight text-foreground">
-          {run.workflowId}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Trigger <span className="font-medium text-foreground">{run.trigger}</span> ·
-          créé le {formatDateTime(run.createdAt)}
-        </p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="space-y-3">
+          <BackLink onBack={() => navigate("/workflows")} />
+          <p className="inline-flex items-center gap-2 text-sm font-medium text-primary">
+            <PlayCircle className="h-4 w-4" />
+            Run #{run.id}
+          </p>
+          <h1 className="font-mono text-2xl font-bold tracking-tight text-foreground">
+            {run.workflowId}
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Trigger <span className="font-medium text-foreground">{run.trigger}</span> ·
+            créé le {formatDateTime(run.createdAt)}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {(run.status === "PENDING" || run.status === "RUNNING" || run.status === "RETRYING") && (
+            <button
+              type="button"
+              onClick={handleCancel}
+              disabled={cancelMutation.isPending}
+              className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-destructive/40 bg-destructive/10 text-xs font-semibold text-destructive hover:bg-destructive/20 disabled:opacity-50"
+            >
+              {cancelMutation.isPending ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                "Annuler l'exécution"
+              )}
+            </button>
+          )}
+          {(run.status === "SUCCEEDED" || run.status === "FAILED" || run.status === "CANCELED") && (
+            <button
+              type="button"
+              onClick={handleRetry}
+              disabled={retryMutation.isPending}
+              className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-primary text-xs font-bold text-primary-foreground shadow-sm hover:bg-primary/90 disabled:opacity-50"
+            >
+              {retryMutation.isPending ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                "Relancer (Retry)"
+              )}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Header : métriques */}
