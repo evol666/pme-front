@@ -56,8 +56,8 @@ const STATUS_LABEL: Record<UserPriorityStatus, string> = {
 
 const STATUS_TONE: Record<UserPriorityStatus, string> = {
   active: "bg-primary/10 text-primary",
-  achieved: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  dropped: "bg-red-500/10 text-red-600 dark:text-red-400",
+  achieved: "bg-emerald-500/10 text-emerald-600",
+  dropped: "bg-red-500/10 text-red-600",
 };
 
 const STATUS_FILTERS: { value: UserPriorityStatus; label: string }[] = [
@@ -134,7 +134,7 @@ function PriorityCard({
           type="button"
           onClick={() => onDelete(priority.id)}
           disabled={pending}
-          className="inline-flex items-center justify-center h-7 w-7 rounded-md border border-border text-muted-foreground hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/10 disabled:opacity-50 shrink-0"
+          className="inline-flex items-center justify-center h-7 w-7 rounded-md border border-border text-muted-foreground hover:text-red-600 hover:bg-red-500/10 disabled:opacity-50 shrink-0"
           title="Supprimer"
         >
           <Trash2 className="w-3.5 h-3.5" />
@@ -152,7 +152,7 @@ function PriorityCard({
                 type="button"
                 onClick={() => onStatus(priority.id, "achieved")}
                 disabled={pending}
-                className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 disabled:opacity-50"
+                className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-[11px] font-bold text-emerald-600 hover:bg-emerald-500/10 disabled:opacity-50"
                 title="Marquer comme atteinte"
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
@@ -162,7 +162,7 @@ function PriorityCard({
                 type="button"
                 onClick={() => onStatus(priority.id, "dropped")}
                 disabled={pending}
-                className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-[11px] font-bold text-red-600 dark:text-red-400 hover:bg-red-500/10 disabled:opacity-50"
+                className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-[11px] font-bold text-red-600 hover:bg-red-500/10 disabled:opacity-50"
                 title="Abandonner"
               >
                 <X className="w-3.5 h-3.5" />
@@ -342,7 +342,7 @@ export default function MissionControlPage() {
           </div>
         </div>
         {formError && (
-          <p className="text-xs font-medium text-red-600 dark:text-red-400">
+          <p className="text-xs font-medium text-red-600">
             {formError}
           </p>
         )}

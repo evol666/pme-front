@@ -23,18 +23,18 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
 
 const TONE: Record<string, { ring: string; chip: string; label: string }> = {
   positive: {
-    ring: 'border-emerald-200 bg-emerald-50/60 dark:border-emerald-900/50 dark:bg-emerald-950/20',
-    chip: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200',
+    ring: 'border-emerald-200 bg-emerald-50/60',
+    chip: 'bg-emerald-100 text-emerald-700',
     label: 'Opportunité',
   },
   info: {
-    ring: 'border-primary/20 bg-primary/5 dark:border-primary/30 dark:bg-primary/10',
-    chip: 'bg-primary/10 text-primary dark:bg-primary/20',
+    ring: 'border-primary/20 bg-primary/5',
+    chip: 'bg-primary/10 text-primary',
     label: 'À considérer',
   },
   attention: {
-    ring: 'border-amber-200 bg-amber-50/60 dark:border-amber-900/50 dark:bg-amber-950/20',
-    chip: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-200',
+    ring: 'border-amber-200 bg-amber-50/60',
+    chip: 'bg-amber-100 text-amber-700',
     label: 'Point de vigilance',
   },
 };

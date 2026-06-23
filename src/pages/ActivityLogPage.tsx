@@ -28,25 +28,25 @@ import { cn } from "@/lib/utils";
 // une palette de badges pour les valeurs courantes; tout autre valeur retombe
 // sur un badge neutre.
 const ACTION_TONE: Record<string, string> = {
-  create: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  update: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
-  delete: "bg-red-500/10 text-red-600 dark:text-red-400",
+  create: "bg-emerald-500/10 text-emerald-600",
+  update: "bg-sky-500/10 text-sky-600",
+  delete: "bg-red-500/10 text-red-600",
   login: "bg-primary/10 text-primary",
   logout: "bg-accent text-muted-foreground",
-  import: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  export: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  run: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
-  notify: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+  import: "bg-amber-500/10 text-amber-600",
+  export: "bg-amber-500/10 text-amber-600",
+  run: "bg-violet-500/10 text-violet-600",
+  notify: "bg-orange-500/10 text-orange-600",
 };
 
 const STATUS_TONE: Record<string, string> = {
-  success: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  ok: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  done: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  failure: "bg-red-500/10 text-red-600 dark:text-red-400",
-  error: "bg-red-500/10 text-red-600 dark:text-red-400",
-  pending: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  running: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
+  success: "bg-emerald-500/10 text-emerald-600",
+  ok: "bg-emerald-500/10 text-emerald-600",
+  done: "bg-emerald-500/10 text-emerald-600",
+  failure: "bg-red-500/10 text-red-600",
+  error: "bg-red-500/10 text-red-600",
+  pending: "bg-amber-500/10 text-amber-600",
+  running: "bg-sky-500/10 text-sky-600",
 };
 
 const ACTION_LABEL: Record<string, string> = {
@@ -92,7 +92,7 @@ function actionTone(action: string): string {
 function statusTone(status: string): string {
   return (
     STATUS_TONE[status] ??
-    "bg-slate-500/10 text-slate-600 dark:text-slate-400"
+    "bg-slate-500/10 text-slate-600"
   );
 }
 
@@ -236,7 +236,7 @@ function EventRow({
             type="button"
             onClick={() => onDelete(log.id)}
             disabled={pending}
-            className="inline-flex items-center justify-center h-7 w-7 rounded-md border border-border text-muted-foreground hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/10 disabled:opacity-50 shrink-0"
+            className="inline-flex items-center justify-center h-7 w-7 rounded-md border border-border text-muted-foreground hover:text-red-600 hover:bg-red-500/10 disabled:opacity-50 shrink-0"
             title="Supprimer"
             aria-label="Supprimer cet événement"
           >

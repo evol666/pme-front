@@ -79,12 +79,12 @@ function formatPercent(p: number): string {
 // --- Statut abonnement ---
 
 const SUB_TONE: Record<string, string> = {
-  active: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  trialing: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
-  past_due: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  unpaid: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
-  canceled: "bg-red-500/10 text-red-600 dark:text-red-400",
-  incomplete: "bg-slate-500/10 text-slate-600 dark:text-slate-400",
+  active: "bg-emerald-500/10 text-emerald-600",
+  trialing: "bg-sky-500/10 text-sky-600",
+  past_due: "bg-amber-500/10 text-amber-600",
+  unpaid: "bg-orange-500/10 text-orange-600",
+  canceled: "bg-red-500/10 text-red-600",
+  incomplete: "bg-slate-500/10 text-slate-600",
 };
 
 const SUB_LABEL: Record<string, string> = {
@@ -107,11 +107,11 @@ function subLabel(status: string): string {
 // --- Statut facture ---
 
 const INV_TONE: Record<string, string> = {
-  paid: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  open: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
-  draft: "bg-slate-500/10 text-slate-600 dark:text-slate-400",
-  void: "bg-red-500/10 text-red-600 dark:text-red-400",
-  uncollectible: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+  paid: "bg-emerald-500/10 text-emerald-600",
+  open: "bg-sky-500/10 text-sky-600",
+  draft: "bg-slate-500/10 text-slate-600",
+  void: "bg-red-500/10 text-red-600",
+  uncollectible: "bg-amber-500/10 text-amber-600",
 };
 
 const INV_LABEL: Record<string, string> = {
@@ -133,11 +133,11 @@ function invLabel(status: string): string {
 // --- Statut quota ---
 
 const QUOTA_TONE: Record<string, string> = {
-  ok: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  warn: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  critical: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
-  exceeded: "bg-red-500/10 text-red-600 dark:text-red-400",
-  unlimited: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
+  ok: "bg-emerald-500/10 text-emerald-600",
+  warn: "bg-amber-500/10 text-amber-600",
+  critical: "bg-orange-500/10 text-orange-600",
+  exceeded: "bg-red-500/10 text-red-600",
+  unlimited: "bg-sky-500/10 text-sky-600",
 };
 
 const QUOTA_LABEL: Record<string, string> = {
@@ -245,7 +245,7 @@ function PageHeader({
       <p className="max-w-2xl text-muted-foreground">
         Gérez votre plan, suivez votre consommation et accédez à vos factures.{" "}
         {stripeMock ? (
-          <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400">
+          <span className="inline-flex items-center gap-1 text-amber-600">
             <Sparkles className="h-3.5 w-3.5" />
             Mode démo (mock Stripe)
           </span>
@@ -273,7 +273,7 @@ function UpgradeBanner({ suggestion }: { suggestion: UpgradeSuggestion }) {
     <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 shadow-sm">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
-          <TrendingUp className="mt-0.5 h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0" />
+          <TrendingUp className="mt-0.5 h-5 w-5 text-amber-600 shrink-0" />
           <div className="space-y-1">
             <p className="text-sm font-semibold text-foreground">
               Suggestion de passage à « {suggestion.suggestedPlan} »
@@ -704,7 +704,7 @@ function PlanCard({
       <div className="flex items-center justify-between">
         <h3 className="text-base font-bold text-foreground">{plan.label}</h3>
         {current && (
-          <span className="rounded bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+          <span className="rounded bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600">
             Actuel
           </span>
         )}
@@ -953,9 +953,9 @@ function Banner({
   message: string;
 }) {
   const tones: Record<string, string> = {
-    amber: "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300",
-    red: "border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-300",
-    sky: "border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300",
+    amber: "border-amber-500/40 bg-amber-500/10 text-amber-700",
+    red: "border-red-500/40 bg-red-500/10 text-red-700",
+    sky: "border-sky-500/40 bg-sky-500/10 text-sky-700",
   };
   return <p className={cn("rounded-lg border px-3 py-2 text-sm", tones[tone])}>{message}</p>;
 }

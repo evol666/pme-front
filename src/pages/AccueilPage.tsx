@@ -49,9 +49,9 @@ function Tile({
 
 function statusTone(status: string): string {
   if (status === "completed")
-    return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400";
+    return "bg-emerald-500/10 text-emerald-600";
   if (["failed", "error"].includes(status))
-    return "bg-red-500/10 text-red-600 dark:text-red-400";
+    return "bg-red-500/10 text-red-600";
   return "bg-primary/10 text-primary";
 }
 

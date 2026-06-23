@@ -29,11 +29,11 @@ const EVENT_KIND_LABEL: Record<string, string> = Object.fromEntries(
 );
 
 const EVENT_KIND_TONE: Record<string, string> = {
-  observation: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
-  decision: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  feedback: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+  observation: "bg-sky-500/10 text-sky-600",
+  decision: "bg-emerald-500/10 text-emerald-600",
+  feedback: "bg-amber-500/10 text-amber-600",
   insight: "bg-primary/10 text-primary",
-  context: "bg-slate-500/10 text-slate-600 dark:text-slate-300",
+  context: "bg-slate-500/10 text-slate-600",
   other: "bg-muted text-muted-foreground",
 };
 
@@ -296,11 +296,11 @@ function ErrorState({
 }) {
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-8 text-center">
-      <p className="text-sm text-red-600 dark:text-red-400">{message}</p>
+      <p className="text-sm text-red-600">{message}</p>
       <button
         type="button"
         onClick={onRetry}
-        className="inline-flex items-center gap-2 rounded-lg border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 transition hover:bg-red-500/10"
+        className="inline-flex items-center gap-2 rounded-lg border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-500/10"
       >
         <RefreshCw className="h-3.5 w-3.5" />
         Réessayer

@@ -53,11 +53,11 @@ const SEVERITY_LABEL: Record<AlertSeverity, string> = {
 };
 
 const SEVERITY_TONE: Record<AlertSeverity, string> = {
-  INFO: "bg-slate-500/10 text-slate-600 dark:text-slate-300",
-  LOW: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
-  MEDIUM: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  HIGH: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
-  CRITICAL: "bg-red-500/10 text-red-600 dark:text-red-400",
+  INFO: "bg-slate-500/10 text-slate-600",
+  LOW: "bg-sky-500/10 text-sky-600",
+  MEDIUM: "bg-amber-500/10 text-amber-600",
+  HIGH: "bg-orange-500/10 text-orange-600",
+  CRITICAL: "bg-red-500/10 text-red-600",
 };
 
 const SIGNAL_STATUS_LABEL: Record<string, string> = {
@@ -66,8 +66,8 @@ const SIGNAL_STATUS_LABEL: Record<string, string> = {
 };
 
 const SIGNAL_STATUS_TONE: Record<string, string> = {
-  open: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  resolved: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  open: "bg-amber-500/10 text-amber-600",
+  resolved: "bg-emerald-500/10 text-emerald-600",
 };
 
 const SEVERITY_FILTERS: { value: AlertSeverity; label: string }[] = [
@@ -272,7 +272,7 @@ function SignalsPanel() {
       </div>
 
       {error && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-600">
           {error}
         </div>
       )}
@@ -367,7 +367,7 @@ function SignalCard({
       <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
         <span>Détecté {formatDateTime(signal.createdAt)}</span>
         {signal.resolvedAt && (
-          <span className="text-emerald-600 dark:text-emerald-400">
+          <span className="text-emerald-600">
             Résolu {formatDateTime(signal.resolvedAt)}
           </span>
         )}
@@ -488,7 +488,7 @@ function EntitiesPanel() {
       </div>
 
       {error && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-600">
           {error}
         </div>
       )}
@@ -668,11 +668,11 @@ function ErrorState({
 }) {
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-8 text-center">
-      <p className="text-sm text-red-600 dark:text-red-400">{message}</p>
+      <p className="text-sm text-red-600">{message}</p>
       <button
         type="button"
         onClick={onRetry}
-        className="inline-flex items-center gap-2 rounded-lg border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 transition hover:bg-red-500/10"
+        className="inline-flex items-center gap-2 rounded-lg border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-500/10"
       >
         <RefreshCw className="h-3.5 w-3.5" />
         Réessayer

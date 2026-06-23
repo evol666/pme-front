@@ -41,9 +41,9 @@ interface ChatMessage {
 }
 
 const SEVERITY_TONE: Record<string, string> = {
-  high: "bg-red-500/10 text-red-600 dark:text-red-400",
-  medium: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  low: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  high: "bg-red-500/10 text-red-600",
+  medium: "bg-amber-500/10 text-amber-600",
+  low: "bg-emerald-500/10 text-emerald-600",
 };
 
 function severityTone(sev: string): string {
@@ -70,10 +70,10 @@ function HealthBadge() {
       className={cn(
         "inline-flex items-center gap-1.5 h-7 px-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider border",
         reachable && !mock
-          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+          ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
           : mock
-            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
-            : "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
+            ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+            : "bg-red-500/10 text-red-600 border-red-500/20",
       )}
       title={data ? `Modèle: ${data.model}` : undefined}
     >
@@ -309,7 +309,7 @@ export default function CopilotePage() {
                       m.role === "user"
                         ? "bg-primary text-primary-foreground rounded-br-md"
                         : m.error
-                          ? "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 rounded-bl-md"
+                          ? "bg-red-500/10 text-red-600 border border-red-500/20 rounded-bl-md"
                           : "bg-accent text-foreground rounded-bl-md",
                     )}
                   >
@@ -318,7 +318,7 @@ export default function CopilotePage() {
                       <div className="mt-1.5 flex items-center gap-2 text-[10px] text-muted-foreground">
                         <span>{m.model ?? "modèle"}</span>
                         {m.mock && (
-                          <span className="text-amber-600 dark:text-amber-400">
+                          <span className="text-amber-600">
                             démo
                           </span>
                         )}

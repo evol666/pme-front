@@ -24,9 +24,9 @@ function StatusBadge({ status }: { status: string }) {
   const tone = cn(
     "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold",
     status === "completed"
-      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+      ? "bg-emerald-500/10 text-emerald-600"
       : ["failed", "error"].includes(status)
-        ? "bg-red-500/10 text-red-600 dark:text-red-400"
+        ? "bg-red-500/10 text-red-600"
         : "bg-primary/10 text-primary",
   );
   return <span className={tone}>{label}</span>;
@@ -145,7 +145,7 @@ export default function AnalysesPage() {
           </button>
         </div>
         {formError && (
-          <p className="text-sm text-red-600 dark:text-red-400">{formError}</p>
+          <p className="text-sm text-red-600">{formError}</p>
         )}
       </form>
 

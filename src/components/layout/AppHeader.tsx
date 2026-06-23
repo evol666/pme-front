@@ -75,7 +75,7 @@ export function AppHeader() {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors font-bold cursor-pointer text-left border-none"
+                  className="w-full flex items-center px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors font-bold cursor-pointer text-left border-none"
                 >
                   <LogOut className="w-4 h-4 mr-2" />
                   Déconnexion

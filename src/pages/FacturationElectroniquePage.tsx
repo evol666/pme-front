@@ -78,14 +78,14 @@ function formatCurrency(
 // --- Statuts facture ---
 
 const INV_TONE: Record<string, string> = {
-  PAID: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  PENDING: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  OVERDUE: "bg-red-500/10 text-red-600 dark:text-red-400",
-  CANCELLED: "bg-slate-500/10 text-slate-600 dark:text-slate-400",
+  PAID: "bg-emerald-500/10 text-emerald-600",
+  PENDING: "bg-amber-500/10 text-amber-600",
+  OVERDUE: "bg-red-500/10 text-red-600",
+  CANCELLED: "bg-slate-500/10 text-slate-600",
   DRAFT: "bg-muted text-muted-foreground",
-  OPEN: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
-  VOID: "bg-red-500/10 text-red-600 dark:text-red-400",
-  UNCOLLECTIBLE: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+  OPEN: "bg-sky-500/10 text-sky-600",
+  VOID: "bg-red-500/10 text-red-600",
+  UNCOLLECTIBLE: "bg-orange-500/10 text-orange-600",
 };
 
 const INV_LABEL: Record<string, string> = {
@@ -110,12 +110,12 @@ function invLabel(status: string): string {
 // --- Statuts abonnement ---
 
 const SUB_TONE: Record<string, string> = {
-  TRIALING: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
-  ACTIVE: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  PAST_DUE: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  UNPAID: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
-  CANCELED: "bg-red-500/10 text-red-600 dark:text-red-400",
-  INCOMPLETE: "bg-slate-500/10 text-slate-600 dark:text-slate-400",
+  TRIALING: "bg-sky-500/10 text-sky-600",
+  ACTIVE: "bg-emerald-500/10 text-emerald-600",
+  PAST_DUE: "bg-amber-500/10 text-amber-600",
+  UNPAID: "bg-orange-500/10 text-orange-600",
+  CANCELED: "bg-red-500/10 text-red-600",
+  INCOMPLETE: "bg-slate-500/10 text-slate-600",
 };
 
 const SUB_LABEL: Record<string, string> = {
@@ -883,7 +883,7 @@ function ErrorBanner({
   onRetry: () => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-700 dark:text-amber-300">
+    <div className="flex items-center justify-between gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-700">
       <span>{message}</span>
       <button
         type="button"

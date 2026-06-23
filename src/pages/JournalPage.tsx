@@ -40,11 +40,11 @@ const KIND_FILTERS = [
 
 const KIND_TONE: Record<string, string> = {
   analysis: "bg-primary/10 text-primary",
-  recommendation: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  alert: "bg-red-500/10 text-red-600 dark:text-red-400",
-  decision: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  document: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
-  workflow: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
+  recommendation: "bg-emerald-500/10 text-emerald-600",
+  alert: "bg-red-500/10 text-red-600",
+  decision: "bg-amber-500/10 text-amber-600",
+  document: "bg-blue-500/10 text-blue-600",
+  workflow: "bg-violet-500/10 text-violet-600",
   system: "bg-accent text-muted-foreground",
   user: "bg-accent text-muted-foreground",
 };
@@ -108,7 +108,7 @@ function EventRow({
             type="button"
             onClick={() => onDelete(event.id)}
             disabled={pending}
-            className="inline-flex items-center justify-center h-7 w-7 rounded-md border border-border text-muted-foreground hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/10 disabled:opacity-50 shrink-0"
+            className="inline-flex items-center justify-center h-7 w-7 rounded-md border border-border text-muted-foreground hover:text-red-600 hover:bg-red-500/10 disabled:opacity-50 shrink-0"
             title="Supprimer"
           >
             <Trash2 className="w-3.5 h-3.5" />

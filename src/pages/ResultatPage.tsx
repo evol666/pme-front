@@ -204,7 +204,7 @@ export default function ResultatPage() {
       </header>
 
       {exportMutation.isError && (
-        <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-600 dark:text-red-400">
+        <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-600">
           Échec de l'export.{" "}
           {String(
             (exportMutation.error as {

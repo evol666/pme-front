@@ -37,9 +37,9 @@ const KIND_LABEL: Record<string, string> = Object.fromEntries(
 );
 
 const STATUS_TONE: Record<string, string> = {
-  active: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  archived: "bg-slate-500/10 text-slate-600 dark:text-slate-300",
-  draft: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+  active: "bg-emerald-500/10 text-emerald-600",
+  archived: "bg-slate-500/10 text-slate-600",
+  draft: "bg-amber-500/10 text-amber-600",
 };
 
 function kindLabel(kind: string): string {
@@ -212,7 +212,7 @@ export default function MemoryHubPage() {
       )}
 
       {error && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-600">
           {error}
         </div>
       )}
@@ -446,11 +446,11 @@ function ErrorState({
 }) {
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-8 text-center">
-      <p className="text-sm text-red-600 dark:text-red-400">{message}</p>
+      <p className="text-sm text-red-600">{message}</p>
       <button
         type="button"
         onClick={onRetry}
-        className="inline-flex items-center gap-2 rounded-lg border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 transition hover:bg-red-500/10"
+        className="inline-flex items-center gap-2 rounded-lg border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-500/10"
       >
         <RefreshCw className="h-3.5 w-3.5" />
         Réessayer

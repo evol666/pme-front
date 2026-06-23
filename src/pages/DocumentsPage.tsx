@@ -77,7 +77,7 @@ function DocumentRow({
           )}
         </p>
         {doc.status === "ERROR" && doc.error && (
-          <p className="mt-1 text-xs text-red-600 dark:text-red-400 truncate">
+          <p className="mt-1 text-xs text-red-600 truncate">
             {doc.error}
           </p>
         )}
@@ -86,7 +86,7 @@ function DocumentRow({
         type="button"
         onClick={() => onDelete(doc.id)}
         disabled={deleting}
-        className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/10 disabled:opacity-50"
+        className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-500/10 disabled:opacity-50"
         title="Supprimer"
         aria-label="Supprimer le document"
       >
@@ -202,7 +202,7 @@ export default function DocumentsPage() {
           </label>
         </div>
         {uploadError && (
-          <p className="text-sm text-red-600 dark:text-red-400">{uploadError}</p>
+          <p className="text-sm text-red-600">{uploadError}</p>
         )}
         <p className="text-xs text-muted-foreground">
           PDF, TXT, Markdown, DOCX, HTML, CSV. Le document sera indexé après

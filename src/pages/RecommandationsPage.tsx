@@ -27,9 +27,9 @@ function StatusPill({ status }: { status: string }) {
   const dismissed = status === "dismissed";
   const seen = status === "seen";
   const tone = accepted
-    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+    ? "bg-emerald-500/10 text-emerald-600"
     : dismissed
-      ? "bg-red-500/10 text-red-600 dark:text-red-400"
+      ? "bg-red-500/10 text-red-600"
       : seen
         ? "bg-primary/10 text-primary"
         : "bg-accent text-muted-foreground";
@@ -116,7 +116,7 @@ function RecommendationCard({
             type="button"
             onClick={() => onFeedback(rec.id, "accepted")}
             disabled={pending}
-            className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-emerald-500/30 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-emerald-500/30 text-xs font-bold text-emerald-600 hover:bg-emerald-500/10 disabled:opacity-50"
             title="Accepter"
           >
             <ThumbsUp className="w-3.5 h-3.5" />
@@ -125,7 +125,7 @@ function RecommendationCard({
             type="button"
             onClick={() => onFeedback(rec.id, "dismissed")}
             disabled={pending}
-            className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-red-500/30 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-500/10 disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-red-500/30 text-xs font-bold text-red-600 hover:bg-red-500/10 disabled:opacity-50"
             title="Écarter"
           >
             <ThumbsDown className="w-3.5 h-3.5" />
@@ -205,7 +205,7 @@ export default function RecommandationsPage() {
       </div>
 
       {feedback.isError && (
-        <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-600 dark:text-red-400">
+        <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-600">
           Échec du feedback.{" "}
           {String(
             (feedback.error as {
