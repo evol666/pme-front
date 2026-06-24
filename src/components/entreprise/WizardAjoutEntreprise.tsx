@@ -331,13 +331,13 @@ function Step2Confirm({
         <div className="grid grid-cols-2 gap-3">
           {[
             { label: "Ville", value: id?.ville },
-            { label: "Ancienneté", value: `${enriched.synthese.points_cles.anciennete_ans} ans` },
+            { label: "Ancienneté", value: enriched.synthese?.points_cles?.anciennete_ans != null ? `${enriched.synthese.points_cles.anciennete_ans} ans` : null },
             { label: "Effectif tranche", value: id?.effectif_tranche ? `Tranche ${id.effectif_tranche}` : null },
             { label: "Catégorie INSEE", value: id?.categorie },
             { label: "Risque sectoriel", value: id?.risque_sectoriel },
             { label: "Conv. collective", value: id?.convention_collective },
-            { label: "Signaux BODACC risque", value: String(enriched.synthese.points_cles.signaux_bodacc_risque) },
-            { label: "Signaux BODACC croissance", value: String(enriched.synthese.points_cles.signaux_bodacc_croissance) },
+            { label: "Signaux BODACC risque", value: enriched.synthese?.points_cles?.signaux_bodacc_risque != null ? String(enriched.synthese.points_cles.signaux_bodacc_risque) : null },
+            { label: "Signaux BODACC croissance", value: enriched.synthese?.points_cles?.signaux_bodacc_croissance != null ? String(enriched.synthese.points_cles.signaux_bodacc_croissance) : null },
           ].filter(r => r.value).map(r => (
             <div key={r.label} className="flex flex-col gap-0.5 px-3 py-2 bg-muted/20 rounded-lg">
               <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-bold">{r.label}</span>

@@ -98,9 +98,9 @@ export default function EntrepriseDetailPage() {
         {/* Bandeau couleur selon severity */}
         <div className={cn(
           "h-1.5",
-          scoring.severity === "faible" ? "bg-emerald-500" :
-          scoring.severity === "modéré" ? "bg-amber-400" :
-          "bg-red-500",
+          scoring?.severity === "faible" ? "bg-emerald-500" :
+          scoring?.severity === "modéré" ? "bg-amber-400" :
+          scoring ? "bg-red-500" : "bg-muted",
         )} />
 
         <div className="px-6 pt-5 pb-4">
@@ -153,6 +153,7 @@ export default function EntrepriseDetailPage() {
 
             {/* Score + refresh */}
             <div className="flex flex-col items-end gap-2 flex-shrink-0">
+              {scoring && (
               <div className={cn(
                 "w-16 h-16 rounded-2xl flex flex-col items-center justify-center",
                 scoring.severity === "faible" ? "bg-emerald-500/10 text-emerald-600" :
@@ -162,6 +163,7 @@ export default function EntrepriseDetailPage() {
                 <span className="text-2xl font-extrabold leading-none">{scoring.score_global}</span>
                 <span className="text-[9px] font-bold text-muted-foreground mt-0.5">/100</span>
               </div>
+              )}
               <button
                 onClick={() => refresh.mutate(siren)}
                 disabled={refresh.isPending}
@@ -228,12 +230,14 @@ function TabIdentite({ enriched }: { enriched: import("@/api/entreprises").Entre
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="w-4 h-4 text-primary" />
           <h2 className="text-sm font-bold">Score PME Platform</h2>
-          <span className="ml-auto text-2xl font-extrabold">
-            {scoring.score_global}<span className="text-base font-normal text-muted-foreground">/100</span>
-          </span>
+          {scoring && (
+            <span className="ml-auto text-2xl font-extrabold">
+              {scoring.score_global}<span className="text-base font-normal text-muted-foreground">/100</span>
+            </span>
+          )}
         </div>
         <div className="space-y-3">
-          {Object.entries(scoring.axes).map(([key, axe]) => (
+          {scoring && Object.entries(scoring.axes).map(([key, axe]) => (
             <AxeRow key={key} axeKey={key} axe={axe} />
           ))}
         </div>

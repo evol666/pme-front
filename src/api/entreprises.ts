@@ -134,8 +134,8 @@ export interface EntrepriseEnrichie {
   identite: Identite;
   bodacc: BodaccData;
   geolocalisation: Geolocalisation | null;
-  scoring: Scoring;
-  synthese: Synthese;
+  scoring: Scoring | undefined;
+  synthese: Synthese | undefined;
 }
 
 // ---------------------------------------------------------------------------
