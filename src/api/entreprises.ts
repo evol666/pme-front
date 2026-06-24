@@ -131,7 +131,7 @@ export interface EntrepriseEnrichie {
   siren: string;
   enriched_at: string;
   offline_sources: string[];
-  identite: Identite;
+  identite: Identite | undefined;
   bodacc: BodaccData;
   geolocalisation: Geolocalisation | null;
   scoring: Scoring | undefined;

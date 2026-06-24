@@ -85,6 +85,10 @@ export default function EntrepriseDetailPage() {
   }
 
   const { identite, scoring } = enriched;
+
+  if (!identite) {
+    return <ErrorView message="Données d'identité indisponibles pour ce SIREN" onBack={() => navigate(-1)} />;
+  }
   const kindLabel = portefeuille
     ? RELATION_TYPES.find(r => r.value === portefeuille.kind)?.label
     : null;
