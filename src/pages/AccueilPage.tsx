@@ -96,14 +96,14 @@ export default function AccueilPage() {
           icon={BarChart3}
         />
         <Tile
-          to="/recommandations"
+          to="/entreprises"
           label="Recommandations"
           value={newRecos}
           hint={`${recommandations?.length ?? 0} au total · ${newRecos} nouvelles`}
           icon={Lightbulb}
         />
         <Tile
-          to="/documents"
+          to="/entreprises"
           label="Documents"
           value={documents?.length ?? 0}
           hint={
@@ -177,7 +177,7 @@ export default function AccueilPage() {
             Recommandations récentes
           </h2>
           <Link
-            to="/recommandations"
+            to="/entreprises"
             className="text-xs font-bold text-primary hover:underline"
           >
             Tout voir

@@ -68,6 +68,23 @@ export function useRecommandations(jobId?: string) {
   });
 }
 
+// Recommandations scopées à une entreprise : on passe la liste des jobId de ses
+// analyses (jobId.in). Sans job, aucune recommandation.
+export function useRecommandationsForJobs(jobIds: string[]) {
+  const ids = [...jobIds].filter(Boolean).sort();
+  return useQuery({
+    queryKey: ["recommandations", "byJobs", ids] as const,
+    enabled: ids.length > 0,
+    queryFn: async () => {
+      const { data } = await axiosClient.get<AiRecommendation[]>(
+        "/api/ai-recommendations",
+        { params: { "jobId.in": ids.join(",") } },
+      );
+      return data;
+    },
+  });
+}
+
 export function useRecommandation(id: number | null | undefined) {
   return useQuery({
     queryKey: id ? recommandationsKeys.detail(id) : ["recommandations", "detail", "none"],

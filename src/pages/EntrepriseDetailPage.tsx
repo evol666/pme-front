@@ -28,7 +28,7 @@ import {
 } from "@/api/entreprises";
 import { usePortefeuilleEntreprise, RELATION_TYPES } from "@/api/portefeuille";
 import { useAnalyses, useLaunchAnalysis } from "@/api/analyses";
-import { useRecommandations } from "@/api/recommandations";
+import { useRecommandationsForJobs } from "@/api/recommandations";
 import { useDocuments } from "@/api/documents";
 import { useJournalEvents } from "@/api/journal";
 import { cn } from "@/lib/utils";
@@ -417,13 +417,13 @@ function TabAnalyses({ siren }: { siren: string }) {
 // ---------------------------------------------------------------------------
 
 function TabRecommandations({ siren }: { siren: string }) {
-  const { data: recos, isLoading } = useRecommandations();
+  // Recommandations propres à l'entreprise : on récupère les analyses du SIREN,
+  // puis les recommandations rattachées à ces jobId.
+  const { data: analyses } = useAnalyses(siren);
+  const jobIds = (analyses ?? []).map((a) => a.job_id).filter(Boolean);
+  const { data: recos, isLoading } = useRecommandationsForJobs(jobIds);
 
-  // Filtrer par SIREN côté client (les recos n'ont pas de filtre backend SIREN direct)
-  // Le lien se fait via jobId qui contient le SIREN dans la description
-  const filtered = (recos ?? []).filter(r =>
-    r.jobId != null || true // afficher toutes pour l'instant
-  ).slice(0, 20);
+  const filtered = (recos ?? []).slice(0, 20);
 
   return (
     <div className="space-y-4">
@@ -472,20 +472,13 @@ function TabRecommandations({ siren }: { siren: string }) {
 // Onglet Documents
 // ---------------------------------------------------------------------------
 
-function TabDocuments({ siren }: { siren: string }) {
-  const navigate = useNavigate();
+function TabDocuments({ siren: _siren }: { siren: string }) {
   const { data: docs, isLoading } = useDocuments();
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-bold text-foreground">Documents</h2>
-        <button
-          onClick={() => navigate("/documents")}
-          className="text-xs text-primary hover:underline flex items-center gap-1"
-        >
-          Gérer les documents <ChevronRight className="w-3.5 h-3.5" />
-        </button>
       </div>
 
       {isLoading ? (
@@ -494,7 +487,6 @@ function TabDocuments({ siren }: { siren: string }) {
         <EmptyTab
           icon={FileText}
           title="Aucun document"
-          action={{ label: "Aller aux documents", onClick: () => navigate("/documents") }}
         />
       ) : (
         <div className="space-y-2">
@@ -518,7 +510,6 @@ function TabDocuments({ siren }: { siren: string }) {
 // ---------------------------------------------------------------------------
 
 function TabJournal() {
-  const navigate = useNavigate();
   const { data, isLoading } = useJournalEvents({ size: 15, sort: "occurredAt,desc" });
   const events = data?.items ?? [];
 
@@ -526,12 +517,6 @@ function TabJournal() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-bold text-foreground">Journal d'activité</h2>
-        <button
-          onClick={() => navigate("/journal")}
-          className="text-xs text-primary hover:underline flex items-center gap-1"
-        >
-          Journal complet <ChevronRight className="w-3.5 h-3.5" />
-        </button>
       </div>
 
       {isLoading ? (

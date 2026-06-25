@@ -92,12 +92,12 @@ test.describe('Dashboard (Accueil)', () => {
     const analysesTile = page.locator('a[href="/analyses"]');
     await expect(analysesTile.locator('span.text-3xl')).toHaveText('2');
 
-    // Recommandations Tile value is "new" count (1)
-    const recosTile = page.locator('a[href="/recommandations"]');
+    // Recommandations Tile value is "new" count (1) — désormais lié au portefeuille
+    const recosTile = page.locator('a[href="/entreprises"]', { hasText: 'Recommandations' });
     await expect(recosTile.locator('span.text-3xl')).toHaveText('1');
 
-    // Documents Tile value is total length (2)
-    const docsTile = page.locator('a[href="/documents"]');
+    // Documents Tile value is total length (2) — désormais lié au portefeuille
+    const docsTile = page.locator('a[href="/entreprises"]', { hasText: 'Documents' });
     await expect(docsTile.locator('span.text-3xl')).toHaveText('2');
 
     // Check lists
@@ -108,7 +108,4 @@ test.describe('Dashboard (Accueil)', () => {
     await expect(page.locator('text=failed')).toBeVisible();
 
     // Recent recommendations
-    await expect(page.locator('text=Optimiser le RAG')).toBeVisible();
-    await expect(page.locator('text=Mettre en place des agents')).toBeVisible();
-  });
-});
+    await expect(page.locator('text=Op

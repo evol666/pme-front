@@ -27,7 +27,7 @@ export default function DocumentsStep() {
 
       <button
         type="button"
-        onClick={() => navigate('/documents')}
+        onClick={() => navigate('/entreprises')}
         className="group flex w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-border bg-muted/30 px-6 py-10 text-center transition-colors hover:border-primary/40 hover:bg-primary/5"
       >
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-card text-primary shadow-sm transition-transform group-hover:scale-105">

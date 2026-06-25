@@ -1,5 +1,4 @@
 import {
-  BarChart3,
   Briefcase,
   Layout,
   LayoutDashboard,
@@ -26,7 +25,6 @@ const mainNav: NavItem[] = [
   { href: "/entreprises",    label: "Entreprises",     icon: Briefcase },
   { href: "/copilote",       label: "Copilote IA",     icon: Sparkles },
   { href: "/mode-directeur", label: "Mode Directeur",  icon: Target },
-  { href: "/analyses",       label: "Analyses",        icon: BarChart3 },
 ];
 
 // Routes visibles uniquement pour ROLE_ADMIN.
