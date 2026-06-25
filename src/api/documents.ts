@@ -22,6 +22,7 @@ export interface RagDocument {
   id: number;
   sourceKind: string;
   sourceId: string | null;
+  siren: string | null;
   title: string;
   uri: string | null;
   checksum: string | null;
@@ -43,6 +44,7 @@ export interface UploadUrlRequest {
   contentType: string;
   sizeBytes?: number | null;
   sourceKind?: string;
+  siren?: string | null;
 }
 
 export interface UploadUrlResponse {
@@ -80,11 +82,14 @@ export async function uploadToPresignedUrl(
 
 // --- Hooks ---
 
-export function useDocuments() {
+export function useDocuments(siren?: string) {
   return useQuery({
-    queryKey: documentsKeys.list(),
+    queryKey: [...documentsKeys.list(), { siren }] as const,
     queryFn: async () => {
-      const { data } = await axiosClient.get<RagDocument[]>("/api/rag-documents");
+      const params = siren ? { "siren.equals": siren } : undefined;
+      const { data } = await axiosClient.get<RagDocument[]>("/api/rag-documents", {
+        params,
+      });
       return data;
     },
   });
@@ -128,11 +133,13 @@ export function useUploadDocumentDirect() {
       file: File;
       title?: string;
       sourceKind?: string;
+      siren?: string;
     }) => {
       const form = new FormData();
       form.append("file", params.file);
       if (params.title) form.append("title", params.title);
       if (params.sourceKind) form.append("sourceKind", params.sourceKind);
+      if (params.siren) form.append("siren", params.siren);
       const { data } = await axiosClient.post<RagDocument>(
         "/api/documents/upload",
         form,

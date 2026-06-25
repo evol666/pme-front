@@ -15,6 +15,7 @@ export interface JournalEvent {
   content: string | null;
   occurredAt: string;
   createdAt: string;
+  siren: string | null;
   tenant: { id: number } | null;
   user: { id: number } | null;
 }
@@ -24,6 +25,7 @@ export interface JournalListParams {
   size?: number;
   sort?: string;
   kind?: string;
+  siren?: string;
 }
 
 export interface JournalListResult {
@@ -45,11 +47,12 @@ export function useJournalEvents(params: JournalListParams = {}) {
   const size = params.size ?? 25;
   const sort = params.sort ?? "occurredAt,desc";
   return useQuery({
-    queryKey: journalKeys.list({ page, size, sort, kind: params.kind }),
+    queryKey: journalKeys.list({ page, size, sort, kind: params.kind, siren: params.siren }),
     queryFn: async () => {
       // Critère JHipster : kind.equals=<value>. Sans kind on remonte tout.
       const requestParams: Record<string, unknown> = { page, size, sort };
       if (params.kind) requestParams["kind.equals"] = params.kind;
+      if (params.siren) requestParams["siren.equals"] = params.siren;
       const response = await axiosClient.get<JournalEvent[]>(
         "/api/journal-events",
         { params: requestParams },

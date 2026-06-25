@@ -212,7 +212,7 @@ export default function EntrepriseDetailPage() {
         {activeTab === "analyses"         && <TabAnalyses siren={siren} />}
         {activeTab === "recommandations"  && <TabRecommandations siren={siren} />}
         {activeTab === "documents"        && <TabDocuments siren={siren} />}
-        {activeTab === "journal"          && <TabJournal />}
+        {activeTab === "journal"          && <TabJournal siren={siren} />}
         {activeTab === "copilote"         && <TabCopilote siren={siren} raisonSociale={identite.raison_sociale ?? siren} />}
         {activeTab === "playbooks"        && <TabPlaybooks />}
       </div>
@@ -472,8 +472,8 @@ function TabRecommandations({ siren }: { siren: string }) {
 // Onglet Documents
 // ---------------------------------------------------------------------------
 
-function TabDocuments({ siren: _siren }: { siren: string }) {
-  const { data: docs, isLoading } = useDocuments();
+function TabDocuments({ siren }: { siren: string }) {
+  const { data: docs, isLoading } = useDocuments(siren);
 
   return (
     <div className="space-y-4">
@@ -509,8 +509,8 @@ function TabDocuments({ siren: _siren }: { siren: string }) {
 // Onglet Journal
 // ---------------------------------------------------------------------------
 
-function TabJournal() {
-  const { data, isLoading } = useJournalEvents({ size: 15, sort: "occurredAt,desc" });
+function TabJournal({ siren }: { siren: string }) {
+  const { data, isLoading } = useJournalEvents({ siren, size: 15, sort: "occurredAt,desc" });
   const events = data?.items ?? [];
 
   return (
