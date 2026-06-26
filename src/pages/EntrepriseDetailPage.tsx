@@ -1663,6 +1663,27 @@ function TabCopilote({
 // Onglet Modules — catalogue modules/outils du métier détecté pour ce SIREN
 // ---------------------------------------------------------------------------
 
+// Bundles sectoriels B2B (Lot H — stratégie hybride). La détection NAF renvoie
+// le métier artisan fin ; ces bundles restent sélectionnables manuellement pour
+// élargir le catalogue au secteur. Les `id` correspondent exactement aux clés
+// `profiles` de `pme_modules.json`.
+const BUNDLE_PROFILES: { id: string; label: string }[] = [
+	{ id: "achats_fournisseurs", label: "Achats & fournisseurs" },
+	{ id: "btp", label: "BTP / Construction" },
+	{ id: "collectivites", label: "Collectivités / Public" },
+	{ id: "consultant", label: "Conseil / Consulting" },
+	{ id: "eti_industrie", label: "ETI / Industrie" },
+	{ id: "immobilier", label: "Immobilier" },
+	{ id: "industrie", label: "Industrie" },
+	{ id: "juridique", label: "Juridique" },
+	{ id: "recrutement", label: "Recrutement" },
+	{ id: "restauration", label: "Restauration" },
+	{ id: "retail", label: "Retail / Commerce" },
+	{ id: "rh_avance", label: "RH avancé" },
+	{ id: "sante", label: "Santé" },
+	{ id: "services_personne", label: "Services à la personne" },
+];
+
 function TabModules({
 	siren,
 	activeModule,
@@ -1676,7 +1697,10 @@ function TabModules({
 	const lastAnalysis = (analyses ?? [])[0];
 	// Métier détecté depuis la dernière analyse ; fallback "generique" (le backend
 	// ne renvoie jamais 404 sur cet identifiant).
-	const metierId = lastAnalysis?.detected_business_id ?? "generique";
+	const detectedId = lastAnalysis?.detected_business_id ?? "generique";
+	// Lot H — l'utilisateur peut élargir au secteur (bundle B2B) ; null = métier détecté.
+	const [bundleOverride, setBundleOverride] = useState<string | null>(null);
+	const metierId = bundleOverride ?? detectedId;
 	const { data: catalog, isLoading } = useMetierModules(metierId);
 
 	if (isLoading) {
@@ -1713,6 +1737,23 @@ function TabModules({
 					Actions guidées par IA pour le métier détecté. Lancées depuis la fiche
 					entreprise, elles nourrissent analyses et recommandations.
 				</p>
+				<div className="mt-3 flex items-center gap-2">
+					<label className="text-xs text-muted-foreground">
+						Élargir au secteur :
+					</label>
+					<select
+						value={bundleOverride ?? ""}
+						onChange={(e) => setBundleOverride(e.target.value || null)}
+						className="text-xs border border-border rounded-md px-2 py-1 bg-card text-foreground"
+					>
+						<option value="">Métier détecté</option>
+						{BUNDLE_PROFILES.map((b) => (
+							<option key={b.id} value={b.id}>
+								{b.label}
+							</option>
+						))}
+					</select>
+				</div>
 			</div>
 
 			{modules.length === 0 ? (
