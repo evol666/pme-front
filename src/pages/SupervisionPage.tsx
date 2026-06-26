@@ -4,6 +4,7 @@ import {
   BarChart3,
   Bell,
   Check,
+  DatabaseZap,
   Eye,
   Gauge,
   Loader2,
@@ -25,6 +26,12 @@ import {
   type KpiSnapshot,
   type PmeHealth,
 } from "@/api/admin";
+import {
+  useSireneImportStatus,
+  useSireneStats,
+  useStartSireneImport,
+  type SireneImportStatus,
+} from "@/api/sirene";
 import { cn } from "@/lib/utils";
 
 // Supervision (LOT observabilité IA/admin). Version Spring Boot.
@@ -32,13 +39,14 @@ import { cn } from "@/lib/utils";
 // Alertes (/api/ai-alerts paginé, filtres severity/status, actions PATCH seen/acted/dismissed) ·
 // KPIs (/api/kpi-snapshots) · Usage IA (/api/ai-usages paginé).
 
-type TabKey = "health" | "alerts" | "kpis" | "usage";
+type TabKey = "health" | "alerts" | "kpis" | "usage" | "sirene";
 
 const TABS: { key: TabKey; label: string; icon: typeof Activity }[] = [
   { key: "health", label: "Santé AI", icon: ServerCog },
   { key: "alerts", label: "Alertes", icon: Bell },
   { key: "kpis", label: "KPIs", icon: Gauge },
   { key: "usage", label: "Usage IA", icon: BarChart3 },
+  { key: "sirene", label: "Base Sirene", icon: DatabaseZap },
 ];
 
 const SEVERITY_TONE: Record<AlertSeverity, string> = {
@@ -131,6 +139,107 @@ export default function SupervisionPage() {
       {tab === "alerts" && <AlertsTab />}
       {tab === "kpis" && <KpisTab />}
       {tab === "usage" && <UsageTab />}
+      {tab === "sirene" && <SireneTab />}
+    </div>
+  );
+}
+
+// --- Base Sirene (import INSEE) ---
+
+const SIRENE_PHASE_LABEL: Record<string, string> = {
+  idle: "En attente",
+  downloading: "Téléchargement du stock INSEE…",
+  parsing: "Parsing & upsert…",
+  done: "Terminé",
+  error: "Erreur",
+};
+
+function SireneTab() {
+  const { data: status } = useSireneImportStatus();
+  const { data: stats } = useSireneStats();
+  const start = useStartSireneImport();
+  const running = status?.running ?? false;
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-base font-bold text-foreground">Import de la base Sirene</h2>
+            <p className="mt-1 text-sm text-muted-foreground max-w-xl">
+              Télécharge le stock mensuel des unités légales (INSEE / data.gouv.fr) et le
+              met à jour en base. Plusieurs millions de lignes — l’opération tourne en
+              arrière-plan. Un import mensuel automatique est également planifié.
+            </p>
+          </div>
+          <button
+            type="button"
+            disabled={running || start.isPending}
+            onClick={() => start.mutate()}
+            className={cn(
+              "inline-flex shrink-0 items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition",
+              running || start.isPending
+                ? "bg-muted text-muted-foreground cursor-not-allowed"
+                : "bg-primary text-primary-foreground hover:opacity-90",
+            )}
+          >
+            {running || start.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <DatabaseZap className="h-4 w-4" />
+            )}
+            {running ? "Import en cours…" : "Lancer l’import"}
+          </button>
+        </div>
+
+        {start.isError && (
+          <ErrorBanner message={extractBackendError(start.error)} />
+        )}
+
+        {status && status.phase !== "idle" && <SireneProgress status={status} />}
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <StatCard label="Unités actives" value={stats?.actives} />
+        <StatCard label="Unités cessées" value={stats?.cessees} />
+        <StatCard label="Total en base" value={stats?.total} />
+      </div>
+    </div>
+  );
+}
+
+function SireneProgress({ status }: { status: SireneImportStatus }) {
+  return (
+    <div className="rounded-lg border border-border/60 bg-muted/30 p-4 space-y-2 text-sm">
+      <div className="flex items-center gap-2 font-medium text-foreground">
+        {status.running && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
+        {SIRENE_PHASE_LABEL[status.phase] ?? status.phase}
+      </div>
+      <div className="grid grid-cols-3 gap-2 text-muted-foreground">
+        <span>Lignes traitées : {status.processed.toLocaleString("fr-FR")}</span>
+        <span>Upsertées : {status.upserted.toLocaleString("fr-FR")}</span>
+        <span>Ignorées : {status.skipped.toLocaleString("fr-FR")}</span>
+      </div>
+      {status.startedAt && (
+        <p className="text-xs text-muted-foreground">
+          Démarré : {formatDateTime(status.startedAt)}
+          {status.finishedAt ? ` · Terminé : ${formatDateTime(status.finishedAt)}` : ""}
+        </p>
+      )}
+      {status.error && <ErrorBanner message={status.error} />}
+    </div>
+  );
+}
+
+function StatCard({ label, value }: { label: string; value: number | undefined }) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-1 text-2xl font-bold text-foreground">
+        {value === undefined ? "—" : value.toLocaleString("fr-FR")}
+      </p>
     </div>
   );
 }
