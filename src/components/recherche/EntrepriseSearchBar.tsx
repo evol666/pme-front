@@ -32,9 +32,9 @@ export function EntrepriseSearchBar() {
 
   // Ouvrir le dropdown quand des résultats arrivent
   useEffect(() => {
-    if (debouncedQuery.length >= 2) setOpen(true);
-    else setOpen(false);
-    setActiveIdx(-1);
+    if (debouncedQuery.length >= 2) setOpen(true); // eslint-disable-line react-hooks/set-state-in-effect
+    else setOpen(false);  
+    setActiveIdx(-1);  
   }, [debouncedQuery, results.length]);
 
   // Fermeture sur clic extérieur

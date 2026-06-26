@@ -29,7 +29,7 @@ export default function ModeDirecteurPage() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pt-8 pb-24 sm:px-6 md:pt-12">
+    <div className="space-y-8 pb-16">
       <header>
         <p className="text-xs font-semibold uppercase tracking-wider text-primary">
           Mode Directeur

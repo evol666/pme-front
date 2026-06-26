@@ -2,6 +2,7 @@ import {
   Briefcase,
   Layout,
   LayoutDashboard,
+  LogOut,
   Settings,
   Shield,
   Sparkles,
@@ -10,6 +11,7 @@ import {
 import type React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAppSelector } from "@/app/hooks";
+import { logout } from "@/api/auth";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
@@ -37,10 +39,12 @@ function NavSection({
   items,
   pathname,
   title,
+  onNavigate,
 }: {
   items: NavItem[];
   pathname: string;
   title?: string;
+  onNavigate?: () => void;
 }) {
   return (
     <>
@@ -57,6 +61,7 @@ function NavSection({
           <Link
             key={item.href}
             to={item.href}
+            onClick={onNavigate}
             className={cn(
               "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group text-sm font-medium",
               isActive
@@ -80,10 +85,11 @@ function NavSection({
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const location = useLocation();
   const pathname = location.pathname;
   const roles = useAppSelector((s) => s.auth.roles);
+  const username = useAppSelector((s) => s.auth.username);
   const isAdmin = roles.includes("ROLE_ADMIN");
 
   return (
@@ -107,26 +113,35 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scrollbar">
-        <NavSection items={mainNav} pathname={pathname} />
+        <NavSection items={mainNav} pathname={pathname} onNavigate={onNavigate} />
         {isAdmin && (
           <NavSection
             items={adminNav}
             pathname={pathname}
             title="Administration"
+            onNavigate={onNavigate}
           />
         )}
       </nav>
 
-      {/* Footer info */}
-      <div className="p-6">
-        <div className="p-4 bg-accent/50 rounded-2xl border border-border/10">
-          <p className="text-xs font-bold text-primary tracking-widest uppercase opacity-70">
-            Athanor
-          </p>
-          <p className="text-[10px] text-muted-foreground mt-1">
-            PME Management
-          </p>
+      {/* Footer utilisateur */}
+      <div className="p-4 border-t border-border/50">
+        <div className="flex items-center gap-3 px-2 py-2 rounded-xl">
+          <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm flex-shrink-0">
+            {username?.[0]?.toUpperCase() ?? "U"}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-foreground truncate">{username}</p>
+            <p className="text-[10px] text-muted-foreground">Connecté</p>
+          </div>
         </div>
+        <button
+          onClick={() => logout()}
+          className="w-full mt-2 flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+        >
+          <LogOut className="w-4 h-4" />
+          Déconnexion
+        </button>
       </div>
     </aside>
   );

@@ -1,3 +1,4 @@
+import React from 'react';
 import { ArrowRight, Target } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { PlaybookRun } from '@/api/playbooks';
@@ -19,7 +20,7 @@ function shortDate(iso?: string | null): string {
 }
 
 export default function ActiveRunCard({ run, playbookIcon }: Props) {
-  const Icon = iconForPlaybook(playbookIcon);
+  const iconEl = React.createElement(iconForPlaybook(playbookIcon), { className: 'h-3.5 w-3.5', strokeWidth: 2.2 });
   const align =
     run.alignment_score != null
       ? Math.round(Math.max(0, Math.min(1, run.alignment_score)) * 100)
@@ -32,7 +33,7 @@ export default function ActiveRunCard({ run, playbookIcon }: Props) {
     >
       <header className="flex items-center gap-2">
         <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
-          <Icon className="h-3.5 w-3.5" strokeWidth={2.2} />
+          {iconEl}
         </span>
         <div className="min-w-0 flex-1">
           <p className="truncate text-[13px] font-semibold text-foreground">

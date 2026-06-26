@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -77,6 +77,8 @@ function PageLoader() {
 }
 
 function DashboardLayout() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="flex h-screen bg-background overflow-hidden text-foreground selection:bg-primary/20 selection:text-primary">
       {/* Desktop Sidebar */}
@@ -84,8 +86,24 @@ function DashboardLayout() {
         <Sidebar />
       </div>
 
+      {/* Mobile Sidebar Drawer */}
+      {sidebarOpen && (
+        <>
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+            aria-hidden="true"
+          />
+          {/* Drawer */}
+          <div className="fixed inset-y-0 left-0 z-50 w-72 lg:hidden animate-in slide-in-from-left duration-300">
+            <Sidebar onNavigate={() => setSidebarOpen(false)} />
+          </div>
+        </>
+      )}
+
       <div className="flex flex-col flex-1 min-w-0">
-        <AppHeader />
+        <AppHeader onMenuClick={() => setSidebarOpen((o) => !o)} />
         <main className="flex-1 overflow-y-auto px-4 lg:px-8 py-6 scroll-smooth custom-scrollbar">
           <div className="max-w-[1600px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
             <Outlet />

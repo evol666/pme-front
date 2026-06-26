@@ -12,7 +12,7 @@ import { usePersonaStore } from "@/stores/personaStore";
 import { EntrepriseSearchBar } from "@/components/recherche/EntrepriseSearchBar";
 import { cn } from "@/lib/utils";
 
-export function AppHeader() {
+export function AppHeader({ onMenuClick }: { onMenuClick?: () => void }) {
   const { username } = useAppSelector((s) => s.auth);
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -29,8 +29,10 @@ export function AppHeader() {
       <div className="flex items-center gap-2 lg:gap-4">
         {/* Mobile menu trigger */}
         <button
+          onClick={onMenuClick}
           className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-all lg:hidden"
           title="Ouvrir le menu"
+          aria-label="Ouvrir le menu de navigation"
         >
           <Menu className="w-5 h-5" />
         </button>

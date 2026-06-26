@@ -49,7 +49,7 @@ interface RawBusinessEntity {
 function toPortefeuille(e: RawBusinessEntity): EntreprisePortefeuille | null {
   if (!e.externalRef || !/^\d{9}$/.test(e.externalRef)) return null;
   let attrs: Record<string, unknown> = {};
-  try { if (e.attributes) attrs = JSON.parse(e.attributes); } catch {}
+  try { if (e.attributes) attrs = JSON.parse(e.attributes); } catch { /* JSON invalide — on ignore */ }
   return {
     id:              e.id,
     siren:           e.externalRef,
@@ -183,7 +183,7 @@ export function useUpdateEntreprise() {
         `/api/business-entities/${id}`,
       );
       let attrs: Record<string, unknown> = {};
-      try { if (existing.attributes) attrs = JSON.parse(existing.attributes); } catch {}
+      try { if (existing.attributes) attrs = JSON.parse(existing.attributes); } catch { /* JSON invalide — on ignore */ }
       if (notes !== undefined) attrs.notes = notes;
 
       const { data } = await axiosClient.put<RawBusinessEntity>(

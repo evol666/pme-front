@@ -125,7 +125,7 @@ export default function WorkflowExecutionPage() {
       await cancelMutation.mutateAsync(runId);
       runQuery.refetch();
       stepsQuery.refetch();
-    } catch (err) {
+    } catch {
       // Ignorer ou gérer l'erreur localement
     }
   };
@@ -135,7 +135,7 @@ export default function WorkflowExecutionPage() {
     try {
       const newRun = await retryMutation.mutateAsync(runId);
       navigate(`/workflows/runs/${newRun.id}`);
-    } catch (err) {
+    } catch {
       // Ignorer ou gérer
     }
   };

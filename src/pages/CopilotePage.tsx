@@ -276,7 +276,7 @@ export default function CopilotePage() {
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">
         {/* Chat */}
-        <section className="flex flex-col bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden h-[600px]">
+        <section className="flex flex-col bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden h-[min(calc(100vh-16rem),700px)] min-h-[400px]">
           <div
             ref={scrollRef}
             className="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-4"

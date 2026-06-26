@@ -47,6 +47,23 @@ function Tile({
   );
 }
 
+// Traduction des statuts
+const STATUS_LABEL: Record<string, string> = {
+  pending:    "En attente",
+  processing: "En cours",
+  running:    "En cours",
+  completed:  "Terminée",
+  failed:     "Échec",
+  error:      "Erreur",
+};
+
+const RECO_STATUS_LABEL: Record<string, string> = {
+  new:       "Nouveau",
+  seen:      "Vue",
+  accepted:  "Acceptée",
+  dismissed: "Écarté",
+};
+
 function statusTone(status: string): string {
   if (status === "completed")
     return "bg-emerald-500/10 text-emerald-600";
@@ -96,7 +113,7 @@ export default function AccueilPage() {
           icon={BarChart3}
         />
         <Tile
-          to="/entreprises"
+          to="/analyses"
           label="Recommandations"
           value={newRecos}
           hint={`${recommandations?.length ?? 0} au total · ${newRecos} nouvelles`}
@@ -109,7 +126,7 @@ export default function AccueilPage() {
           hint={
             pendingDocs > 0
               ? `${pendingDocs} en cours d'indexation`
-              : "Base RAG à jour"
+              : "Documents dans la base RAG"
           }
           icon={FileText}
         />
@@ -162,7 +179,7 @@ export default function AccueilPage() {
                     statusTone(job.status),
                   )}
                 >
-                  {job.status}
+                  {STATUS_LABEL[job.status] ?? job.status}
                 </span>
               </li>
             ))}
@@ -201,7 +218,7 @@ export default function AccueilPage() {
                     statusTone(r.status),
                   )}
                 >
-                  {r.status}
+                  {RECO_STATUS_LABEL[r.status] ?? r.status}
                 </span>
               </li>
             ))}

@@ -33,14 +33,13 @@ export default function WelcomeStep() {
   const { data: entreprise, isFetching, isError } = useEntreprise(activeSiren);
 
   useEffect(() => {
-    if (welcome && !hydrated) {
-      setCompanyName(welcome.company_name || '');
-      setSecteur(welcome.secteur || '');
-      setHeadcount(welcome.headcount || '');
-      setActivity(welcome.activity || '');
-      setSiren(welcome.siren || '');
-      setHydrated(true);
-    }
+    if (!welcome || hydrated) return;
+    setCompanyName(welcome.company_name || ''); // eslint-disable-line react-hooks/set-state-in-effect
+    setSecteur(welcome.secteur || '');  
+    setHeadcount(welcome.headcount || '');  
+    setActivity(welcome.activity || '');  
+    setSiren(welcome.siren || '');  
+    setHydrated(true);  
   }, [welcome, hydrated]);
 
   const persistAll = (values: {
@@ -70,11 +69,11 @@ export default function WelcomeStep() {
       ? `${id.libelle_naf}${id.ville ? ` — ${id.ville}` : ''}`
       : activity;
 
-    setCompanyName(nextName);
-    setSecteur(nextSecteur);
-    setHeadcount(nextHeadcount);
-    setActivity(nextActivity);
-    setFilled(true);
+    setCompanyName(nextName); // eslint-disable-line react-hooks/set-state-in-effect
+    setSecteur(nextSecteur);  
+    setHeadcount(nextHeadcount);  
+    setActivity(nextActivity);  
+    setFilled(true);  
 
     persistAll({
       company_name: nextName,

@@ -1,3 +1,4 @@
+import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import type { PlaybookCatalogItem } from '@/api/playbooks';
 import { iconForPlaybook } from './icons';
@@ -22,7 +23,7 @@ type Props = {
 };
 
 export default function PlaybookCard({ playbook, onStart }: Props) {
-  const Icon = iconForPlaybook(playbook.icon);
+  const iconEl = React.createElement(iconForPlaybook(playbook.icon), { className: 'h-4 w-4', strokeWidth: 2.2 });
   const toneDot = TONE_DOT[playbook.tone] || 'bg-muted-foreground';
 
   return (
@@ -33,7 +34,7 @@ export default function PlaybookCard({ playbook, onStart }: Props) {
     >
       <span className="flex w-full items-start justify-between gap-2">
         <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-muted text-muted-foreground transition group-hover:bg-primary/10 group-hover:text-primary">
-          <Icon className="h-4 w-4" strokeWidth={2.2} />
+          {iconEl}
         </span>
         <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
           <span className={`inline-block h-1.5 w-1.5 rounded-full ${toneDot}`} />

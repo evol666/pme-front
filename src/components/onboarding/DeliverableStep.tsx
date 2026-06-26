@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Check, Loader2, Wand2 } from 'lucide-react';
 import {
   useOnboardingDeliverables,

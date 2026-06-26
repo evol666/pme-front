@@ -18,8 +18,8 @@ export default function PlaybooksPage() {
   const { data: overview, isLoading, refetch } = usePlaybooksOverview();
   const startRun = useStartPlaybookRun();
 
-  const catalog: PlaybookCatalogItem[] = overview?.catalog ?? [];
-  const activeRuns: PlaybookRun[] = overview?.active_runs ?? [];
+  const catalog = useMemo<PlaybookCatalogItem[]>(() => overview?.catalog ?? [], [overview]);
+  const activeRuns = useMemo<PlaybookRun[]>(() => overview?.active_runs ?? [], [overview]);
 
   const catalogByKey = useMemo(() => {
     const m = new Map<string, string | null>();

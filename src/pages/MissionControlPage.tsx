@@ -202,7 +202,7 @@ export default function MissionControlPage() {
   const updateStatus = useUpdatePriorityStatus();
   const del = useDeletePriority();
 
-  const priorities = data ?? [];
+  const priorities = useMemo(() => data ?? [], [data]);
 
   // Regroupement par horizon (ordre canonique).
   const grouped = useMemo(() => {
