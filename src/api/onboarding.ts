@@ -40,6 +40,7 @@ export interface WelcomePayload {
   headcount: string;
   headcount_label: string;
   activity: string;
+  siren: string;
   prefilled: boolean;
   headcount_options: HeadcountOption[];
 }
@@ -173,6 +174,7 @@ export function useSaveWelcome() {
       secteur: string;
       headcount: string;
       activity: string;
+      siren: string;
     }>) => {
       const { data } = await axiosClient.post<WelcomePayload>('/api/onboarding/welcome', payload);
       return data;
