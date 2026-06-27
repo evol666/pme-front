@@ -18,6 +18,7 @@ import {
   type AddEntrepriseInput,
 } from "@/api/portefeuille";
 import { cn } from "@/lib/utils";
+import { libelleTrancheEffectif } from "@/lib/trancheEffectif";
 
 // ---------------------------------------------------------------------------
 // Wizard d'ajout d'entreprise — 3 étapes
@@ -332,7 +333,7 @@ function Step2Confirm({
           {[
             { label: "Ville", value: id?.ville },
             { label: "Ancienneté", value: enriched.synthese?.points_cles?.anciennete_ans != null ? `${enriched.synthese.points_cles.anciennete_ans} ans` : null },
-            { label: "Effectif tranche", value: id?.effectif_tranche ? `Tranche ${id.effectif_tranche}` : null },
+            { label: "Effectif", value: libelleTrancheEffectif(id?.effectif_tranche) },
             { label: "Catégorie INSEE", value: id?.categorie },
             { label: "Risque sectoriel", value: id?.risque_sectoriel },
             { label: "Conv. collective", value: id?.convention_collective },

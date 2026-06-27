@@ -14,8 +14,15 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 //  - GET  /api/copilot/health              -> statut Ollama (reachable, model...)
 //  - POST /api/copilot/v2/alerts/{id}/seen|act|dismiss|snooze -> actions alertes
 //
-// L'historique de conversation est géré côté client (state React) et renvoyé à
-// chaque /converse ; le backend ne persiste pas la session de chat ici.
+// Chat persistant (inspiré du chatbot GED) :
+//  - GET  /api/copilot/chats              -> liste des conversations
+//  - POST /api/copilot/chats              -> créer une conversation
+//  - GET  /api/copilot/chats/{id}         -> détail conversation
+//  - PUT  /api/copilot/chats/{id}         -> renommer
+//  - PUT  /api/copilot/chats/{id}/archive -> archiver
+//  - PUT  /api/copilot/chats/{id}/unarchive -> désarchiver
+//  - GET  /api/copilot/chats/{id}/messages -> historique messages
+//  - POST /api/copilot/chats/{id}/messages -> envoyer un message (IA répond + persiste)
 
 // --- Types (match exact avec le wire backend, snake_case) ---
 
@@ -153,6 +160,113 @@ export function useCopilotConverse() {
         request,
       );
       return data;
+    },
+  });
+}
+
+// ─── Chat persistant ──────────────────────────────────────────────────────────
+
+export interface CopilotChat {
+  id: string;
+  title: string;
+  archived: boolean;
+  createdAt: string;
+  lastActivity: string;
+}
+
+export interface CopilotChatMessage {
+  id: string;
+  chatId: string;
+  role: "user" | "assistant";
+  message: string;
+  createdDate: string;
+}
+
+export const chatKeys = {
+  all: ["copilot", "chats"] as const,
+  list: () => ["copilot", "chats", "list"] as const,
+  detail: (id: string) => ["copilot", "chats", id] as const,
+  messages: (id: string) => ["copilot", "chats", id, "messages"] as const,
+};
+
+export function useChats() {
+  return useQuery({
+    queryKey: chatKeys.list(),
+    queryFn: async () => {
+      const { data } = await axiosClient.get<CopilotChat[]>("/api/copilot/chats");
+      return data ?? [];
+    },
+  });
+}
+
+export function useCreateChat() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (title: string) => {
+      const { data } = await axiosClient.post<CopilotChat>("/api/copilot/chats", { title });
+      return data;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: chatKeys.list() }),
+  });
+}
+
+export function useUpdateChatTitle() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ chatId, title }: { chatId: string; title: string }) => {
+      const { data } = await axiosClient.put<CopilotChat>(`/api/copilot/chats/${chatId}`, { title });
+      return data;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: chatKeys.list() }),
+  });
+}
+
+export function useArchiveChat() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (chatId: string) => {
+      await axiosClient.put(`/api/copilot/chats/${chatId}/archive`);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: chatKeys.list() }),
+  });
+}
+
+export function useUnarchiveChat() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (chatId: string) => {
+      await axiosClient.put(`/api/copilot/chats/${chatId}/unarchive`);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: chatKeys.list() }),
+  });
+}
+
+export function useChatMessages(chatId: string | null) {
+  return useQuery({
+    queryKey: chatKeys.messages(chatId ?? ""),
+    enabled: !!chatId,
+    queryFn: async () => {
+      const { data } = await axiosClient.get<CopilotChatMessage[]>(
+        `/api/copilot/chats/${chatId}/messages`,
+      );
+      return data ?? [];
+    },
+  });
+}
+
+export function useSendChatMessage() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ chatId, message, temperature }: { chatId: string; message: string; temperature?: number }) => {
+      const { data } = await axiosClient.post<CopilotChatMessage>(
+        `/api/copilot/chats/${chatId}/messages`,
+        { message, temperature },
+      );
+      return data;
+    },
+    onSuccess: (_data, variables) => {
+      qc.invalidateQueries({ queryKey: chatKeys.messages(variables.chatId) });
+      qc.invalidateQueries({ queryKey: chatKeys.list() });
     },
   });
 }

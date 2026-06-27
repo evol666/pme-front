@@ -45,8 +45,24 @@ axiosClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      store.dispatch(logout());
-      window.location.href = '/oauth2/authorization/pme';
+      // Redirection vers l'IdP encadrée pour ne JAMAIS boucler :
+      // - on ignore la sonde de session (/api/account), gérée par fetchAuthInfo
+      //   + RequireAuth (sinon : redirige -> revient -> 401 -> redirige...) ;
+      // - on n'enchaîne pas si on est déjà sur /oauth2/... ;
+      // - garde temporel : 1 redirection / 10 s max. Si un endpoint fonctionnel
+      //   renvoie un 401 *persistant* alors qu'on est connecté (ex. token non
+      //   relayé par la gateway, rôle manquant), rediriger ne résout rien et
+      //   boucle : on laisse alors le 401 remonter pour que l'UI l'affiche.
+      const reqUrl = error.config?.url ?? '';
+      const isAuthProbe = AUTH_PATHS.has(reqUrl);
+      const alreadyRedirecting = window.location.pathname.startsWith('/oauth2/');
+      const lastRedirect = Number(sessionStorage.getItem('authRedirectAt') ?? '0');
+      const recentlyRedirected = Date.now() - lastRedirect < 10_000;
+      if (!isAuthProbe && !alreadyRedirecting && !recentlyRedirected) {
+        sessionStorage.setItem('authRedirectAt', String(Date.now()));
+        store.dispatch(logout());
+        window.location.href = '/oauth2/authorization/pme';
+      }
     }
     return Promise.reject(error);
   }

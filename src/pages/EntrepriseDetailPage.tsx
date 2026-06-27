@@ -61,6 +61,7 @@ import {
 	useRecommandationsForJobs,
 } from "@/api/recommandations";
 import { cn } from "@/lib/utils";
+import { libelleTrancheEffectif } from "@/lib/trancheEffectif";
 
 // ---------------------------------------------------------------------------
 // Onglets
@@ -882,7 +883,7 @@ function buildContexteEntreprise(
 	}
 	if (identite.ville) lignes.push(`Ville : ${identite.ville}`);
 	if (identite.effectif_tranche)
-		lignes.push(`Tranche effectif : ${identite.effectif_tranche}`);
+		lignes.push(`Effectif : ${libelleTrancheEffectif(identite.effectif_tranche)}`);
 	if (identite.effectif_estime != null)
 		lignes.push(`Effectif estimé : ${identite.effectif_estime}`);
 	if (metier?.nom_metier) lignes.push(`Métier détecté : ${metier.nom_metier}`);
@@ -1964,9 +1965,7 @@ function IdentiteCard({
 		},
 		{
 			label: "Effectif",
-			value: identite.effectif_tranche
-				? `Tranche ${identite.effectif_tranche}`
-				: null,
+			value: libelleTrancheEffectif(identite.effectif_tranche),
 		},
 		{ label: "Catégorie", value: identite.categorie },
 		{ label: "Risque NAF", value: identite.risque_sectoriel },
