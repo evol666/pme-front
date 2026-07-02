@@ -127,6 +127,46 @@ export interface Synthese {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Données financières — structure miroir de EnrichmentDTOs.java / Origami
+// ---------------------------------------------------------------------------
+
+export interface ExerciceFinancier {
+  annee: number | null;
+  date_cloture: string | null;
+  // Compte de résultat
+  chiffre_affaires: number | null;
+  resultat_net: number | null;
+  excedent_brut_exploitation: number | null;
+  resultat_exploitation: number | null;
+  // Bilan
+  capitaux_propres: number | null;
+  total_actif: number | null;
+  dettes_fiscales_sociales: number | null;
+  tresorerie: number | null;
+  creances_clients: number | null;
+  capital_social: number | null;
+  confidentiel: boolean;
+}
+
+export interface ProcedureCollective {
+  type:
+    | "redressement_judiciaire"
+    | "liquidation_judiciaire"
+    | "sauvegarde"
+    | "cessation_de_paiements"
+    | string;
+  libelle: string;
+  date: string | null;
+  tribunal: string | null;
+}
+
+export interface FinancesData {
+  exercices: ExerciceFinancier[];
+  procedure_collective: ProcedureCollective | null;
+  source: "inpi" | "bodacc_derive" | "mock" | string;
+}
+
 export interface EntrepriseEnrichie {
   siren: string;
   enriched_at: string;
@@ -136,6 +176,7 @@ export interface EntrepriseEnrichie {
   geolocalisation: Geolocalisation | null;
   scoring: Scoring | undefined;
   synthese: Synthese | undefined;
+  finances?: FinancesData | null;
 }
 
 // ---------------------------------------------------------------------------

@@ -1,6 +1,8 @@
 import {
 	AlertTriangle,
 	ArrowLeft,
+	ArrowUpRight,
+	ArrowDownRight,
 	BarChart3,
 	Blocks,
 	BookOpen,
@@ -9,25 +11,32 @@ import {
 	Calendar,
 	CheckCircle2,
 	ChevronRight,
+	Circle,
 	CircleDot,
+	Clock,
 	Copy,
 	Download,
+	Eye,
 	FileText,
 	LayoutGrid,
 	Lightbulb,
 	Loader2,
 	MapPin,
+	Minus,
+	PiggyBank,
 	Play,
 	Plus,
 	RefreshCw,
+	Rocket,
 	Send,
 	Sparkles,
+	Target,
 	TrendingUp,
 	Users,
 	Workflow,
 	X,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAnalyses, useLaunchAnalysis } from "@/api/analyses";
 import {
@@ -37,6 +46,8 @@ import {
 } from "@/api/copilot";
 import { useDocuments, useUploadDocumentDirect } from "@/api/documents";
 import {
+	type ExerciceFinancier,
+	type FinancesData,
 	type Identite,
 	type ScoreAxe,
 	useEntreprise,
@@ -59,6 +70,9 @@ import {
 	type ContextualDiagnosticResponse,
 	useContextualDiagnostic,
 	useRecommandationsForJobs,
+	type ConsultantPlanEtape,
+	type ConsultantKpi,
+	type ConsultantScenario,
 } from "@/api/recommandations";
 import { cn } from "@/lib/utils";
 import { libelleTrancheEffectif } from "@/lib/trancheEffectif";
@@ -69,6 +83,7 @@ import { libelleTrancheEffectif } from "@/lib/trancheEffectif";
 
 const TABS = [
 	{ id: "identite", label: "Identité", icon: Building2 },
+	{ id: "finances", label: "Finances", icon: PiggyBank },
 	{ id: "analyses", label: "Analyses", icon: BarChart3 },
 	{ id: "recommandations", label: "Recommandations", icon: Lightbulb },
 	{ id: "modules", label: "Modules", icon: LayoutGrid },
@@ -91,6 +106,83 @@ export default function EntrepriseDetailPage() {
 	const activeTab = (searchParams.get("tab") ?? "identite") as TabId;
 	const activeModule = searchParams.get("module");
 
+	const execute = useExecuteModule();
+	const upload = useUploadDocumentDirect();
+	const exportMut = useExportDocument();
+
+	const [running, setRunning] = useState<CatalogItem | null>(null);
+	const [livrable, setLivrable] = useState<ExecuteModuleResponse | null>(null);
+	const [drawerOpen, setDrawerOpen] = useState(false);
+	const [archived, setArchived] = useState(false);
+
+	const { data: enriched, isLoading, isError } = useEntreprise(siren);
+	const { data: portefeuille } = usePortefeuilleEntreprise(siren);
+	const refresh = useRefreshEntreprise();
+
+	const { data: metier } = useDetectMetier(enriched?.identite?.code_naf);
+	const metierId = metier?.id ?? "generique";
+
+	const handleLaunchModule = (item: any) => {
+		if (!item.prompt_id || !enriched?.identite) return;
+		setRunning(item);
+		setLivrable(null);
+		setArchived(false);
+		setDrawerOpen(true);
+		execute.mutate(
+			{
+				metier_id: metierId,
+				prompt_id: item.prompt_id,
+				contexte_entreprise: buildContexteEntreprise(
+					enriched.identite,
+					enriched.identite.raison_sociale ?? siren,
+					siren,
+					metier,
+				),
+				preferences: { style: "consultant", duree: item.duree },
+			},
+			{ onSuccess: (res) => setLivrable(res) },
+		);
+	};
+
+	const handleArchive = (markdown: string, item: CatalogItem) => {
+		if (!enriched?.identite) return;
+		const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
+		const file = new File([blob], `${item.id}.md`, {
+			type: "text/markdown;charset=utf-8",
+		});
+		upload.mutate(
+			{
+				file,
+				title: `${item.titre} — ${enriched.identite.raison_sociale ?? siren}`,
+				sourceKind: "module",
+				siren,
+			},
+			{ onSuccess: () => setArchived(true) },
+		);
+	};
+
+	const handleExport = (format: "pdf" | "docx", markdown: string) => {
+		if (!enriched?.identite) return;
+		const proposal: Proposal = {
+			executiveSummary: markdown,
+			contextAnalysis: "",
+			recommendations: [],
+			actionPlan: [],
+			expectedBenefits: "",
+			nextSteps: "",
+		};
+		exportMut.mutate({
+			format,
+			request: {
+				proposition: proposal,
+				meta: {
+					company_name: enriched.identite.raison_sociale ?? siren,
+					metier_label: metier?.nom_metier,
+				},
+			},
+		});
+	};
+
 	// Change d'onglet tout en préservant le param `module` (ouvert par le copilote
 	// lorsqu'il cite un module du métier). `goTo` est l'entrée utilisée par les
 	// sources cliquables du copilote : `goTo("modules", moduleId)` ouvre la fiche
@@ -106,10 +198,6 @@ export default function EntrepriseDetailPage() {
 	function goTo(id: TabId, module?: string) {
 		setTab(id, module);
 	}
-
-	const { data: enriched, isLoading, isError } = useEntreprise(siren);
-	const { data: portefeuille } = usePortefeuilleEntreprise(siren);
-	const refresh = useRefreshEntreprise();
 
 	if (!siren || !/^\d{9}$/.test(siren)) {
 		return <ErrorView message={`SIREN invalide : ${siren}`} />;
@@ -192,6 +280,16 @@ export default function EntrepriseDetailPage() {
 									<span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-bold">
 										{kindLabel}
 									</span>
+								)}
+								{enriched.finances?.procedure_collective && (
+									<button
+										onClick={() => setTab("finances")}
+										className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/10 text-red-600 text-xs font-bold border border-red-500/20 hover:bg-red-500/20 transition-colors"
+										title={enriched.finances.procedure_collective.libelle}
+									>
+										<AlertTriangle className="w-3 h-3" />
+										{enriched.finances.procedure_collective.libelle}
+									</button>
 								)}
 							</div>
 
@@ -283,12 +381,25 @@ export default function EntrepriseDetailPage() {
 			{/* ------------------------------------------------------------------ */}
 			<div>
 				{activeTab === "identite" && <TabIdentite enriched={enriched} />}
-				{activeTab === "analyses" && <TabAnalyses siren={siren} goTo={goTo} />}
+				{activeTab === "finances" && (
+					<TabFinances
+						finances={enriched.finances ?? null}
+						raisonSociale={identite.raison_sociale ?? siren}
+					/>
+				)}
+				{activeTab === "analyses" && (
+					<TabAnalyses
+						siren={siren}
+						goTo={goTo}
+						onLaunchModule={handleLaunchModule}
+					/>
+				)}
 				{activeTab === "recommandations" && (
 					<TabRecommandations
 						siren={siren}
 						identite={identite}
 						raisonSociale={identite.raison_sociale ?? siren}
+						onLaunchModule={handleLaunchModule}
 					/>
 				)}
 				{activeTab === "modules" && (
@@ -305,6 +416,21 @@ export default function EntrepriseDetailPage() {
 				)}
 				{activeTab === "playbooks" && <TabPlaybooks />}
 			</div>
+
+			{identite && (
+				<ModuleLivrableDrawer
+					open={drawerOpen}
+					item={running}
+					raisonSociale={identite.raison_sociale ?? siren}
+					isPending={execute.isPending}
+					livrable={livrable}
+					error={execute.error}
+					archived={archived}
+					onClose={() => setDrawerOpen(false)}
+					onArchive={handleArchive}
+					onExport={handleExport}
+				/>
+			)}
 		</div>
 	);
 }
@@ -464,6 +590,368 @@ const TREND_TONE: Record<string, string> = {
 	stable: "text-muted-foreground",
 };
 
+// ---------------------------------------------------------------------------
+// Sous-composants pour le Diagnostic Consultant (Lot C)
+// ---------------------------------------------------------------------------
+
+function ScoreRing({ score }: { score: number }) {
+	const r = 52;
+	const c = 2 * Math.PI * r;
+	const offset = c - (score / 100) * c;
+	return (
+		<div className="relative h-28 w-28 shrink-0 flex-shrink-0">
+			<svg viewBox="0 0 120 120" className="-rotate-90 w-full h-full">
+				<circle
+					cx="60"
+					cy="60"
+					r={r}
+					stroke="currentColor"
+					strokeWidth="10"
+					className="text-muted/30"
+					fill="none"
+				/>
+				<circle
+					cx="60"
+					cy="60"
+					r={r}
+					stroke="currentColor"
+					strokeWidth="10"
+					strokeLinecap="round"
+					className="text-primary"
+					fill="none"
+					strokeDasharray={c}
+					strokeDashoffset={offset}
+				/>
+			</svg>
+			<div className="absolute inset-0 flex flex-col items-center justify-center">
+				<span className="text-2xl font-extrabold text-foreground">{score}</span>
+				<span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold">
+					Score global
+				</span>
+			</div>
+		</div>
+	);
+}
+
+const IMPACT_STYLE: Record<string, { label: string; cls: string }> = {
+	faible: { label: "Impact faible", cls: "bg-muted text-muted-foreground border border-border" },
+	moyen:  { label: "Impact moyen",  cls: "bg-primary/5 text-primary border border-primary/10" },
+	fort:   { label: "Impact fort",   cls: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20" },
+};
+
+function ImpactBadge({ impact, compact = false }: { impact: string; compact?: boolean }) {
+	const imp = impact.toLowerCase();
+	const s = IMPACT_STYLE[imp] ?? IMPACT_STYLE.faible;
+	return (
+		<span
+			className={cn(
+				"inline-flex items-center rounded-full font-bold whitespace-nowrap",
+				compact ? "px-2 py-0.5 text-[10px]" : "px-2.5 py-1 text-xs",
+				s.cls
+			)}
+		>
+			{compact ? impact.charAt(0).toUpperCase() + impact.slice(1) : s.label}
+		</span>
+	);
+}
+
+const STATUS_MAP = {
+	termine:  { label: "Terminé",   icon: <CheckCircle2 className="h-4 w-4" />,         colorCls: "text-emerald-500 bg-emerald-500/10" },
+	en_cours: { label: "En cours",  icon: <Loader2 className="h-4 w-4 animate-spin" />, colorCls: "text-primary bg-primary/10" },
+	a_faire:  { label: "À faire",   icon: <Circle className="h-4 w-4 text-muted-foreground" />, colorCls: "text-muted-foreground/30 bg-muted/40" },
+} as const;
+
+const CTA_ICON: Record<string, React.ReactNode> = {
+	Voir:   <Eye className="h-3.5 w-3.5" />,
+	Créer:  <Plus className="h-3.5 w-3.5" />,
+	Lancer: <Play className="h-3.5 w-3.5" />,
+	Suivre: <TrendingUp className="h-3.5 w-3.5" />,
+};
+
+function PlanRow({
+	etape,
+	index,
+	onCta,
+}: {
+	etape: ConsultantPlanEtape;
+	index: number;
+	onCta: () => void;
+}) {
+	const statut = (etape.statut ?? "a_faire").toLowerCase() as keyof typeof STATUS_MAP;
+	const status = STATUS_MAP[statut] ?? STATUS_MAP.a_faire;
+	const isCurrent = statut === "en_cours";
+	return (
+		<li
+			className={cn(
+				"rounded-xl border bg-card transition-all duration-200",
+				isCurrent
+					? "border-primary/40 bg-primary/5"
+					: "border-border/60 hover:border-border"
+			)}
+		>
+			<div className="flex items-center gap-3 px-4 py-3">
+				<span className="text-xs font-semibold text-muted-foreground w-5 tabular-nums">
+					{String(index).padStart(2, "0")}
+				</span>
+				<span className={cn("shrink-0 p-1 rounded-md", status.colorCls)}>{status.icon}</span>
+				<p
+					className={cn(
+						"flex-1 text-sm text-foreground",
+						isCurrent ? "font-semibold" : ""
+					)}
+				>
+					{etape.titre}
+					{isCurrent && (
+						<span className="ml-2 inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary border border-primary/20">
+							En cours
+						</span>
+					)}
+				</p>
+				{etape.echeance && (
+					<span className="hidden md:inline-flex items-center gap-1 text-xs text-muted-foreground">
+						<Clock className="h-3.5 w-3.5" />
+						{etape.echeance}
+					</span>
+				)}
+				<ImpactBadge impact={etape.impact} compact />
+				<button
+					type="button"
+					onClick={onCta}
+					className={cn(
+						"inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-bold transition-all",
+						isCurrent
+							? "bg-primary text-primary-foreground hover:bg-primary/95"
+							: "bg-card border border-border text-foreground hover:bg-accent hover:border-border"
+					)}
+				>
+					{CTA_ICON[etape.cta] ?? <Play className="h-3.5 w-3.5" />}
+					{etape.cta}
+				</button>
+			</div>
+
+			{isCurrent && etape.messageIA && (
+				<div className="mx-4 mb-3 -mt-1 flex gap-2 px-3 py-2 rounded-lg bg-muted/50 animate-in fade-in duration-300">
+					<Sparkles className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+					<p className="text-xs text-muted-foreground leading-relaxed">
+						{etape.messageIA}
+					</p>
+				</div>
+			)}
+		</li>
+	);
+}
+
+function ProgressBar({ plan, className = "" }: { plan: ConsultantPlanEtape[]; className?: string }) {
+	const total = plan.length;
+	const done = plan.filter((e) => e.statut?.toLowerCase() === "termine").length;
+	const inProgress = plan.filter((e) => e.statut?.toLowerCase() === "en_cours").length;
+	const pct = total === 0 ? 0 : Math.round(((done + inProgress * 0.5) / total) * 100);
+	return (
+		<div className={className}>
+			<div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
+				<span>Progression globale</span>
+				<span className="font-semibold text-foreground">{pct}%</span>
+			</div>
+			<div className="h-2 w-full overflow-hidden rounded-full bg-muted/40 border border-border/40">
+				<div
+					className="h-full rounded-full bg-primary transition-all duration-700"
+					style={{ width: `${pct}%` }}
+				/>
+			</div>
+		</div>
+	);
+}
+
+const TREND_STYLE: Record<string, { icon: React.ReactNode; cls: string }> = {
+	up:   { icon: <ArrowUpRight className="h-4 w-4" />,   cls: "text-emerald-600 bg-emerald-500/10 border border-emerald-500/20" },
+	down: { icon: <ArrowDownRight className="h-4 w-4" />, cls: "text-red-600 bg-red-500/10 border border-red-500/20" },
+	flat: { icon: <Minus className="h-4 w-4" />,          cls: "text-muted-foreground bg-muted border border-border" },
+};
+
+function KpiCard({ kpi }: { kpi: ConsultantKpi }) {
+	const trendKey = (kpi.tendance ?? "flat").toLowerCase();
+	const trend = TREND_STYLE[trendKey] ?? TREND_STYLE.flat;
+	return (
+		<div className="bg-card border border-border/50 rounded-2xl p-5 shadow-sm space-y-4">
+			<div className="flex items-center justify-between">
+				<p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
+				<span className={cn("inline-flex h-7 w-7 items-center justify-center rounded-lg", trend.cls)}>
+					{trend.icon}
+				</span>
+			</div>
+			<div>
+				<p className="text-3xl font-extrabold text-foreground leading-none">
+					{kpi.valeur}
+					<span className="text-sm text-muted-foreground font-normal ml-0.5">/100</span>
+				</p>
+				<div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted/40 border border-border/40">
+					<div
+						className="h-full rounded-full bg-primary transition-all duration-700"
+						style={{ width: `${kpi.valeur}%` }}
+					/>
+				</div>
+			</div>
+			<div className="space-y-2 pt-2 border-t border-border/40">
+				<div className="flex gap-2">
+					<Sparkles className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+					<p className="text-xs text-muted-foreground leading-relaxed">
+						{kpi.interpretation}
+					</p>
+				</div>
+				<div className="flex gap-2">
+					<Lightbulb className="h-3.5 w-3.5 text-primary/80 shrink-0 mt-0.5" />
+					<p className="text-xs text-foreground font-medium leading-relaxed">
+						{kpi.recommandation}
+					</p>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+function ScenarioRow({
+	icon,
+	label,
+	value,
+	help,
+	accent = false,
+}: {
+	icon: React.ReactNode;
+	label: string;
+	value: string;
+	help: string;
+	accent?: boolean;
+}) {
+	return (
+		<div className="flex items-start gap-3 py-2.5 border-b last:border-0 border-border/30">
+			<span className={accent ? "text-primary" : "text-muted-foreground"}>{icon}</span>
+			<div className="flex-1 min-w-0">
+				<div className="flex items-baseline justify-between gap-2">
+					<span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">
+						{label}
+					</span>
+					<span
+						className={cn(
+							"text-sm font-extrabold",
+							accent ? "text-foreground" : "text-muted-foreground"
+						)}
+					>
+						{value}
+					</span>
+				</div>
+				<p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{help}</p>
+			</div>
+		</div>
+	);
+}
+
+function ProjectionBlock({
+	visAvant,
+	avec,
+	sans,
+}: {
+	visAvant: number;
+	avec: ConsultantScenario;
+	sans: ConsultantScenario;
+}) {
+	const deltaAvec = avec.visibilite - visAvant;
+	const deltaSans = sans.visibilite - visAvant;
+	return (
+		<div className="bg-card border border-border/50 rounded-2xl p-5 shadow-sm space-y-4">
+			<div className="flex items-start gap-3">
+				<span className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+					<Target className="h-4 w-4" />
+				</span>
+				<div>
+					<h3 className="text-sm font-bold text-foreground">Projection à 30 jours</h3>
+					<p className="text-xs text-muted-foreground">
+						Comparaison entre lancer l'action prioritaire et ne rien faire.
+					</p>
+				</div>
+			</div>
+
+			<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-2">
+				{/* Plan appliqué */}
+				<div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-2">
+					<div className="flex items-center gap-2 mb-2">
+						<span className="grid h-7 w-7 place-items-center rounded-lg bg-primary/10 text-primary">
+							<Rocket className="h-3.5 w-3.5" />
+						</span>
+						<h4 className="text-xs font-bold text-foreground">
+							Plan appliqué
+						</h4>
+						<span className="ml-auto inline-flex items-center gap-1 rounded-full bg-primary/15 text-primary text-[10px] font-bold px-2 py-0.5 border border-primary/20">
+							Recommandé
+						</span>
+					</div>
+					<ScenarioRow
+						icon={<Rocket className="h-4 w-4" />}
+						label="Opportunités"
+						value={`+${avec.opportunites}`}
+						help={`${avec.opportunites} RDV qualifiés probables`}
+						accent
+					/>
+					<ScenarioRow
+						icon={<TrendingUp className="h-4 w-4" />}
+						label="Visibilité"
+						value={`${visAvant} → ${avec.visibilite}`}
+						help={`${deltaAvec >= 0 ? "+" : ""}${deltaAvec} pts attendus`}
+						accent
+					/>
+					<ScenarioRow
+						icon={<ArrowUpRight className="h-4 w-4" />}
+						label="Pipeline"
+						value="Renforcé"
+						help={avec.pipelineEtat}
+						accent
+					/>
+				</div>
+
+				{/* Sans action immédiate */}
+				<div className="rounded-xl border border-border/70 bg-muted/30 p-4 space-y-2">
+					<div className="flex items-center gap-2 mb-2">
+						<span className="grid h-7 w-7 place-items-center rounded-lg bg-muted text-muted-foreground">
+							<Minus className="h-3.5 w-3.5" />
+						</span>
+						<h4 className="text-xs font-bold text-muted-foreground">
+							Sans action immédiate
+						</h4>
+						<span className="ml-auto inline-flex items-center gap-1 rounded-full bg-muted text-muted-foreground text-[10px] font-bold px-2 py-0.5">
+							Trajectoire actuelle
+						</span>
+					</div>
+					<ScenarioRow
+						icon={<Rocket className="h-4 w-4" />}
+						label="Opportunités"
+						value={`+${sans.opportunites}`}
+						help={
+							sans.opportunites === 0
+								? "Aucune opportunité supplémentaire projetée."
+								: `${sans.opportunites} RDV qualifiés projetés`
+						}
+					/>
+					<ScenarioRow
+						icon={<Minus className="h-4 w-4" />}
+						label="Visibilité"
+						value={`${visAvant} → ${sans.visibilite}`}
+						help={`${deltaSans >= 0 ? "+" : ""}${deltaSans} pts projetés`}
+					/>
+					<ScenarioRow
+						icon={<Minus className="h-4 w-4" />}
+						label="Pipeline"
+						value="Stable"
+						help={sans.pipelineEtat}
+					/>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+// ---------------------------------------------------------------------------
+// Section Principale du Diagnostic Consultant
+// ---------------------------------------------------------------------------
+
 function ConsultantDiagnosticSection({
 	siren,
 	isPending,
@@ -472,6 +960,8 @@ function ConsultantDiagnosticSection({
 	data,
 	onGenerate,
 	onLaunchModule,
+	onRefresh,
+	isRefreshing,
 }: {
 	siren: string;
 	isPending: boolean;
@@ -479,37 +969,53 @@ function ConsultantDiagnosticSection({
 	error: unknown;
 	data: ContextualDiagnosticResponse | undefined;
 	onGenerate: () => void;
-	onLaunchModule: () => void;
+	onLaunchModule: (item: any) => void;
+	onRefresh?: () => void;
+	isRefreshing?: boolean;
 }) {
 	const diag = data?.diagnostic;
 	const delta = diag ? diag.scoreGlobal - diag.scorePrecedent : 0;
+	const actionsSecondaires = diag ? diag.plan.filter(e => e.statut?.toLowerCase() === "a_faire") : [];
 
 	return (
-		<div className="bg-card border border-border/50 rounded-2xl p-5 shadow-sm space-y-4">
-			<div className="flex items-center justify-between gap-3">
+		<div className="space-y-6">
+			{/* En-tête + bouton Générer */}
+			<div className="bg-card border border-border/50 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
 				<div>
-					<p className="text-sm font-bold text-foreground flex items-center gap-2">
-						<Lightbulb className="w-4 h-4 text-primary" />
-						Diagnostic consultant
-					</p>
-					<p className="text-xs text-muted-foreground mt-0.5">
-						Évaluation orientée métier
-						{data?.metierId ? ` (${data.metierId})` : ""} pour {siren}.
+					<p className="text-xs font-bold uppercase tracking-widest text-primary">Analyses</p>
+					<h1 className="text-2xl font-extrabold text-foreground mt-0.5">
+						Votre situation, expliquée
+					</h1>
+					<p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+						Une vue claire et orientée action : ce qu'il faut faire <em>maintenant</em>, ce qui peut suivre, et ce que ça va changer dans 30 jours.
 					</p>
 				</div>
-				<button
-					type="button"
-					onClick={onGenerate}
-					disabled={isPending}
-					className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 disabled:opacity-60"
-				>
-					{isPending ? (
-						<Loader2 className="w-3.5 h-3.5 animate-spin" />
-					) : (
-						<Sparkles className="w-3.5 h-3.5" />
+				<div className="flex items-center gap-2 flex-shrink-0 self-start md:self-center">
+					{onRefresh && diag && (
+						<button
+							type="button"
+							onClick={onRefresh}
+							disabled={isRefreshing || isPending}
+							className="inline-flex items-center justify-center p-2 h-9 w-9 rounded-xl border border-border/50 bg-card text-muted-foreground hover:text-foreground hover:bg-accent transition-colors disabled:opacity-60"
+							title="Rafraîchir le diagnostic depuis la base"
+						>
+							<RefreshCw className={cn("w-4 h-4", isRefreshing && "animate-spin")} />
+						</button>
 					)}
-					{diag ? "Régénérer" : "Générer le diagnostic"}
-				</button>
+					<button
+						type="button"
+						onClick={onGenerate}
+						disabled={isPending}
+						className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/95 disabled:opacity-60 flex-shrink-0"
+					>
+						{isPending ? (
+							<Loader2 className="w-3.5 h-3.5 animate-spin" />
+						) : (
+							<Sparkles className="w-3.5 h-3.5" />
+						)}
+						{diag ? "Relancer l'analyse" : "Générer le diagnostic"}
+					</button>
+				</div>
 			</div>
 
 			{isError && (
@@ -518,226 +1024,266 @@ function ConsultantDiagnosticSection({
 				</p>
 			)}
 
-			{diag && (
+			{isPending && (
+				<div className="flex flex-col items-center justify-center py-20 gap-3 text-muted-foreground bg-card border border-border/50 rounded-2xl">
+					<Loader2 className="w-7 h-7 animate-spin text-primary" />
+					<p className="text-sm font-semibold text-foreground">L'IA analyse votre situation…</p>
+					<p className="text-xs">Cette étape prend environ 10 à 30 secondes.</p>
+				</div>
+			)}
+
+			{diag && !isPending && (
 				<>
-					{/* Score + variation */}
-					<div className="flex items-center gap-4">
-						<div className="flex items-baseline gap-1.5">
-							<span className="text-3xl font-extrabold text-foreground">
-								{diag.scoreGlobal}
-							</span>
-							<span className="text-sm text-muted-foreground">/100</span>
-						</div>
-						{delta !== 0 && (
-							<span
-								className={cn(
-									"inline-flex items-center gap-1 text-xs font-bold",
-									delta > 0 ? "text-emerald-600" : "text-red-600",
+					{/* 1. HERO — Score + Synthèse IA + Action Prioritaire */}
+					<div className="bg-card border border-border/50 rounded-2xl p-5 md:p-6 shadow-sm space-y-6">
+						<div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
+							{/* Score global */}
+							<div className="flex flex-col items-center gap-2 self-center md:self-start">
+								<ScoreRing score={diag.scoreGlobal} />
+								{delta !== 0 && (
+									<span
+										className={cn(
+											"inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold",
+											delta > 0
+												? "bg-emerald-500/10 text-emerald-600"
+												: "bg-red-500/10 text-red-600"
+										)}
+									>
+										<TrendingUp
+											className={cn("w-3 h-3", delta < 0 && "rotate-180")}
+										/>
+										{delta > 0 ? "+" : ""}
+										{delta} pts depuis dernière analyse
+									</span>
 								)}
-							>
-								<TrendingUp
-									className={cn("w-3.5 h-3.5", delta < 0 && "rotate-180")}
-								/>
-								{delta > 0 ? "+" : ""}
-								{delta} vs précédent
-							</span>
-						)}
+							</div>
+
+							{/* Synthèse IA & Action Prioritaire */}
+							<div className="flex-1 space-y-5 w-full">
+								<div className="space-y-1.5">
+									<div className="flex items-center gap-1.5 text-primary text-xs font-bold uppercase tracking-wider">
+										<Sparkles className="w-3.5 h-3.5" />
+										Synthèse IA
+									</div>
+									<p className="text-base font-bold text-foreground leading-snug">
+										{diag.diagnostic}
+									</p>
+								</div>
+
+								{/* Carte Action Prioritaire */}
+								{diag.actionPrioritaireDefault && (
+									<div className="bg-primary/5 border border-primary/25 rounded-2xl p-4 md:p-5 space-y-4">
+										<div className="flex flex-wrap items-center gap-2">
+											<span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold border border-primary/20">
+												Action prioritaire
+											</span>
+											<span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 text-[10px] font-bold border border-amber-500/20">
+												Priorité cette semaine
+											</span>
+											<span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold border border-emerald-500/20">
+												Impact fort
+											</span>
+										</div>
+										<div className="space-y-1">
+											<h3 className="text-base font-extrabold text-foreground">
+												{diag.actionPrioritaireDefault.titre}
+											</h3>
+											<p className="text-xs text-muted-foreground leading-relaxed">
+												{diag.actionPrioritaireDefault.description}
+											</p>
+										</div>
+										<div className="flex items-center gap-4">
+											<button
+												type="button"
+												onClick={() =>
+													onLaunchModule({
+														id: diag.actionPrioritaireDefault.promptIA,
+														titre: diag.actionPrioritaireDefault.titre,
+														description: diag.actionPrioritaireDefault.description,
+														prompt_id: diag.actionPrioritaireDefault.promptIA,
+														duree: diag.actionPrioritaireDefault.duree,
+														prompt: "",
+													})
+												}
+												className="inline-flex items-center justify-center gap-2 h-9 px-4 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/95 shadow-sm transition-colors"
+											>
+												<Rocket className="w-3.5 h-3.5" />
+												Lancer maintenant
+											</button>
+											<span className="flex items-center gap-1 text-xs text-muted-foreground">
+												<Clock className="w-3.5 h-3.5" />
+												{diag.actionPrioritaireDefault.duree}
+											</span>
+										</div>
+									</div>
+								)}
+
+								{/* Actions secondaires */}
+								{actionsSecondaires.length > 0 && (
+									<div className="space-y-2 pt-2">
+										<p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+											Actions secondaires
+										</p>
+										<div className="divide-y divide-border/40 border-t border-border/40">
+											{actionsSecondaires.map((act, idx) => (
+												<div
+													key={idx}
+													className="flex items-center justify-between gap-4 py-2.5 first:pt-0 last:pb-0"
+												>
+													<div className="min-w-0">
+														<p className="text-xs font-semibold text-foreground truncate">
+															{act.titre}
+														</p>
+														{act.echeance && (
+															<p className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-1">
+																<Clock className="w-3 h-3" />
+																{act.echeance} · Impact {act.impact}
+															</p>
+														)}
+													</div>
+													<button
+														type="button"
+														onClick={() =>
+															onLaunchModule({
+																id: act.titre,
+																titre: act.titre,
+																description: act.titre,
+																prompt_id: act.messageIA ? "generique" : act.titre, // fallback prompt
+																duree: "5 min",
+																prompt: "",
+															})
+														}
+														className="inline-flex items-center justify-center h-7 px-2.5 rounded-lg border border-border text-xs font-bold hover:bg-accent text-foreground transition-all flex-shrink-0"
+													>
+														{act.cta} <ChevronRight className="w-3 h-3 ml-0.5" />
+													</button>
+												</div>
+											))}
+										</div>
+									</div>
+								)}
+							</div>
+						</div>
 					</div>
 
-					<p className="text-sm text-foreground leading-relaxed">
-						{diag.diagnostic}
-					</p>
-
-					{/* KPIs interprétés */}
+					{/* 2. AXES D'ANALYSE (KPIs) — 3 cartes en ligne */}
 					{diag.kpis.length > 0 && (
-						<div className="space-y-2">
-							<p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-								Indicateurs clés
-							</p>
-							<div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-								{diag.kpis.map((k, i) => (
-									<div
-										key={i}
-										className="bg-muted/30 border border-border/40 rounded-lg p-3 space-y-1"
-									>
-										<div className="flex items-center justify-between gap-2">
-											<span className="text-xs font-semibold text-foreground truncate">
-												{k.label}
-											</span>
-											<span
-												className={cn(
-													"text-xs font-bold",
-													TREND_TONE[k.tendance?.toLowerCase()] ??
-														"text-foreground",
-												)}
-											>
-												{k.valeur}
-											</span>
-										</div>
-										<p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
-											{k.interpretation}
-										</p>
-										{k.recommandation && (
-											<p className="text-[11px] text-primary font-medium line-clamp-2">
-												{k.recommandation}
-											</p>
-										)}
-									</div>
-								))}
-							</div>
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+							{diag.kpis.map((k, i) => (
+								<KpiCard key={i} kpi={k} />
+							))}
 						</div>
 					)}
 
-					{/* Action prioritaire */}
-					{diag.actionPrioritaireDefault && (
-						<div className="bg-primary/5 border border-primary/30 rounded-xl p-4 space-y-2">
-							<p className="text-[10px] font-bold uppercase tracking-wider text-primary">
-								Action prioritaire
-							</p>
-							<div className="flex items-start justify-between gap-3">
-								<div className="min-w-0">
-									<p className="text-sm font-bold text-foreground">
-										{diag.actionPrioritaireDefault.titre}
-									</p>
-									<p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-										{diag.actionPrioritaireDefault.description}
-									</p>
-									{diag.actionPrioritaireDefault.duree && (
-										<p className="text-[11px] text-muted-foreground mt-1">
-											Durée : {diag.actionPrioritaireDefault.duree}
-										</p>
-									)}
-								</div>
-								<button
-									type="button"
-									onClick={onLaunchModule}
-									className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 whitespace-nowrap flex-shrink-0"
-								>
-									<Sparkles className="w-3.5 h-3.5" />
-									Lancer
-								</button>
-							</div>
-						</div>
-					)}
-
-					{/* Plan d'action */}
+					{/* 3. PLAN D'ACTION RECOMMANDÉ */}
 					{diag.plan.length > 0 && (
-						<div className="space-y-2">
-							<p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-								Plan d'action
-							</p>
-							<ol className="space-y-2">
+						<div className="bg-card border border-border/50 rounded-2xl p-5 md:p-6 shadow-sm space-y-4">
+							<div className="space-y-1">
+								<h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+									<Workflow className="w-4 h-4 text-primary" />
+									Plan d'action
+								</h3>
+								<p className="text-xs text-muted-foreground">
+									Étapes recommandées pour atteindre votre objectif
+								</p>
+							</div>
+							<ul className="space-y-3.5 pt-2">
 								{diag.plan.map((etape, i) => (
-									<li
+									<PlanRow
 										key={i}
-										className="bg-muted/30 border border-border/40 rounded-lg p-3"
-									>
-										<div className="flex items-start justify-between gap-3">
-											<div className="min-w-0 space-y-1">
-												<div className="flex items-center gap-2">
-													<span className="text-[10px] font-bold text-primary">
-														Étape {i + 1}
-													</span>
-													{etape.statut && (
-														<span className="text-[10px] font-medium text-muted-foreground">
-															{etape.statut}
-														</span>
-													)}
-													{etape.echeance && (
-														<span className="text-[10px] text-muted-foreground">
-															· {etape.echeance}
-														</span>
-													)}
-												</div>
-												<p className="text-sm font-semibold text-foreground">
-													{etape.titre}
-												</p>
-												{etape.impact && (
-													<p className="text-[11px] text-muted-foreground">
-														Impact : {etape.impact}
-													</p>
-												)}
-											</div>
-											{etape.cta && (
-												<button
-													type="button"
-													onClick={onLaunchModule}
-													className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md border border-primary/40 text-primary text-[11px] font-bold hover:bg-primary/10 whitespace-nowrap flex-shrink-0"
-												>
-													{etape.cta}
-												</button>
-											)}
-										</div>
-									</li>
+										etape={etape}
+										index={i + 1}
+										onCta={() =>
+											onLaunchModule({
+												id: etape.titre,
+												titre: etape.titre,
+												description: etape.titre,
+												prompt_id: etape.messageIA ? "generique" : etape.titre,
+												duree: "5 min",
+												prompt: "",
+											})
+										}
+									/>
 								))}
-							</ol>
+							</ul>
+							<ProgressBar plan={diag.plan} className="pt-3 border-t border-border/40" />
 						</div>
 					)}
 
-					{/* Projection 30 jours */}
+					{/* 4. PROJECTION À 30 JOURS */}
 					{diag.projection && (
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-							<div className="bg-muted/30 border border-border/40 rounded-lg p-3">
-								<p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-									Visibilité actuelle
-								</p>
-								<p className="text-lg font-bold text-foreground mt-1">
-									{diag.projection.visibiliteAvant}
-								</p>
-							</div>
-							<div className="bg-emerald-500/5 border border-emerald-500/30 rounded-lg p-3">
-								<p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">
-									Avec action
-								</p>
-								<p className="text-lg font-bold text-foreground mt-1">
-									{diag.projection.avecAction.visibilite}
-								</p>
-								<p className="text-[11px] text-muted-foreground">
-									{diag.projection.avecAction.opportunites} opportunités
-								</p>
-							</div>
-							<div className="bg-muted/30 border border-border/40 rounded-lg p-3">
-								<p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-									Sans action
-								</p>
-								<p className="text-lg font-bold text-foreground mt-1">
-									{diag.projection.sansAction.visibilite}
-								</p>
-								<p className="text-[11px] text-muted-foreground">
-									{diag.projection.sansAction.opportunites} opportunités
-								</p>
-							</div>
-						</div>
+						<ProjectionBlock
+							visAvant={diag.projection.visibiliteAvant}
+							avec={diag.projection.avecAction}
+							sans={diag.projection.sansAction}
+						/>
 					)}
 				</>
 			)}
 
 			{!diag && !isPending && !isError && (
-				<p className="text-xs text-muted-foreground py-2">
-					Générez le diagnostic consultant pour afficher l'action prioritaire,
-					les KPI interprétés et le plan d'action orienté métier.
-				</p>
+				<div className="bg-card border border-border/50 rounded-2xl p-8 shadow-sm text-center space-y-3">
+					<div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
+						<Lightbulb className="w-6 h-6" />
+					</div>
+					<div>
+						<p className="text-sm font-semibold text-foreground">Aucun diagnostic généré</p>
+						<p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+							Générez le diagnostic consultant pour afficher l'action prioritaire, les indicateurs clés et le plan de progression à 30 jours de cette entreprise.
+						</p>
+					</div>
+					<button
+						type="button"
+						onClick={onGenerate}
+						className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/95"
+					>
+						<Sparkles className="w-3.5 h-3.5" />
+						Générez le diagnostic
+					</button>
+				</div>
 			)}
 		</div>
 	);
 }
 
-// ---------------------------------------------------------------------------
-// Onglet Analyses
-// ---------------------------------------------------------------------------
-
 function TabAnalyses({
 	siren,
 	goTo,
+	onLaunchModule,
 }: {
 	siren: string;
 	goTo: (id: TabId, module?: string) => void;
+	onLaunchModule: (item: any) => void;
 }) {
 	const navigate = useNavigate();
 	const { data: analyses, isLoading, refetch, isFetching } = useAnalyses(siren);
 	const launch = useLaunchAnalysis();
 	const diagnostic = useContextualDiagnostic();
 	const lastAnalysis = (analyses ?? [])[0];
+
+	// Chargeons les recommandations associées aux jobs de cette entreprise pour persistance
+	const jobIds = useMemo(() => (analyses ?? []).map((a) => a.job_id).filter(Boolean), [analyses]);
+	const { data: recos, refetch: refetchRecos, isFetching: isFetchingRecos } = useRecommandationsForJobs(jobIds);
+
+	const savedDiagnosticData = useMemo(() => {
+		const savedConsultantReco = recos?.find((r) => r.category === "consultant");
+		if (savedConsultantReco?.payload) {
+			try {
+				const parsed = JSON.parse(savedConsultantReco.payload);
+				return {
+					siren,
+					metierId: savedConsultantReco.metierId ?? lastAnalysis?.detected_business_id ?? "generique",
+					diagnostic: parsed,
+					actionPrioritaire: savedConsultantReco,
+				};
+			} catch (e) {
+				console.warn("Failed to parse saved diagnostic payload", e);
+			}
+		}
+		return undefined;
+	}, [recos, siren, lastAnalysis]);
+
+	const displayData = diagnostic.data || savedDiagnosticData;
 
 	async function handleLaunch() {
 		const ack = await launch.mutateAsync({ siren });
@@ -763,8 +1309,26 @@ function TabAnalyses({
 
 	return (
 		<div className="space-y-4">
-			<div className="flex items-center justify-between">
-				<h2 className="text-sm font-bold text-foreground">Analyses IA</h2>
+			{/* Diagnostic consultant contextuel (Lot C) — orienté métier détecté. */}
+			<ConsultantDiagnosticSection
+				siren={siren}
+				isPending={diagnostic.isPending}
+				isError={diagnostic.isError}
+				error={diagnostic.error}
+				data={displayData}
+				onGenerate={handleGenerateDiagnostic}
+				onLaunchModule={onLaunchModule}
+				onRefresh={() => {
+					refetch();
+					if (jobIds.length > 0) {
+						refetchRecos();
+					}
+				}}
+				isRefreshing={isFetching || isFetchingRecos}
+			/>
+
+			<div className="flex items-center justify-between pt-4 border-t border-border/40">
+				<h2 className="text-sm font-bold text-foreground">Historique des analyses</h2>
 				<div className="flex gap-2">
 					<button
 						onClick={() => refetch()}
@@ -785,69 +1349,209 @@ function TabAnalyses({
 					</button>
 				</div>
 			</div>
+		</div>
+	);
+}
 
-			{/* Diagnostic consultant contextuel (Lot C) — orienté métier détecté. */}
-			<ConsultantDiagnosticSection
-				siren={siren}
-				isPending={diagnostic.isPending}
-				isError={diagnostic.isError}
-				error={diagnostic.error}
-				data={diagnostic.data}
-				onGenerate={handleGenerateDiagnostic}
-				onLaunchModule={() => goTo("modules")}
-			/>
+// ---------------------------------------------------------------------------
+// Onglet Finances — inspiré de la structure Origami (bilans multi-exercices)
+// ---------------------------------------------------------------------------
 
-			{isLoading ? (
-				<LoadingSpinner />
-			) : (analyses ?? []).length === 0 ? (
-				<EmptyTab
-					icon={BarChart3}
-					title="Aucune analyse pour ce SIREN"
-					action={{ label: "Lancer une analyse", onClick: handleLaunch }}
-				/>
-			) : (
-				<div className="space-y-2">
-					{(analyses ?? []).map((a) => (
-						<button
-							key={a.job_id}
-							onClick={() => navigate(`/analyse?jobId=${a.job_id}`)}
-							className="w-full flex items-center gap-4 p-4 bg-card border border-border/50 rounded-xl hover:border-primary/30 transition-all text-left"
-						>
-							<div
-								className={cn(
-									"flex-shrink-0 px-2.5 py-0.5 rounded-full text-xs font-bold",
-									a.status === "completed"
-										? "bg-emerald-500/10 text-emerald-600"
-										: ["failed", "error"].includes(a.status)
-											? "bg-red-500/10 text-red-600"
-											: "bg-primary/10 text-primary",
-								)}
-							>
-								{STATUS_LABEL[a.status] ?? a.status}
-							</div>
-							<div className="flex-1 min-w-0">
-								<p className="text-sm font-semibold text-foreground truncate">
-									{a.company_name ?? siren}
-								</p>
-								{a.created_at && (
-									<p className="text-xs text-muted-foreground mt-0.5">
-										{new Date(a.created_at).toLocaleString("fr-FR")}
-									</p>
-								)}
-							</div>
-							{a.score != null && (
-								<span className="text-sm font-bold text-foreground flex-shrink-0">
-									{a.score}/100
+const FINANCE_ROWS: {
+	key: keyof ExerciceFinancier;
+	label: string;
+	section: "cr" | "bilan";
+}[] = [
+	{ key: "chiffre_affaires",           label: "Chiffre d'affaires",          section: "cr"    },
+	{ key: "excedent_brut_exploitation", label: "EBE",                          section: "cr"    },
+	{ key: "resultat_exploitation",      label: "Résultat d'exploitation",      section: "cr"    },
+	{ key: "resultat_net",               label: "Résultat net",                 section: "cr"    },
+	{ key: "total_actif",                label: "Total actif",                  section: "bilan" },
+	{ key: "capitaux_propres",           label: "Capitaux propres",             section: "bilan" },
+	{ key: "tresorerie",                 label: "Trésorerie",                   section: "bilan" },
+	{ key: "creances_clients",           label: "Créances clients",             section: "bilan" },
+	{ key: "dettes_fiscales_sociales",   label: "Dettes fiscales & sociales",   section: "bilan" },
+];
+
+function fmtEuros(val: number | null | undefined): string {
+	if (val == null) return "—";
+	if (Math.abs(val) >= 1_000_000)
+		return `${(val / 1_000_000).toFixed(2).replace(".", ",")}M €`;
+	if (Math.abs(val) >= 1_000)
+		return `${Math.round(val / 1_000)}K €`;
+	return `${val.toLocaleString("fr-FR")} €`;
+}
+
+function TabFinances({
+	finances,
+	raisonSociale,
+}: {
+	finances: FinancesData | null;
+	raisonSociale: string;
+}) {
+	const proc = finances?.procedure_collective;
+	const exercices = (finances?.exercices ?? []).slice(0, 6); // max 6 colonnes
+
+	return (
+		<div className="space-y-4">
+			{/* Procédure collective */}
+			{proc && (
+				<div className="flex items-start gap-3 bg-red-500/8 border border-red-500/20 rounded-xl px-4 py-3">
+					<AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+					<div>
+						<p className="text-sm font-bold text-red-700">{proc.libelle}</p>
+						<p className="text-xs text-red-600 mt-0.5">
+							{proc.tribunal && <span>{proc.tribunal}</span>}
+							{proc.tribunal && proc.date && " · "}
+							{proc.date && (
+								<span>
+									{new Date(proc.date).toLocaleDateString("fr-FR", {
+										day: "2-digit",
+										month: "long",
+										year: "numeric",
+									})}
 								</span>
 							)}
-							<ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-						</button>
-					))}
+						</p>
+					</div>
+				</div>
+			)}
+
+			{/* Tableau des exercices */}
+			{exercices.length > 0 ? (
+				<div className="bg-card border border-border/50 rounded-2xl overflow-hidden shadow-sm">
+					<div className="flex items-center gap-2 px-5 py-4 border-b border-border/50">
+						<PiggyBank className="w-4 h-4 text-primary" />
+						<h2 className="text-sm font-bold">Données financières</h2>
+						{finances?.source && (
+							<span className="ml-auto text-xs text-muted-foreground uppercase tracking-wider">
+								Source : {finances.source}
+							</span>
+						)}
+					</div>
+
+					<div className="overflow-x-auto">
+						<table className="w-full text-xs">
+							<thead>
+								<tr className="border-b border-border/40 bg-muted/30">
+									<th className="text-left px-5 py-2.5 font-semibold text-muted-foreground w-48">
+										EN EUROS
+									</th>
+									{exercices.map((ex) => (
+										<th
+											key={ex.annee ?? ex.date_cloture}
+											className="text-right px-4 py-2.5 font-bold text-foreground"
+										>
+											{ex.annee ?? "—"}
+											{ex.confidentiel && (
+												<span
+													className="ml-1 text-muted-foreground font-normal"
+													title="Comptes partiellement confidentiels"
+												>
+													*
+												</span>
+											)}
+										</th>
+									))}
+								</tr>
+							</thead>
+							<tbody className="divide-y divide-border/30">
+								{(["cr", "bilan"] as const).map((section) => (
+									<>
+										<tr key={`header-${section}`} className="bg-muted/20">
+											<td
+												colSpan={exercices.length + 1}
+												className="px-5 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
+											>
+												{section === "cr"
+													? "Compte de résultat"
+													: "Bilan"}
+											</td>
+										</tr>
+										{FINANCE_ROWS.filter((r) => r.section === section).map(
+											(row) => (
+												<tr
+													key={row.key}
+													className="hover:bg-muted/20 transition-colors"
+												>
+													<td className="px-5 py-2 text-muted-foreground">
+														{row.label}
+													</td>
+													{exercices.map((ex) => {
+														const val = ex[row.key] as
+															| number
+															| null
+															| undefined;
+														const isNeg =
+															typeof val === "number" && val < 0;
+														const isPos =
+															typeof val === "number" && val > 0;
+														const isKey =
+															row.key === "resultat_net" ||
+															row.key === "chiffre_affaires";
+														return (
+															<td
+																key={ex.annee}
+																className={cn(
+																	"px-4 py-2 text-right tabular-nums",
+																	isKey && "font-semibold",
+																	isNeg && isKey
+																		? "text-red-600"
+																		: isPos && isKey
+																			? "text-emerald-600"
+																			: "text-foreground",
+																)}
+															>
+																{val == null && ex.confidentiel
+																	? "<conf.>"
+																	: fmtEuros(val)}
+															</td>
+														);
+													})}
+												</tr>
+											),
+										)}
+									</>
+								))}
+							</tbody>
+						</table>
+					</div>
+
+					{exercices.some((e) => e.confidentiel) && (
+						<p className="px-5 py-2.5 text-xs text-muted-foreground border-t border-border/30">
+							* Comptes soumis à confidentialité partielle (art. L. 232-25 du
+							Code de commerce).
+						</p>
+					)}
+				</div>
+			) : (
+				<div className="bg-card border border-border/50 rounded-2xl p-8 shadow-sm text-center space-y-3">
+					<PiggyBank className="w-8 h-8 text-muted-foreground/40 mx-auto" />
+					<p className="text-sm font-semibold text-muted-foreground">
+						Données financières non disponibles
+					</p>
+					<p className="text-xs text-muted-foreground max-w-xs mx-auto">
+						Configurez la variable d'environnement{" "}
+						<code className="font-mono bg-muted px-1 rounded">INPI_TOKEN</code>{" "}
+						pour accéder aux bilans et comptes de résultat déposés au greffe
+						(compte gratuit sur{" "}
+						<a
+							href="https://registre-national-entreprises.inpi.fr/"
+							target="_blank"
+							rel="noreferrer"
+							className="text-primary hover:underline"
+						>
+							registre-national-entreprises.inpi.fr
+						</a>
+						).
+					</p>
 				</div>
 			)}
 		</div>
 	);
 }
+
+// Supprimé (doublon de TabAnalyses)
 
 // ---------------------------------------------------------------------------
 // Onglet Recommandations
@@ -1115,10 +1819,12 @@ function TabRecommandations({
 	siren,
 	identite,
 	raisonSociale,
+	onLaunchModule,
 }: {
 	siren: string;
 	identite: Identite;
 	raisonSociale: string;
+	onLaunchModule: (item: any) => void;
 }) {
 	// Recommandations propres à l'entreprise : on récupère les analyses du SIREN,
 	// puis les recommandations rattachées à ces jobId.
@@ -1134,76 +1840,9 @@ function TabRecommandations({
 	const { data: metier } = useDetectMetier(identite.code_naf);
 	const metierId = metier?.id ?? "generique";
 	const { data: catalogue, isLoading: catLoading } = useMetierModules(metierId);
-	const execute = useExecuteModule();
-	const upload = useUploadDocumentDirect();
-	const exportMut = useExportDocument();
-
-	const [running, setRunning] = useState<CatalogItem | null>(null);
-	const [livrable, setLivrable] = useState<ExecuteModuleResponse | null>(null);
-	const [drawerOpen, setDrawerOpen] = useState(false);
-	const [archived, setArchived] = useState(false);
 
 	const modules = catalogue?.modules ?? [];
 	const tools = catalogue?.tools ?? [];
-
-	const handleLaunch = (item: CatalogItem) => {
-		if (!item.prompt_id) return;
-		setRunning(item);
-		setLivrable(null);
-		setArchived(false);
-		setDrawerOpen(true);
-		execute.mutate(
-			{
-				metier_id: metierId,
-				prompt_id: item.prompt_id,
-				contexte_entreprise: buildContexteEntreprise(
-					identite,
-					raisonSociale,
-					siren,
-					metier,
-				),
-				preferences: { style: "consultant", duree: item.duree },
-			},
-			{ onSuccess: (res) => setLivrable(res) },
-		);
-	};
-
-	const handleArchive = (markdown: string, item: CatalogItem) => {
-		const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
-		const file = new File([blob], `${item.id}.md`, {
-			type: "text/markdown;charset=utf-8",
-		});
-		upload.mutate(
-			{
-				file,
-				title: `${item.titre} — ${raisonSociale}`,
-				sourceKind: "module",
-				siren,
-			},
-			{ onSuccess: () => setArchived(true) },
-		);
-	};
-
-	const handleExport = (format: "pdf" | "docx", markdown: string) => {
-		const proposal: Proposal = {
-			executiveSummary: markdown,
-			contextAnalysis: "",
-			recommendations: [],
-			actionPlan: [],
-			expectedBenefits: "",
-			nextSteps: "",
-		};
-		exportMut.mutate({
-			format,
-			request: {
-				proposition: proposal,
-				meta: {
-					company_name: raisonSociale,
-					metier_label: metier?.nom_metier,
-				},
-			},
-		});
-	};
 
 	return (
 		<div className="space-y-6">
@@ -1227,20 +1866,36 @@ function TabRecommandations({
 				) : (
 					<>
 						{modules.length > 0 && (
-							<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-								{modules.map((m) => (
-									<ModuleCard
-										key={m.id}
-										item={m}
-										variant="module"
-										onLaunch={handleLaunch}
-									/>
+							<div className="space-y-4">
+								{Object.entries(
+									modules.reduce<Record<string, CatalogItem[]>>((acc, m) => {
+										const cat = m.categorie || "Général";
+										acc[cat] = acc[cat] ?? [];
+										acc[cat].push(m);
+										return acc;
+									}, {})
+								).map(([cat, list]) => (
+									<div key={cat} className="space-y-2">
+										<p className="text-xs font-bold uppercase tracking-wider text-primary">
+											{cat}
+										</p>
+										<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+											{list.map((m) => (
+												<ModuleCard
+													key={m.id}
+													item={m}
+													variant="module"
+													onLaunch={onLaunchModule}
+												/>
+											))}
+										</div>
+									</div>
 								))}
 							</div>
 						)}
 						{tools.length > 0 && (
 							<>
-								<p className="text-xs font-bold uppercase tracking-wider text-muted-foreground pt-2">
+								<p className="text-xs font-bold uppercase tracking-wider text-muted-foreground pt-4 border-t border-border/20">
 									Outils réutilisables
 								</p>
 								<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1249,7 +1904,7 @@ function TabRecommandations({
 											key={t.id}
 											item={t}
 											variant="tool"
-											onLaunch={handleLaunch}
+											onLaunch={onLaunchModule}
 										/>
 									))}
 								</div>
@@ -1313,18 +1968,7 @@ function TabRecommandations({
 				)}
 			</div>
 
-			<ModuleLivrableDrawer
-				open={drawerOpen}
-				item={running}
-				raisonSociale={raisonSociale}
-				isPending={execute.isPending}
-				livrable={livrable}
-				error={execute.error}
-				archived={archived}
-				onClose={() => setDrawerOpen(false)}
-				onArchive={handleArchive}
-				onExport={handleExport}
-			/>
+			{/* Rendu unifié au niveau parent */}
 		</div>
 	);
 }

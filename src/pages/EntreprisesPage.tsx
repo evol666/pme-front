@@ -14,6 +14,7 @@ import {
 import {
   usePortefeuille,
   useRemoveEntreprise,
+  useAddEntreprise,
   RELATION_TYPES,
   type RelationType,
   type EntreprisePortefeuille,
@@ -53,8 +54,36 @@ export default function EntreprisesPage() {
   const [showImport, setShowImport] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
 
-  const { data: entreprises, isLoading } = usePortefeuille(filterKind || undefined);
+  const { data: entreprises, isLoading, refetch } = usePortefeuille(filterKind || undefined);
   const removeMutation = useRemoveEntreprise();
+  const addMutation = useAddEntreprise();
+  const [isSeeding, setIsSeeding] = useState(false);
+
+  async function handleSeed() {
+    setIsSeeding(true);
+    try {
+      for (const company of DEMO_COMPANIES) {
+        await addMutation.mutateAsync({
+          siren: company.siren,
+          label: company.label,
+          kind: company.kind,
+          notes: company.notes,
+          codeNaf: company.codeNaf,
+          libelleNaf: company.libelleNaf,
+          ville: company.ville,
+          score: company.score,
+          severity: company.severity,
+          statut: company.statut,
+          effectifTranche: company.effectifTranche,
+        });
+      }
+      await refetch();
+    } catch (err) {
+      console.error("Échec du seed démo:", err);
+    } finally {
+      setIsSeeding(false);
+    }
+  }
 
   const filtered = (entreprises ?? []).filter((e) => {
     if (!search.trim()) return true;
@@ -147,15 +176,19 @@ export default function EntreprisesPage() {
       </div>
 
       {/* Contenu */}
-      {isLoading ? (
+      {isLoading || isSeeding ? (
         <div className="flex items-center justify-center py-16 gap-3 text-muted-foreground">
           <Loader2 className="w-5 h-5 animate-spin text-primary" />
-          <span className="text-sm">Chargement du portefeuille…</span>
+          <span className="text-sm">
+            {isSeeding ? "Initialisation du portefeuille de démonstration…" : "Chargement du portefeuille…"}
+          </span>
         </div>
       ) : filtered.length === 0 ? (
         <EmptyState
           hasFilter={!!filterKind || !!search}
           onAdd={() => setShowWizard(true)}
+          onSeed={handleSeed}
+          isSeeding={isSeeding}
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -289,7 +322,17 @@ function EntrepriseCard({
 // Empty state
 // ---------------------------------------------------------------------------
 
-function EmptyState({ hasFilter, onAdd }: { hasFilter: boolean; onAdd: () => void }) {
+function EmptyState({
+  hasFilter,
+  onAdd,
+  onSeed,
+  isSeeding,
+}: {
+  hasFilter: boolean;
+  onAdd: () => void;
+  onSeed: () => void;
+  isSeeding: boolean;
+}) {
   return (
     <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
       <div className="w-16 h-16 rounded-2xl bg-muted/40 flex items-center justify-center">
@@ -306,13 +349,29 @@ function EmptyState({ hasFilter, onAdd }: { hasFilter: boolean; onAdd: () => voi
         </p>
       </div>
       {!hasFilter && (
-        <button
-          onClick={onAdd}
-          className="flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Ajouter une entreprise
-        </button>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={onAdd}
+            disabled={isSeeding}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-60"
+          >
+            <Plus className="w-4 h-4" />
+            Ajouter une entreprise
+          </button>
+          <button
+            type="button"
+            onClick={onSeed}
+            disabled={isSeeding}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 border border-border hover:bg-accent rounded-xl text-sm font-semibold transition-colors disabled:opacity-60"
+          >
+            {isSeeding ? (
+              <Loader2 className="w-4 h-4 animate-spin text-primary" />
+            ) : (
+              <Upload className="w-4 h-4" />
+            )}
+            Charger les entreprises de démonstration
+          </button>
+        </div>
       )}
     </div>
   );
@@ -362,3 +421,18 @@ function ConfirmDelete({
     </div>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Données de démonstration (seed local)
+// ---------------------------------------------------------------------------
+
+const DEMO_COMPANIES = [
+  { siren: "900111001", label: "Boulangerie du Marché", kind: "client" as const, codeNaf: "10.71C", libelleNaf: "Boulangerie et boulangerie-pâtisserie", ville: "Lyon", score: 65, severity: "faible", statut: "actif", effectifTranche: "3 à 5 salariés", notes: "Boulangerie artisanale de quartier." },
+  { siren: "900111002", label: "Le Petit Bistrot", kind: "prospect" as const, codeNaf: "56.10A", libelleNaf: "Restauration traditionnelle", ville: "Paris", score: 64, severity: "modéré", statut: "actif", effectifTranche: "6 à 9 salariés", notes: "Restauration traditionnelle de saison." },
+  { siren: "900111003", label: "Cabinet Médical Beauregard", kind: "partenaire" as const, codeNaf: "86.21Z", libelleNaf: "Activité des médecins généralistes", ville: "Bordeaux", score: 70, severity: "faible", statut: "actif", effectifTranche: "3 à 5 salariés", notes: "Cabinet médical de proximité." },
+  { siren: "900111004", label: "Atelier d'Architecture Reverbel", kind: "fournisseur" as const, codeNaf: "71.11Z", libelleNaf: "Activités d'architecture", ville: "Nantes", score: 75, severity: "faible", statut: "actif", effectifTranche: "10 à 19 salariés", notes: "Cabinet d'architecture et maîtrise d'œuvre." },
+  { siren: "900111005", label: "Maison Lemoine — Coiffure & Barbier", kind: "concurrent" as const, codeNaf: "96.02A", libelleNaf: "Coiffure", ville: "Marseille", score: 58, severity: "modéré", statut: "actif", effectifTranche: "1 à 2 salariés", notes: "Salon coiffeur/barbier." },
+  { siren: "900111006", label: "Garage Dupont & Fils", kind: "client" as const, codeNaf: "45.20A", libelleNaf: "Entretien et réparation de véhicules", ville: "Toulouse", score: 62, severity: "modéré", statut: "actif", effectifTranche: "3 à 5 salariés", notes: "Garage mécanique de quartier." },
+  { siren: "900111007", label: "Domaine du Coteau", kind: "prospect" as const, codeNaf: "01.21Z", libelleNaf: "Culture de la vigne", ville: "Beaune", score: 80, severity: "faible", statut: "actif", effectifTranche: "6 à 9 salariés", notes: "Viticulteur et vinificateur." },
+  { siren: "900111008", label: "TechFlow Studio", kind: "client" as const, codeNaf: "62.01Z", libelleNaf: "Programmation informatique", ville: "Lille", score: 68, severity: "modéré", statut: "actif", effectifTranche: "10 à 19 salariés", notes: "Studio de développement logiciel sur mesure." },
+];
