@@ -83,10 +83,11 @@ pipeline {
           def appImage = "${DOCKER_USERNAME}/${APP_NAME}:latest"
           withCredentials([string(credentialsId: 'github-pat', variable: 'GITHUB_TOKEN')]) {
             sh """
-                            DOCKER_BUILDKIT=1 docker build \\\\
-                                --cache-from ${DOCKER_REGISTRY}/${appImage} \\\\
-                                --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \\\\
-                                -t ${appImage} \\\\
+                            DOCKER_BUILDKIT=1 docker build \\
+                                --cache-from ${DOCKER_REGISTRY}/${appImage} \\
+                                --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\
+                                --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \\
+                                -t ${appImage} \\
                                 -f Dockerfile .
                         """
           }
