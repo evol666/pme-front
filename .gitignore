@@ -31,3 +31,4 @@ src/**/__tests__/__screenshots__/*
 # Playwright
 playwright-report/
 test-results/
+/issue_projet.json
