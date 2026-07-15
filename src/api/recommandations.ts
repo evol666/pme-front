@@ -14,8 +14,6 @@ import axiosClient from "@/api/axiosClient";
 
 // --- Types (match exact avec le wire backend, camelCase) ---
 
-export type RecommendationStatus = string;
-
 export interface AiRecommendation {
 	id: number;
 	jobId: string | null;
@@ -30,7 +28,7 @@ export interface AiRecommendation {
 	reasons: string | null;
 	sources: string | null;
 	payload: string | null;
-	status: RecommendationStatus;
+	status: string;
 	createdAt: string;
 	expiresAt: string | null;
 	dismissedAt: string | null;
@@ -133,7 +131,7 @@ export function useRecommandations(jobId?: string) {
 // Recommandations scopées à une entreprise : on passe la liste des jobId de ses
 // analyses (jobId.in). Sans job, aucune recommandation.
 export function useRecommandationsForJobs(jobIds: string[]) {
-	const ids = [...jobIds].filter(Boolean).sort();
+	const ids = [...jobIds].filter(Boolean).sort((a, b) => a.localeCompare(b));
 	return useQuery({
 		queryKey: ["recommandations", "byJobs", ids] as const,
 		enabled: ids.length > 0,

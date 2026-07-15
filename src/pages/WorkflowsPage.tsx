@@ -121,14 +121,14 @@ export default function WorkflowsPage() {
     }
   };
 
-  const submitSearch = (e: React.FormEvent) => {
+  const submitSearch = (e: React.SubmitEvent) => {
     e.preventDefault();
     setAppliedSearch(search.trim());
   };
 
   const handleDelete = async (run: WorkflowRun) => {
     if (
-      !window.confirm(
+      !globalThis.confirm(
         `Supprimer le run « ${run.workflowId} » #${run.id} ? Cette action est définitive.`,
       )
     ) {

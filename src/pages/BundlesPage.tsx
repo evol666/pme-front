@@ -38,6 +38,14 @@ const ASSET_KIND_LABEL: Record<string, string> = {
 
 type StatusFilter = "all" | "active" | "inactive";
 
+// Traduit le filtre de statut en paramètre isActive.equals pour l'API —
+// if/else plutôt que ternaires imbriquées.
+function statusFilterToIsActive(filter: StatusFilter): boolean | undefined {
+  if (filter === "active") return true;
+  if (filter === "inactive") return false;
+  return undefined;
+}
+
 const STATUS_TABS: { key: StatusFilter; label: string }[] = [
   { key: "all", label: "Tous" },
   { key: "active", label: "Actifs" },
@@ -73,8 +81,7 @@ export default function BundlesPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [error, setError] = useState<string | null>(null);
 
-  const isActiveParam =
-    statusFilter === "active" ? true : statusFilter === "inactive" ? false : undefined;
+  const isActiveParam = statusFilterToIsActive(statusFilter);
 
   const { data: bundles, isLoading, refetch, isFetching } = useBundles(
     appliedSearch || undefined,
@@ -89,7 +96,7 @@ export default function BundlesPage() {
     return bundles;
   }, [bundles]);
 
-  const submitSearch = (e: React.FormEvent) => {
+  const submitSearch = (e: React.SubmitEvent) => {
     e.preventDefault();
     setAppliedSearch(search.trim());
   };
@@ -105,7 +112,7 @@ export default function BundlesPage() {
 
   const handleDelete = async (bundle: StudioBundle) => {
     if (
-      !window.confirm(
+      !globalThis.confirm(
         `Supprimer le bundle « ${bundle.name} » ? Cette action est définitive.`,
       )
     ) {
@@ -196,11 +203,9 @@ export default function BundlesPage() {
         </div>
       )}
 
-      {isLoading ? (
-        <LoadingState />
-      ) : filtered.length === 0 ? (
-        <EmptyState />
-      ) : (
+      {isLoading && <LoadingState />}
+      {!isLoading && filtered.length === 0 && <EmptyState />}
+      {!isLoading && filtered.length > 0 && (
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
           {filtered.map((bundle) => (
             <BundleCard
@@ -332,13 +337,8 @@ function BundleCard({
               : "bg-primary text-primary-foreground hover:bg-primary/90",
           )}
         >
-          {toggling ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          ) : bundle.isActive ? (
-            "Désactiver"
-          ) : (
-            "Activer"
-          )}
+          {toggling && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+          {!toggling && (bundle.isActive ? "Désactiver" : "Activer")}
         </button>
         <button
           type="button"

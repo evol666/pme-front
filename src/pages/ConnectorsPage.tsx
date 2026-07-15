@@ -21,6 +21,14 @@ import {
 } from "@/api/connectors";
 import { cn } from "@/lib/utils";
 
+// Traduit un filtre "" | "true" | "false" en booléen optionnel pour l'API —
+// if/else plutôt que ternaires imbriquées.
+function tristateFilterToBoolean(filter: "" | "true" | "false"): boolean | undefined {
+  if (filter === "true") return true;
+  if (filter === "false") return false;
+  return undefined;
+}
+
 // Page « Connecteurs » (LOT 15). Version Spring Boot : 2 onglets CRUD sur les entités
 // spécifiques aux connecteurs — synchronisations (ConnectorSync) et webhooks reçus
 // (ConnectorWebhook). La gestion des connexions OAuth (Connection) est déjà couverte
@@ -172,7 +180,7 @@ function SyncsTab() {
 
   const handleDelete = async (s: ConnectorSync) => {
     if (
-      !window.confirm(
+      !globalThis.confirm(
         `Supprimer la synchronisation #${s.id} (${s.provider} · ${s.entity}) ?`,
       )
     )
@@ -240,15 +248,15 @@ function SyncsTab() {
 
       {error && <ErrorBanner message={error} />}
 
-      {isLoading ? (
-        <LoadingState label="Chargement des synchronisations…" />
-      ) : !syncs || syncs.length === 0 ? (
+      {isLoading && <LoadingState label="Chargement des synchronisations…" />}
+      {!isLoading && (!syncs || syncs.length === 0) && (
         <EmptyState
           icon={RefreshCw}
           title="Aucune synchronisation"
           hint="Aucune sync de connecteur enregistrée. Les synchronisations apparaissent ici dès qu'un provider est invoqué."
         />
-      ) : (
+      )}
+      {!isLoading && syncs && syncs.length > 0 && (
         <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -347,8 +355,7 @@ function WebhooksTab() {
   const [processedFilter, setProcessedFilter] = useState<"" | "true" | "false">("");
   const [error, setError] = useState<string | null>(null);
 
-  const processed =
-    processedFilter === "true" ? true : processedFilter === "false" ? false : undefined;
+  const processed = tristateFilterToBoolean(processedFilter);
 
   const { data: webhooks, isLoading, refetch, isFetching } = useConnectorWebhooks(
     provider || undefined,
@@ -358,7 +365,7 @@ function WebhooksTab() {
 
   const handleDelete = async (w: ConnectorWebhook) => {
     if (
-      !window.confirm(
+      !globalThis.confirm(
         `Supprimer le webhook #${w.id} (${w.provider} · ${w.eventType}) ?`,
       )
     )
@@ -417,15 +424,15 @@ function WebhooksTab() {
 
       {error && <ErrorBanner message={error} />}
 
-      {isLoading ? (
-        <LoadingState label="Chargement des webhooks…" />
-      ) : !webhooks || webhooks.length === 0 ? (
+      {isLoading && <LoadingState label="Chargement des webhooks…" />}
+      {!isLoading && (!webhooks || webhooks.length === 0) && (
         <EmptyState
           icon={Webhook}
           title="Aucun webhook"
           hint="Aucun webhook reçu de vos providers. Les événements entrants apparaîtront ici."
         />
-      ) : (
+      )}
+      {!isLoading && webhooks && webhooks.length > 0 && (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {webhooks.map((w) => (
             <WebhookCard
@@ -574,7 +581,7 @@ function WebhookCard({
 
 // --- États partagés ---
 
-function ErrorBanner({ message }: { message: string }) {
+function ErrorBanner({ message }: { readonly message: string }) {
   return (
     <div
       role="alert"
@@ -585,7 +592,7 @@ function ErrorBanner({ message }: { message: string }) {
   );
 }
 
-function LoadingState({ label }: { label: string }) {
+function LoadingState({ label }: { readonly label: string }) {
   return (
     <div className="flex items-center justify-center rounded-2xl border border-border bg-card p-12 text-muted-foreground">
       <Loader2 className="mr-2 h-5 w-5 animate-spin" />

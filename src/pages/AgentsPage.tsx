@@ -106,13 +106,13 @@ export default function AgentsPage() {
   );
   const deleteMutation = useDeleteAgentRun();
 
-  const submitSearch = (e: React.FormEvent) => {
+  const submitSearch = (e: React.SubmitEvent) => {
     e.preventDefault();
     setAppliedSearch(search.trim());
   };
 
   const handleDelete = async (run: AgentRun) => {
-    if (!window.confirm(`Supprimer le run « ${run.topic} » ? Cette action est définitive.`)) {
+    if (!globalThis.confirm(`Supprimer le run « ${run.topic} » ? Cette action est définitive.`)) {
       return;
     }
     setError(null);
@@ -211,11 +211,9 @@ export default function AgentsPage() {
         </div>
       )}
 
-      {isLoading ? (
-        <LoadingState />
-      ) : !runs || runs.length === 0 ? (
-        <EmptyState />
-      ) : (
+      {isLoading && <LoadingState />}
+      {!isLoading && (!runs || runs.length === 0) && <EmptyState />}
+      {!isLoading && runs && runs.length > 0 && (
         <div className="space-y-4">
           {runs.map((run) => (
             <RunCard
@@ -359,11 +357,11 @@ function RunDetail({ runId }: { readonly runId: number }) {
             ({messages.data?.length ?? 0})
           </span>
         </h4>
-        {messages.isLoading ? (
-          <InlineLoader />
-        ) : !messages.data || messages.data.length === 0 ? (
+        {messages.isLoading && <InlineLoader />}
+        {!messages.isLoading && (!messages.data || messages.data.length === 0) && (
           <p className="text-sm text-muted-foreground">Aucun message.</p>
-        ) : (
+        )}
+        {!messages.isLoading && messages.data && messages.data.length > 0 && (
           <ol className="space-y-2">
             {messages.data.map((m) => (
               <li
@@ -401,11 +399,11 @@ function RunDetail({ runId }: { readonly runId: number }) {
             ({reasoning.data?.length ?? 0})
           </span>
         </h4>
-        {reasoning.isLoading ? (
-          <InlineLoader />
-        ) : !reasoning.data || reasoning.data.length === 0 ? (
+        {reasoning.isLoading && <InlineLoader />}
+        {!reasoning.isLoading && (!reasoning.data || reasoning.data.length === 0) && (
           <p className="text-sm text-muted-foreground">Aucune étape de raisonnement.</p>
-        ) : (
+        )}
+        {!reasoning.isLoading && reasoning.data && reasoning.data.length > 0 && (
           <ol className="space-y-2">
             {reasoning.data.map((s) => (
               <li
@@ -438,11 +436,11 @@ function RunDetail({ runId }: { readonly runId: number }) {
             ({memory.data?.length ?? 0})
           </span>
         </h4>
-        {memory.isLoading ? (
-          <InlineLoader />
-        ) : !memory.data || memory.data.length === 0 ? (
+        {memory.isLoading && <InlineLoader />}
+        {!memory.isLoading && (!memory.data || memory.data.length === 0) && (
           <p className="text-sm text-muted-foreground">Aucune mémoire partagée.</p>
-        ) : (
+        )}
+        {!memory.isLoading && memory.data && memory.data.length > 0 && (
           <ul className="space-y-2">
             {memory.data.map((mem) => (
               <li

@@ -52,6 +52,14 @@ interface Props {
   readonly onDismiss: (id: string) => void;
 }
 
+// Couleur du bouton d'action selon le ton de l'insight — table de
+// correspondance plutôt que ternaires imbriquées.
+function actionButtonClass(tone: string | undefined): string {
+  if (tone === 'positive') return 'bg-emerald-600 hover:bg-emerald-700';
+  if (tone === 'attention') return 'bg-amber-600 hover:bg-amber-700';
+  return 'bg-primary hover:bg-primary/90';
+}
+
 export default function DirectorInsightCard({ insight, onDismiss }: Props) {
   const [showWhy, setShowWhy] = useState(false);
   const navigate = useNavigate();
@@ -61,12 +69,7 @@ export default function DirectorInsightCard({ insight, onDismiss }: Props) {
   const confidencePct = Math.round((insight.confidence || 0) * 100);
   const action = insight.suggested_action;
 
-  const actionBg =
-    insight.tone === 'positive'
-      ? 'bg-emerald-600 hover:bg-emerald-700'
-      : insight.tone === 'attention'
-        ? 'bg-amber-600 hover:bg-amber-700'
-        : 'bg-primary hover:bg-primary/90';
+  const actionBg = actionButtonClass(insight.tone);
 
   return (
     <article

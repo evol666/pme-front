@@ -18,11 +18,14 @@ const queryClient = new QueryClient({
   },
 });
 
-// Surcharge globale de window.fetch pour acheminer les requêtes /api vers la Gateway (/services/pme/api)
+// Surcharge globale de globalThis.fetch pour acheminer les requêtes /api vers la Gateway (/services/pme/api)
 // et inclure les cookies de session (withCredentials).
-const originalFetch = window.fetch;
-window.fetch = async (input, init) => {
-  let url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+const originalFetch = globalThis.fetch;
+globalThis.fetch = async (input, init) => {
+  let url: string;
+  if (typeof input === 'string') url = input;
+  else if (input instanceof URL) url = input.toString();
+  else url = input.url;
 
   if (url.startsWith('/api/') && url !== '/api/auth-info' && url !== '/api/logout' && url !== '/api/account') {
     url = `/services/pme${url}`;

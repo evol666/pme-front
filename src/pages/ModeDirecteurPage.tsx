@@ -68,7 +68,7 @@ export default function ModeDirecteurPage() {
       </div>
 
       <div className="mt-4 space-y-3">
-        {isLoading ? (
+        {isLoading && (
           <div className="space-y-3">
             {[0, 1, 2].map((i) => (
               <div
@@ -77,7 +77,8 @@ export default function ModeDirecteurPage() {
               />
             ))}
           </div>
-        ) : insights.length === 0 ? (
+        )}
+        {!isLoading && insights.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600">
               <ShieldCheck className="h-6 w-6" />
@@ -88,15 +89,16 @@ export default function ModeDirecteurPage() {
               vous préviendra dès qu'un signal mérite votre regard.
             </p>
           </div>
-        ) : (
+        )}
+        {!isLoading &&
+          insights.length > 0 &&
           insights.map((insight) => (
             <DirectorInsightCard
               key={insight.id}
               insight={insight}
               onDismiss={onDismiss}
             />
-          ))
-        )}
+          ))}
       </div>
 
       <p className="mt-8 text-center text-[12px] text-muted-foreground">

@@ -176,21 +176,23 @@ export default function EntreprisesPage() {
       </div>
 
       {/* Contenu */}
-      {isLoading || isSeeding ? (
+      {(isLoading || isSeeding) && (
         <div className="flex items-center justify-center py-16 gap-3 text-muted-foreground">
           <Loader2 className="w-5 h-5 animate-spin text-primary" />
           <span className="text-sm">
             {isSeeding ? "Initialisation du portefeuille de démonstration…" : "Chargement du portefeuille…"}
           </span>
         </div>
-      ) : filtered.length === 0 ? (
+      )}
+      {!isLoading && !isSeeding && filtered.length === 0 && (
         <EmptyState
           hasFilter={!!filterKind || !!search}
           onAdd={() => setShowWizard(true)}
           onSeed={handleSeed}
           isSeeding={isSeeding}
         />
-      ) : (
+      )}
+      {!isLoading && !isSeeding && filtered.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map((e) => (
             <EntrepriseCard
