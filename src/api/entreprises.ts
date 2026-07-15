@@ -154,8 +154,7 @@ export interface ProcedureCollective {
     | "redressement_judiciaire"
     | "liquidation_judiciaire"
     | "sauvegarde"
-    | "cessation_de_paiements"
-    | string;
+    | "cessation_de_paiements";
   libelle: string;
   date: string | null;
   tribunal: string | null;
@@ -164,7 +163,7 @@ export interface ProcedureCollective {
 export interface FinancesData {
   exercices: ExerciceFinancier[];
   procedure_collective: ProcedureCollective | null;
-  source: "inpi" | "bodacc_derive" | "mock" | string;
+  source: "inpi" | "bodacc_derive" | "mock";
 }
 
 export interface EntrepriseEnrichie {

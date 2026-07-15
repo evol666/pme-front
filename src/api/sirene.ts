@@ -9,7 +9,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export interface SireneImportStatus {
   running: boolean;
-  phase: "idle" | "downloading" | "parsing" | "done" | "error" | string;
+  phase: "idle" | "downloading" | "parsing" | "done" | "error";
   processed: number;
   upserted: number;
   skipped: number;

@@ -17,12 +17,12 @@ export interface SuggestedAction {
 
 export interface DirectorInsight {
   id: string;
-  kind: InsightKind | string;
+  kind: InsightKind;
   category: string;
   title: string;
   message: string;
   rationale: string;
-  tone: InsightTone | string | null;
+  tone: InsightTone | null;
   icon: string | null;
   confidence: number;
   priority: number;

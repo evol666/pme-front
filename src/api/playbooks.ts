@@ -14,7 +14,7 @@ export interface StepDefinition {
   key: string;
   label: string;
   description: string;
-  kind: StepKind | string;
+  kind: StepKind;
   module_id?: string | null;
   workflow_id?: string | null;
   recommendation_action?: string | null;
@@ -40,7 +40,7 @@ export interface StepState {
   step_key: string;
   label: string;
   description?: string | null;
-  kind: StepKind | string;
+  kind: StepKind;
   status: StepStatus;
   note?: string | null;
   module_id?: string | null;
@@ -71,11 +71,11 @@ export interface PlaybookRun {
 }
 
 export interface PlaybookSuggestion {
-  kind: 'missing_step' | 'automation' | 'tone' | 'note' | string;
+  kind: 'missing_step' | 'automation' | 'tone' | 'note';
   label: string;
   rationale?: string | null;
-  source: 'heuristic' | 'llm' | 'stats' | string;
-  impact: 'low' | 'medium' | 'high' | string;
+  source: 'heuristic' | 'llm' | 'stats';
+  impact: 'low' | 'medium' | 'high';
 }
 
 export interface PlaybookStats {
