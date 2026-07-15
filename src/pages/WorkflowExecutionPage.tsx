@@ -289,16 +289,18 @@ export default function WorkflowExecutionPage() {
           </button>
         </div>
 
-        {stepsQuery.isLoading ? (
+        {stepsQuery.isLoading && (
           <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
             Chargement des étapes…
           </div>
-        ) : steps.length === 0 ? (
+        )}
+        {!stepsQuery.isLoading && steps.length === 0 && (
           <p className="text-sm text-muted-foreground">
             Aucune étape exécutée pour ce run.
           </p>
-        ) : (
+        )}
+        {!stepsQuery.isLoading && steps.length > 0 && (
           <ol className="relative ml-3 space-y-3 border-l-2 border-border pl-5">
             {steps.map((step, idx) => (
               <StepItem key={step.id} step={step} idx={idx} />

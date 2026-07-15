@@ -308,11 +308,9 @@ export default function WorkflowsPage() {
         </div>
       )}
 
-      {isLoading ? (
-        <LoadingState />
-      ) : !runs || runs.length === 0 ? (
-        <EmptyState />
-      ) : (
+      {isLoading && <LoadingState />}
+      {!isLoading && (!runs || runs.length === 0) && <EmptyState />}
+      {!isLoading && runs && runs.length > 0 && (
         <div className="space-y-4">
           {runs.map((run) => (
             <RunCard
