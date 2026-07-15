@@ -197,22 +197,7 @@ export default function BundleDetailPage() {
             {manifest.description ?? "Aucune description dans le manifest."}
           </p>
           <div className="flex flex-wrap items-center gap-2 pt-1">
-            <span
-              className={cn(
-                "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
-                bundle.isActive
-                  ? "bg-emerald-500/10 text-emerald-600"
-                  : "bg-muted text-muted-foreground",
-              )}
-            >
-              <span
-                className={cn(
-                  "h-1.5 w-1.5 rounded-full",
-                  bundle.isActive ? "bg-emerald-500" : "bg-muted-foreground/60",
-                )}
-              />
-              {bundle.isActive ? "Actif" : "Inactif"}
-            </span>
+            <BundleStatusBadge isActive={bundle.isActive} />
             {manifest.version && (
               <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-xs font-medium text-accent-foreground">
                 <Package className="h-3 w-3" />
@@ -244,40 +229,18 @@ export default function BundleDetailPage() {
         </ol>
 
         <div className="flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={handleActivate}
-            disabled={toggleMutation.isPending || activated || bundle.isActive}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-60"
-          >
-            {toggleMutation.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : activated || bundle.isActive ? (
-              <Sparkles className="h-4 w-4" />
-            ) : (
-              <Play className="h-4 w-4" />
-            )}
-            {activated || bundle.isActive
-              ? "Bundle activé"
-              : toggleMutation.isPending
-                ? "Activation en cours…"
-                : "Activer ce bundle"}
-          </button>
+          <ActivateButton
+            onActivate={handleActivate}
+            pending={toggleMutation.isPending}
+            activated={activated}
+            isActive={bundle.isActive}
+          />
           {activateError && (
             <span className="text-sm text-destructive">{activateError}</span>
           )}
         </div>
 
-        {((manifest.metier_ids?.length ?? 0) > 0 || (manifest.keywords?.length ?? 0) > 0) && (
-          <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
-            {manifest.metier_ids && manifest.metier_ids.length > 0 && (
-              <Targets label="Métiers ciblés" items={manifest.metier_ids} />
-            )}
-            {manifest.keywords && manifest.keywords.length > 0 && (
-              <Targets label="Mots-clés" items={manifest.keywords} />
-            )}
-          </div>
-        )}
+        <BundleManifestTargets manifest={manifest} />
 
         {bundle.manifest && (
           <details className="rounded-lg border border-border bg-background">
@@ -291,40 +254,15 @@ export default function BundleDetailPage() {
         )}
       </section>
 
-      {SECTIONS.map((section) => {
-        const items = getItems(section.kind, {
+      <BundleComponentSections
+        data={{
           agents: agents.data ?? [],
           prompts: prompts.data ?? [],
           pages: pages.data ?? [],
           apiRoutes: apiRoutes.data ?? [],
           workflows: workflows.data ?? [],
-        });
-        if (items.length === 0) return null;
-        const Icon = section.icon;
-        return (
-          <section key={section.kind} className="space-y-4">
-            <header className="flex items-center gap-2">
-              <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary/10 text-primary">
-                <Icon className="h-4 w-4" />
-              </span>
-              <div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  {section.label}{" "}
-                  <span className="font-normal text-muted-foreground">
-                    ({items.length})
-                  </span>
-                </h2>
-                <p className="text-xs text-muted-foreground">{section.description}</p>
-              </div>
-            </header>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {items.map((item) => (
-                <ComponentCard key={item.id} kind={section.kind} item={item} />
-              ))}
-            </div>
-          </section>
-        );
-      })}
+        }}
+      />
 
       {Object.values(counts).every((c) => c === 0) && (
         <section className="rounded-2xl border border-dashed border-border bg-card p-10 text-center">
@@ -424,7 +362,7 @@ function OnboardStep({
   );
 }
 
-function Targets({ label, items }: { label: string; items: string[] }) {
+function Targets({ label, items }: { readonly label: string; readonly items: string[] }) {
   if (items.length === 0) return null;
   return (
     <div>
@@ -439,6 +377,138 @@ function Targets({ label, items }: { label: string; items: string[] }) {
         ))}
       </div>
     </div>
+  );
+}
+
+// Badge de statut actif/inactif du bundle — extrait pour éviter les ternaires
+// imbriquées directement dans BundleDetailPage.
+function BundleStatusBadge({ isActive }: { readonly isActive: boolean }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
+        isActive ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground",
+      )}
+    >
+      <span
+        className={cn(
+          "h-1.5 w-1.5 rounded-full",
+          isActive ? "bg-emerald-500" : "bg-muted-foreground/60",
+        )}
+      />
+      {isActive ? "Actif" : "Inactif"}
+    </span>
+  );
+}
+
+// Bouton d'activation du bundle : icône + libellé dépendant de l'état
+// (activation en cours / déjà actif / à activer). Extrait de BundleDetailPage
+// pour réduire sa complexité cognitive.
+function ActivateButton({
+  onActivate,
+  pending,
+  activated,
+  isActive,
+}: {
+  readonly onActivate: () => void;
+  readonly pending: boolean;
+  readonly activated: boolean;
+  readonly isActive: boolean;
+}) {
+  const alreadyActive = activated || isActive;
+
+  let icon = <Play className="h-4 w-4" />;
+  if (pending) {
+    icon = <Loader2 className="h-4 w-4 animate-spin" />;
+  } else if (alreadyActive) {
+    icon = <Sparkles className="h-4 w-4" />;
+  }
+
+  let label = "Activer ce bundle";
+  if (alreadyActive) {
+    label = "Bundle activé";
+  } else if (pending) {
+    label = "Activation en cours…";
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onActivate}
+      disabled={pending || alreadyActive}
+      className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-60"
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
+
+// Section « Métiers ciblés / Mots-clés » du manifest — extraite pour ne pas
+// ajouter sa condition d'affichage à la complexité de BundleDetailPage.
+function BundleManifestTargets({
+  manifest,
+}: {
+  readonly manifest: { metier_ids?: string[] | null; keywords?: string[] | null };
+}) {
+  const hasMetierIds = (manifest.metier_ids?.length ?? 0) > 0;
+  const hasKeywords = (manifest.keywords?.length ?? 0) > 0;
+  if (!hasMetierIds && !hasKeywords) return null;
+
+  return (
+    <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
+      {hasMetierIds && <Targets label="Métiers ciblés" items={manifest.metier_ids!} />}
+      {hasKeywords && <Targets label="Mots-clés" items={manifest.keywords!} />}
+    </div>
+  );
+}
+
+// Liste des sections de composants (prompts, workflows, pages, routes API,
+// agents) — extraite de BundleDetailPage pour que la boucle de rendu (avec
+// son retour anticipé par section vide) ne pèse pas sur la complexité
+// cognitive du composant principal.
+function BundleComponentSections({
+  data,
+}: {
+  readonly data: {
+    agents: StudioAgent[];
+    prompts: StudioPrompt[];
+    pages: StudioPage[];
+    apiRoutes: StudioApiRoute[];
+    workflows: StudioWorkflow[];
+  };
+}) {
+  return (
+    <>
+      {SECTIONS.map((section) => {
+        const items = getItems(section.kind, data);
+        if (items.length === 0) return null;
+        const Icon = section.icon;
+        return (
+          <section key={section.kind} className="space-y-4">
+            <header className="flex items-center gap-2">
+              <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary/10 text-primary">
+                <Icon className="h-4 w-4" />
+              </span>
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">
+                  {section.label}{" "}
+                  <span className="font-normal text-muted-foreground">
+                    ({items.length})
+                  </span>
+                </h2>
+                <p className="text-xs text-muted-foreground">{section.description}</p>
+              </div>
+            </header>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {items.map((item) => (
+                <ComponentCard key={item.id} kind={section.kind} item={item} />
+              ))}
+            </div>
+          </section>
+        );
+      })}
+    </>
   );
 }
 

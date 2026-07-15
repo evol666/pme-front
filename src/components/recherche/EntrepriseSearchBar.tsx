@@ -112,9 +112,10 @@ export function EntrepriseSearchBar() {
         />
         {/* Indicateur chargement / clear */}
         <span className="absolute right-2.5 flex items-center">
-          {isFetching ? (
+          {isFetching && (
             <Loader2 className="w-3.5 h-3.5 text-muted-foreground animate-spin" />
-          ) : query.length > 0 ? (
+          )}
+          {!isFetching && query.length > 0 && (
             <button
               onClick={clear}
               className="text-muted-foreground hover:text-foreground transition-colors"
@@ -123,7 +124,7 @@ export function EntrepriseSearchBar() {
             >
               <X className="w-3.5 h-3.5" />
             </button>
-          ) : null}
+          )}
         </span>
       </div>
 

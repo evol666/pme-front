@@ -99,6 +99,31 @@ type TabId = (typeof TABS)[number]["id"];
 // Page
 // ---------------------------------------------------------------------------
 
+// Couleur du bandeau d'en-tête selon la sévérité du scoring — table de
+// correspondance plutôt que ternaires imbriquées.
+function bandeauSeverityClass(scoring: { severity?: string } | null | undefined): string {
+	if (scoring?.severity === "faible") return "bg-emerald-500";
+	if (scoring?.severity === "modéré") return "bg-amber-400";
+	if (scoring) return "bg-red-500";
+	return "bg-muted";
+}
+
+// Couleurs du badge de score selon la sévérité — table de correspondance
+// plutôt que ternaires imbriquées.
+function scoreBadgeSeverityClass(severity: string | undefined): string {
+	if (severity === "faible") return "bg-emerald-500/10 text-emerald-600";
+	if (severity === "modéré") return "bg-amber-500/10 text-amber-500";
+	return "bg-red-500/10 text-red-500";
+}
+
+// Couleurs du badge de priorité d'une recommandation — table de
+// correspondance plutôt que ternaires imbriquées.
+function recommandationPriorityClass(priority: number): string {
+	if (priority <= 2) return "bg-red-500/10 text-red-600";
+	if (priority <= 4) return "bg-amber-500/10 text-amber-600";
+	return "bg-muted text-muted-foreground";
+}
+
 export default function EntrepriseDetailPage() {
 	const { siren } = useParams<{ siren: string }>();
 	const navigate = useNavigate();
@@ -243,16 +268,7 @@ export default function EntrepriseDetailPage() {
 			<div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden mb-4">
 				{/* Bandeau couleur selon severity */}
 				<div
-					className={cn(
-						"h-1.5",
-						scoring?.severity === "faible"
-							? "bg-emerald-500"
-							: scoring?.severity === "modéré"
-								? "bg-amber-400"
-								: scoring
-									? "bg-red-500"
-									: "bg-muted",
-					)}
+					className={cn("h-1.5", bandeauSeverityClass(scoring))}
 				/>
 
 				<div className="px-6 pt-5 pb-4">
@@ -323,11 +339,7 @@ export default function EntrepriseDetailPage() {
 								<div
 									className={cn(
 										"w-16 h-16 rounded-2xl flex flex-col items-center justify-center",
-										scoring.severity === "faible"
-											? "bg-emerald-500/10 text-emerald-600"
-											: scoring.severity === "modéré"
-												? "bg-amber-500/10 text-amber-500"
-												: "bg-red-500/10 text-red-500",
+										scoreBadgeSeverityClass(scoring.severity),
 									)}
 								>
 									<span className="text-2xl font-extrabold leading-none">
@@ -594,7 +606,7 @@ const TREND_TONE: Record<string, string> = {
 // Sous-composants pour le Diagnostic Consultant (Lot C)
 // ---------------------------------------------------------------------------
 
-function ScoreRing({ score }: { score: number }) {
+function ScoreRing({ score }: { readonly score: number }) {
 	const r = 52;
 	const c = 2 * Math.PI * r;
 	const offset = c - (score / 100) * c;
@@ -639,7 +651,7 @@ const IMPACT_STYLE: Record<string, { label: string; cls: string }> = {
 	fort:   { label: "Impact fort",   cls: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20" },
 };
 
-function ImpactBadge({ impact, compact = false }: { impact: string; compact?: boolean }) {
+function ImpactBadge({ impact, compact = false }: { readonly impact: string; readonly compact?: boolean }) {
 	const imp = impact.toLowerCase();
 	const s = IMPACT_STYLE[imp] ?? IMPACT_STYLE.faible;
 	return (
@@ -741,7 +753,7 @@ function PlanRow({
 	);
 }
 
-function ProgressBar({ plan, className = "" }: { plan: ConsultantPlanEtape[]; className?: string }) {
+function ProgressBar({ plan, className = "" }: { readonly plan: ConsultantPlanEtape[]; readonly className?: string }) {
 	const total = plan.length;
 	const done = plan.filter((e) => e.statut?.toLowerCase() === "termine").length;
 	const inProgress = plan.filter((e) => e.statut?.toLowerCase() === "en_cours").length;
@@ -768,7 +780,7 @@ const TREND_STYLE: Record<string, { icon: React.ReactNode; cls: string }> = {
 	flat: { icon: <Minus className="h-4 w-4" />,          cls: "text-muted-foreground bg-muted border border-border" },
 };
 
-function KpiCard({ kpi }: { kpi: ConsultantKpi }) {
+function KpiCard({ kpi }: { readonly kpi: ConsultantKpi }) {
 	const trendKey = (kpi.tendance ?? "flat").toLowerCase();
 	const trend = TREND_STYLE[trendKey] ?? TREND_STYLE.flat;
 	return (
@@ -1256,7 +1268,7 @@ function TabAnalyses({
 	readonly onLaunchModule: (item: any) => void;
 }) {
 	const navigate = useNavigate();
-	const { data: analyses, isLoading, refetch, isFetching } = useAnalyses(siren);
+	const { data: analyses, refetch, isFetching } = useAnalyses(siren);
 	const launch = useLaunchAnalysis();
 	const diagnostic = useContextualDiagnostic();
 	const lastAnalysis = (analyses ?? [])[0];
@@ -1297,15 +1309,6 @@ function TabAnalyses({
 			metierId: lastAnalysis?.detected_business_id ?? undefined,
 		});
 	}
-
-	const STATUS_LABEL: Record<string, string> = {
-		pending: "En attente",
-		processing: "En cours",
-		running: "En cours",
-		completed: "Terminée",
-		failed: "Échec",
-		error: "Erreur",
-	};
 
 	return (
 		<div className="space-y-4">
@@ -1489,17 +1492,16 @@ function TabFinances({
 														const isKey =
 															row.key === "resultat_net" ||
 															row.key === "chiffre_affaires";
+														let valueColorClass = "text-foreground";
+														if (isKey && isNeg) valueColorClass = "text-red-600";
+														else if (isKey && isPos) valueColorClass = "text-emerald-600";
 														return (
 															<td
 																key={ex.annee}
 																className={cn(
 																	"px-4 py-2 text-right tabular-nums",
 																	isKey && "font-semibold",
-																	isNeg && isKey
-																		? "text-red-600"
-																		: isPos && isKey
-																			? "text-emerald-600"
-																			: "text-foreground",
+																	valueColorClass,
 																)}
 															>
 																{val == null && ex.confidentiel
@@ -1702,6 +1704,45 @@ function ModuleLivrableDrawer({
 		}
 	};
 
+	// Rendu du corps du drawer — if/else plutôt que ternaires imbriquées.
+	const renderDrawerBody = () => {
+		if (isPending) {
+			return (
+				<div className="flex flex-col items-center justify-center py-20 gap-3 text-muted-foreground">
+					<Loader2 className="w-6 h-6 animate-spin text-primary" />
+					<p className="text-sm">Génération du livrable…</p>
+					<p className="text-xs">L'IA rédige, cela peut prendre ~1 min.</p>
+				</div>
+			);
+		}
+		if (error) {
+			return (
+				<div className="rounded-xl bg-red-500/10 border border-red-500/20 p-4 text-sm text-red-600">
+					<p className="font-semibold mb-1">Génération indisponible</p>
+					<p className="text-xs leading-relaxed">
+						{extractModuleError(error)}
+					</p>
+					<p className="text-[11px] text-muted-foreground mt-2">
+						Vérifiez que la bibliothèque de prompts et le service IA sont
+						disponibles (prérequis §1.4 du PLAN_PARITE).
+					</p>
+				</div>
+			);
+		}
+		if (markdown) {
+			return (
+				<pre className="text-sm text-foreground whitespace-pre-wrap font-sans leading-relaxed">
+					{markdown}
+				</pre>
+			);
+		}
+		return (
+			<p className="text-sm text-muted-foreground italic">
+				Aucun contenu renvoyé.
+			</p>
+		);
+	};
+
 	return (
 		<div className="fixed inset-0 z-50 flex justify-end">
 			<div
@@ -1733,32 +1774,7 @@ function ModuleLivrableDrawer({
 				</div>
 
 				<div className="flex-1 overflow-y-auto px-5 py-4">
-					{isPending ? (
-						<div className="flex flex-col items-center justify-center py-20 gap-3 text-muted-foreground">
-							<Loader2 className="w-6 h-6 animate-spin text-primary" />
-							<p className="text-sm">Génération du livrable…</p>
-							<p className="text-xs">L'IA rédige, cela peut prendre ~1 min.</p>
-						</div>
-					) : error ? (
-						<div className="rounded-xl bg-red-500/10 border border-red-500/20 p-4 text-sm text-red-600">
-							<p className="font-semibold mb-1">Génération indisponible</p>
-							<p className="text-xs leading-relaxed">
-								{extractModuleError(error)}
-							</p>
-							<p className="text-[11px] text-muted-foreground mt-2">
-								Vérifiez que la bibliothèque de prompts et le service IA sont
-								disponibles (prérequis §1.4 du PLAN_PARITE).
-							</p>
-						</div>
-					) : markdown ? (
-						<pre className="text-sm text-foreground whitespace-pre-wrap font-sans leading-relaxed">
-							{markdown}
-						</pre>
-					) : (
-						<p className="text-sm text-muted-foreground italic">
-							Aucun contenu renvoyé.
-						</p>
-					)}
+					{renderDrawerBody()}
 				</div>
 
 				{!isPending && !error && markdown && (
@@ -1844,6 +1860,69 @@ function TabRecommandations({
 	const modules = catalogue?.modules ?? [];
 	const tools = catalogue?.tools ?? [];
 
+	// Rendu de la section « Actions pour votre métier » — if/else plutôt que
+	// ternaires imbriquées.
+	const renderMetierActions = () => {
+		if (catLoading) return <LoadingSpinner />;
+		if (modules.length === 0 && tools.length === 0) {
+			return (
+				<EmptyTab
+					icon={LayoutGrid}
+					title="Aucun module disponible pour ce métier"
+				/>
+			);
+		}
+		return (
+			<>
+				{modules.length > 0 && (
+					<div className="space-y-4">
+						{Object.entries(
+							modules.reduce<Record<string, CatalogItem[]>>((acc, m) => {
+								const cat = m.categorie || "Général";
+								acc[cat] = acc[cat] ?? [];
+								acc[cat].push(m);
+								return acc;
+							}, {})
+						).map(([cat, list]) => (
+							<div key={cat} className="space-y-2">
+								<p className="text-xs font-bold uppercase tracking-wider text-primary">
+									{cat}
+								</p>
+								<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+									{list.map((m) => (
+										<ModuleCard
+											key={m.id}
+											item={m}
+											variant="module"
+											onLaunch={onLaunchModule}
+										/>
+									))}
+								</div>
+							</div>
+						))}
+					</div>
+				)}
+				{tools.length > 0 && (
+					<>
+						<p className="text-xs font-bold uppercase tracking-wider text-muted-foreground pt-4 border-t border-border/20">
+							Outils réutilisables
+						</p>
+						<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+							{tools.map((t) => (
+								<ModuleCard
+									key={t.id}
+									item={t}
+									variant="tool"
+									onLaunch={onLaunchModule}
+								/>
+							))}
+						</div>
+					</>
+				)}
+			</>
+		);
+	};
+
 	return (
 		<div className="space-y-6">
 			{/* Actions pour votre métier */}
@@ -1856,62 +1935,7 @@ function TabRecommandations({
 						{metier?.nom_metier ?? "Profil générique"}
 					</span>
 				</div>
-				{catLoading ? (
-					<LoadingSpinner />
-				) : modules.length === 0 && tools.length === 0 ? (
-					<EmptyTab
-						icon={LayoutGrid}
-						title="Aucun module disponible pour ce métier"
-					/>
-				) : (
-					<>
-						{modules.length > 0 && (
-							<div className="space-y-4">
-								{Object.entries(
-									modules.reduce<Record<string, CatalogItem[]>>((acc, m) => {
-										const cat = m.categorie || "Général";
-										acc[cat] = acc[cat] ?? [];
-										acc[cat].push(m);
-										return acc;
-									}, {})
-								).map(([cat, list]) => (
-									<div key={cat} className="space-y-2">
-										<p className="text-xs font-bold uppercase tracking-wider text-primary">
-											{cat}
-										</p>
-										<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-											{list.map((m) => (
-												<ModuleCard
-													key={m.id}
-													item={m}
-													variant="module"
-													onLaunch={onLaunchModule}
-												/>
-											))}
-										</div>
-									</div>
-								))}
-							</div>
-						)}
-						{tools.length > 0 && (
-							<>
-								<p className="text-xs font-bold uppercase tracking-wider text-muted-foreground pt-4 border-t border-border/20">
-									Outils réutilisables
-								</p>
-								<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-									{tools.map((t) => (
-										<ModuleCard
-											key={t.id}
-											item={t}
-											variant="tool"
-											onLaunch={onLaunchModule}
-										/>
-									))}
-								</div>
-							</>
-						)}
-					</>
-				)}
+				{renderMetierActions()}
 			</div>
 
 			{/* Recommandations IA (existant) */}
@@ -1922,11 +1946,11 @@ function TabRecommandations({
 					</h2>
 				</div>
 
-				{isLoading ? (
-					<LoadingSpinner />
-				) : filtered.length === 0 ? (
+				{isLoading && <LoadingSpinner />}
+				{!isLoading && filtered.length === 0 && (
 					<EmptyTab icon={Lightbulb} title="Aucune recommandation" />
-				) : (
+				)}
+				{!isLoading && filtered.length > 0 && (
 					<div className="space-y-2">
 						{filtered.map((r) => (
 							<div
@@ -1937,11 +1961,7 @@ function TabRecommandations({
 									<div
 										className={cn(
 											"flex-shrink-0 mt-0.5 px-2.5 py-0.5 rounded-full text-xs font-bold",
-											r.priority <= 2
-												? "bg-red-500/10 text-red-600"
-												: r.priority <= 4
-													? "bg-amber-500/10 text-amber-600"
-													: "bg-muted text-muted-foreground",
+											recommandationPriorityClass(r.priority),
 										)}
 									>
 										P{r.priority}
@@ -1977,7 +1997,7 @@ function TabRecommandations({
 // Onglet Documents
 // ---------------------------------------------------------------------------
 
-function TabDocuments({ siren }: { siren: string }) {
+function TabDocuments({ siren }: { readonly siren: string }) {
 	const { data: docs, isLoading } = useDocuments(siren);
 
 	return (
@@ -1986,11 +2006,11 @@ function TabDocuments({ siren }: { siren: string }) {
 				<h2 className="text-sm font-bold text-foreground">Documents</h2>
 			</div>
 
-			{isLoading ? (
-				<LoadingSpinner />
-			) : (docs ?? []).length === 0 ? (
+			{isLoading && <LoadingSpinner />}
+			{!isLoading && (docs ?? []).length === 0 && (
 				<EmptyTab icon={FileText} title="Aucun document" />
-			) : (
+			)}
+			{!isLoading && (docs ?? []).length > 0 && (
 				<div className="space-y-2">
 					{(docs ?? []).slice(0, 15).map((d) => (
 						<div
@@ -2018,7 +2038,7 @@ function TabDocuments({ siren }: { siren: string }) {
 // Onglet Journal
 // ---------------------------------------------------------------------------
 
-function TabJournal({ siren }: { siren: string }) {
+function TabJournal({ siren }: { readonly siren: string }) {
 	const { data, isLoading } = useJournalEvents({
 		siren,
 		size: 15,
@@ -2034,11 +2054,11 @@ function TabJournal({ siren }: { siren: string }) {
 				</h2>
 			</div>
 
-			{isLoading ? (
-				<LoadingSpinner />
-			) : events.length === 0 ? (
+			{isLoading && <LoadingSpinner />}
+			{!isLoading && events.length === 0 && (
 				<EmptyTab icon={BookOpen} title="Aucun événement dans le journal" />
-			) : (
+			)}
+			{!isLoading && events.length > 0 && (
 				<div className="relative pl-4 border-l border-border/50 space-y-4">
 					{events.map((e) => (
 						<div key={e.id} className="relative">
@@ -2085,6 +2105,14 @@ interface CopilotChatMessage {
 	content: string;
 	sources?: CopilotSource[];
 	error?: boolean;
+}
+
+// Classe de la bulle de message du copilote selon l'auteur/l'état — table de
+// correspondance plutôt que ternaires imbriquées.
+function copilotBubbleClass(message: CopilotChatMessage): string {
+	if (message.role === "user") return "bg-primary text-primary-foreground rounded-br-md";
+	if (message.error) return "bg-red-500/10 text-red-600 border border-red-500/20 rounded-bl-md";
+	return "bg-accent text-foreground rounded-bl-md";
 }
 
 function sourceLabel(src: CopilotSource): string {
@@ -2175,6 +2203,16 @@ function TabCopilote({
 		}
 	};
 
+	let healthToneClass = "bg-red-500/10 text-red-600 border-red-500/20";
+	let healthLabel = "Hors ligne";
+	if (health?.ollama_reachable && !health?.mock) {
+		healthToneClass = "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
+		healthLabel = "En ligne";
+	} else if (health?.mock) {
+		healthToneClass = "bg-amber-500/10 text-amber-600 border-amber-500/20";
+		healthLabel = "Mode démo";
+	}
+
 	return (
 		<div className="space-y-4">
 			<div className="flex items-start justify-between gap-3">
@@ -2193,18 +2231,10 @@ function TabCopilote({
 				<span
 					className={cn(
 						"inline-flex items-center gap-1.5 h-7 px-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider border whitespace-nowrap",
-						health?.ollama_reachable && !health?.mock
-							? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-							: health?.mock
-								? "bg-amber-500/10 text-amber-600 border-amber-500/20"
-								: "bg-red-500/10 text-red-600 border-red-500/20",
+						healthToneClass,
 					)}
 				>
-					{health?.mock
-						? "Mode démo"
-						: health?.ollama_reachable
-							? "En ligne"
-							: "Hors ligne"}
+					{healthLabel}
 				</span>
 			</div>
 
@@ -2235,11 +2265,7 @@ function TabCopilote({
 								<div
 									className={cn(
 										"max-w-[85%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed",
-										m.role === "user"
-											? "bg-primary text-primary-foreground rounded-br-md"
-											: m.error
-												? "bg-red-500/10 text-red-600 border border-red-500/20 rounded-bl-md"
-												: "bg-accent text-foreground rounded-bl-md",
+										copilotBubbleClass(m),
 									)}
 								>
 									<p className="whitespace-pre-wrap">{m.content}</p>
@@ -2547,7 +2573,7 @@ function TabPlaybooks() {
 // Composants partagés
 // ---------------------------------------------------------------------------
 
-function StatusBadge({ statut }: { statut: string }) {
+function StatusBadge({ statut }: { readonly statut: string }) {
 	return (
 		<span
 			className={cn(
@@ -2571,13 +2597,10 @@ const AXE_LABELS: Record<string, string> = {
 	solidite_dirigeants: "Dirigeants",
 };
 
-function AxeRow({ axeKey, axe }: { axeKey: string; axe: ScoreAxe }) {
-	const barColor =
-		axe.score >= 70
-			? "bg-emerald-500"
-			: axe.score >= 40
-				? "bg-amber-400"
-				: "bg-red-400";
+function AxeRow({ axeKey, axe }: { readonly axeKey: string; readonly axe: ScoreAxe }) {
+	let barColor = "bg-red-400";
+	if (axe.score >= 70) barColor = "bg-emerald-500";
+	else if (axe.score >= 40) barColor = "bg-amber-400";
 
 	return (
 		<div className="flex items-center gap-3">

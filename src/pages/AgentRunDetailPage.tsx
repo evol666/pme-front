@@ -124,7 +124,7 @@ export default function AgentRunDetailPage() {
   const handleDelete = async () => {
     if (!run) return;
     if (
-      !window.confirm(
+      !globalThis.confirm(
         `Supprimer le run « ${run.topic} » (#${run.id}) ? Cette action est définitive.`,
       )
     ) {
@@ -361,10 +361,12 @@ function MessagesTimeline({ runId }: { readonly runId: number }) {
     }
     return Array.from(byTurn.entries())
       .sort((a, b) => a[0] - b[0])
-      .map(([turn, items]) => ({
-        turn,
-        items: items.sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
-      }));
+      .map(([turn, items]) => {
+        const sortedItems = [...items].sort((a, b) =>
+          a.createdAt.localeCompare(b.createdAt),
+        );
+        return { turn, items: sortedItems };
+      });
   }, [messages.data]);
 
   return (
@@ -376,17 +378,18 @@ function MessagesTimeline({ runId }: { readonly runId: number }) {
           ({messages.data?.length ?? 0})
         </span>
       </h2>
-      {messages.isLoading ? (
-        <InlineLoader />
-      ) : messages.isError ? (
+      {messages.isLoading && <InlineLoader />}
+      {!messages.isLoading && messages.isError && (
         <p className="text-sm text-destructive">
           {extractBackendError(messages.error)}
         </p>
-      ) : grouped.length === 0 ? (
+      )}
+      {!messages.isLoading && !messages.isError && grouped.length === 0 && (
         <p className="rounded-lg border border-dashed border-border bg-card p-4 text-sm text-muted-foreground">
           Aucun message.
         </p>
-      ) : (
+      )}
+      {!messages.isLoading && !messages.isError && grouped.length > 0 && (
         <ol className="space-y-4">
           {grouped.map(({ turn, items }) => (
             <li
@@ -443,17 +446,20 @@ function ReasoningSection({ runId }: { readonly runId: number }) {
           ({reasoning.data?.length ?? 0})
         </span>
       </h2>
-      {reasoning.isLoading ? (
-        <InlineLoader />
-      ) : reasoning.isError ? (
+      {reasoning.isLoading && <InlineLoader />}
+      {!reasoning.isLoading && reasoning.isError && (
         <p className="text-sm text-destructive">
           {extractBackendError(reasoning.error)}
         </p>
-      ) : !reasoning.data || reasoning.data.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-border bg-card p-4 text-sm text-muted-foreground">
-          Aucune étape de raisonnement.
-        </p>
-      ) : (
+      )}
+      {!reasoning.isLoading &&
+        !reasoning.isError &&
+        (!reasoning.data || reasoning.data.length === 0) && (
+          <p className="rounded-lg border border-dashed border-border bg-card p-4 text-sm text-muted-foreground">
+            Aucune étape de raisonnement.
+          </p>
+        )}
+      {!reasoning.isLoading && !reasoning.isError && reasoning.data && reasoning.data.length > 0 && (
         <ol className="space-y-2">
           {reasoning.data.map((s) => (
             <li
@@ -482,7 +488,7 @@ function ReasoningSection({ runId }: { readonly runId: number }) {
   );
 }
 
-function SharedMemorySection({ runId }: { runId: number }) {
+function SharedMemorySection({ runId }: { readonly runId: number }) {
   const memory = useAgentSharedMemory(runId);
 
   return (
@@ -494,17 +500,20 @@ function SharedMemorySection({ runId }: { runId: number }) {
           ({memory.data?.length ?? 0})
         </span>
       </h2>
-      {memory.isLoading ? (
-        <InlineLoader />
-      ) : memory.isError ? (
+      {memory.isLoading && <InlineLoader />}
+      {!memory.isLoading && memory.isError && (
         <p className="text-sm text-destructive">
           {extractBackendError(memory.error)}
         </p>
-      ) : !memory.data || memory.data.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-border bg-card p-4 text-sm text-muted-foreground">
-          Aucune mémoire partagée.
-        </p>
-      ) : (
+      )}
+      {!memory.isLoading &&
+        !memory.isError &&
+        (!memory.data || memory.data.length === 0) && (
+          <p className="rounded-lg border border-dashed border-border bg-card p-4 text-sm text-muted-foreground">
+            Aucune mémoire partagée.
+          </p>
+        )}
+      {!memory.isLoading && !memory.isError && memory.data && memory.data.length > 0 && (
         <ul className="space-y-2">
           {memory.data.map((mem) => (
             <li
@@ -545,7 +554,7 @@ function InlineLoader() {
   );
 }
 
-function LoadingState({ onBack }: { onBack: () => void }) {
+function LoadingState({ onBack }: { readonly onBack: () => void }) {
   return (
     <div className="space-y-4">
       <button

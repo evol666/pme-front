@@ -18,6 +18,15 @@ function progressLabel(pct: number, status: string): string {
   return 'Tout juste lancé';
 }
 
+// Couleur de la barre de progression selon le statut/l'avancement — if/else
+// plutôt que ternaires imbriquées.
+function progressFillClass(status: string, pct: number): string {
+  if (status === 'completed') return 'bg-emerald-500';
+  if (status === 'abandoned') return 'bg-muted-foreground/40';
+  if (pct >= 0.8) return 'bg-primary';
+  return 'bg-cyan-500';
+}
+
 export default function PlaybookProgress({ run, compact }: Props) {
   const pct = Math.max(0, Math.min(1, run.completion_pct || 0));
   const pctDisplay = Math.round(pct * 100);
@@ -28,14 +37,7 @@ export default function PlaybookProgress({ run, compact }: Props) {
   const skipped = statusCount(run, 'skipped');
   const total = run.steps.length;
 
-  const fillClass =
-    run.status === 'completed'
-      ? 'bg-emerald-500'
-      : run.status === 'abandoned'
-        ? 'bg-muted-foreground/40'
-        : pct >= 0.8
-          ? 'bg-primary'
-          : 'bg-cyan-500';
+  const fillClass = progressFillClass(run.status, pct);
 
   return (
     <div className={compact ? '' : 'space-y-2'}>

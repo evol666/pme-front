@@ -21,7 +21,7 @@ const SOURCE_LABEL: Record<string, string> = {
 
 const IMPACT_DOTS: Record<string, number> = { low: 1, medium: 2, high: 3 };
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value }: { readonly label: string; readonly value: string }) {
   return (
     <li className="flex items-baseline gap-1.5">
       <span className="text-[11px] uppercase tracking-wide text-muted-foreground">{label} :</span>

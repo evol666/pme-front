@@ -224,7 +224,7 @@ export default function MissionControlPage() {
     [priorities],
   );
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault();
     setFormError(null);
     const trimmed = label.trim();
@@ -397,12 +397,13 @@ export default function MissionControlPage() {
       </div>
 
       {/* Liste groupée par horizon */}
-      {isLoading ? (
+      {isLoading && (
         <div className="flex items-center justify-center py-16 gap-2 text-sm text-muted-foreground">
           <Loader2 className="w-4 h-4 animate-spin" />
           Chargement…
         </div>
-      ) : priorities.length === 0 ? (
+      )}
+      {!isLoading && priorities.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <Target className="w-10 h-10 text-muted-foreground/40 mb-3" />
           <p className="text-sm text-muted-foreground">
@@ -410,7 +411,8 @@ export default function MissionControlPage() {
             moment. Déclarez-en une ci-dessus.
           </p>
         </div>
-      ) : (
+      )}
+      {!isLoading && priorities.length > 0 && (
         <div className="space-y-6">
           {HORIZON_ORDER.map((h) => {
             const items = grouped[h];

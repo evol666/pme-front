@@ -164,7 +164,7 @@ export default function NotificationsPage() {
   const total = data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-  const submitSearch = (e: React.FormEvent) => {
+  const submitSearch = (e: React.SubmitEvent) => {
     e.preventDefault();
     setAppliedSearch(search.trim());
     setPage(0);
@@ -208,7 +208,7 @@ export default function NotificationsPage() {
 
   const handleDelete = async (n: Notification) => {
     if (
-      !window.confirm(
+      !globalThis.confirm(
         `Supprimer la notification « ${n.title ?? `#${n.id}`} » ? Cette action est définitive.`,
       )
     ) {
@@ -474,11 +474,9 @@ export default function NotificationsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
         {/* Liste principale */}
         <section className="space-y-4">
-          {isLoading ? (
-            <LoadingState />
-          ) : items.length === 0 ? (
-            <EmptyState />
-          ) : (
+          {isLoading && <LoadingState />}
+          {!isLoading && items.length === 0 && <EmptyState />}
+          {!isLoading && items.length > 0 && (
             <ul className="space-y-3">
               {items.map((n) => (
                 <NotificationCard
@@ -547,17 +545,19 @@ export default function NotificationsPage() {
                 {digests.data?.length ?? 0}
               </span>
             </div>
-            {digests.isLoading ? (
+            {digests.isLoading && (
               <div className="mt-3 inline-flex items-center gap-2 text-xs text-muted-foreground">
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 Chargement…
               </div>
-            ) : !digests.data || digests.data.length === 0 ? (
+            )}
+            {!digests.isLoading && (!digests.data || digests.data.length === 0) && (
               <p className="mt-3 text-xs text-muted-foreground">
                 Aucun digest pour l’instant. Les synthèses périodiques
                 apparaîtront ici.
               </p>
-            ) : (
+            )}
+            {!digests.isLoading && digests.data && digests.data.length > 0 && (
               <ul className="mt-3 space-y-3">
                 {digests.data.slice(0, 10).map((d) => (
                   <li key={d.id} className="text-xs">

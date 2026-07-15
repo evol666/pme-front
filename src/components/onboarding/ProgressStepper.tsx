@@ -6,6 +6,22 @@ type Props = {
   readonly current: number; // 1-based
 };
 
+// Classe du cercle d'étape selon son état — table de correspondance plutôt
+// que ternaires imbriquées.
+function stepCircleClass(done: boolean, active: boolean): string {
+  if (done) return 'bg-emerald-500 text-white';
+  if (active) return 'bg-primary text-primary-foreground ring-4 ring-primary/20';
+  return 'bg-muted text-muted-foreground';
+}
+
+// Classe du libellé d'étape selon son état — table de correspondance plutôt
+// que ternaires imbriquées.
+function stepLabelClass(active: boolean, done: boolean): string {
+  if (active) return 'text-foreground';
+  if (done) return 'text-emerald-700';
+  return 'text-muted-foreground';
+}
+
 export default function ProgressStepper({ steps, current }: Props) {
   return (
     <nav aria-label="Progression" className="w-full">
@@ -20,11 +36,7 @@ export default function ProgressStepper({ steps, current }: Props) {
                 <span
                   className={[
                     'flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-colors',
-                    done
-                      ? 'bg-emerald-500 text-white'
-                      : active
-                        ? 'bg-primary text-primary-foreground ring-4 ring-primary/20'
-                        : 'bg-muted text-muted-foreground',
+                    stepCircleClass(done, active),
                   ].join(' ')}
                   aria-current={active ? 'step' : undefined}
                 >
@@ -33,11 +45,7 @@ export default function ProgressStepper({ steps, current }: Props) {
                 <span
                   className={[
                     'hidden text-sm font-medium md:inline',
-                    active
-                      ? 'text-foreground'
-                      : done
-                        ? 'text-emerald-700'
-                        : 'text-muted-foreground',
+                    stepLabelClass(active, done),
                   ].join(' ')}
                 >
                   {step.title}

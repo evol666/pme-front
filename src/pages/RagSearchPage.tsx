@@ -54,20 +54,18 @@ const STATUS_STYLES: Record<RagDocumentStatus, string> = {
   DELETED: "bg-slate-500/10 text-slate-600",
 };
 
-export default function RagSearchPage() {
+// Hook regroupant l'état de la recherche (query, k, résultats) et les deux
+// soumissions (recherche / ask). Extrait du composant pour que sa complexité
+// cognitive propre reste faible et ne s'ajoute pas à celle de RagSearchPage.
+function useRagSearchForm() {
   const [query, setQuery] = useState("");
   const [k, setK] = useState(8);
   const [results, setResults] = useState<RagChunkView[] | null>(null);
-  const [askOpen, setAskOpen] = useState(false);
 
   const search = useRagSearch();
   const ask = useRagAsk();
-  const docs = useRagDocuments({ limit: 100 });
-  const stats = useRagStats();
 
-  const documents = docs.data?.items ?? [];
-
-  const submitSearch = (e: React.FormEvent) => {
+  const submitSearch = (e: React.SubmitEvent) => {
     e.preventDefault();
     const q = query.trim();
     if (!q) {
@@ -86,7 +84,7 @@ export default function RagSearchPage() {
     );
   };
 
-  const submitAsk = (e: React.FormEvent) => {
+  const submitAsk = (e: React.SubmitEvent) => {
     e.preventDefault();
     const q = query.trim();
     if (!q) {
@@ -100,6 +98,39 @@ export default function RagSearchPage() {
       },
     );
   };
+
+  return {
+    query,
+    setQuery,
+    k,
+    setK,
+    results,
+    setResults,
+    search,
+    ask,
+    submitSearch,
+    submitAsk,
+  };
+}
+
+export default function RagSearchPage() {
+  const [askOpen, setAskOpen] = useState(false);
+  const {
+    query,
+    setQuery,
+    k,
+    setK,
+    results,
+    setResults,
+    search,
+    ask,
+    submitSearch,
+    submitAsk,
+  } = useRagSearchForm();
+  const docs = useRagDocuments({ limit: 100 });
+  const stats = useRagStats();
+
+  const documents = docs.data?.items ?? [];
 
   const searching = search.isPending;
   const asking = ask.isPending;
@@ -202,38 +233,11 @@ export default function RagSearchPage() {
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <section className="space-y-4">
-          {searching ? (
-            <LoadingState label="Recherche sémantique en cours…" />
-          ) : results === null ? (
-            <IdleState />
-          ) : results.length === 0 ? (
-            <EmptyState />
-          ) : (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold text-foreground">
-                  {results.length} extrait{results.length > 1 ? "s" : ""}{" "}
-                  pertinent{results.length > 1 ? "s" : ""}
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => setResults(null)}
-                  className="text-xs text-muted-foreground hover:text-foreground"
-                >
-                  Effacer
-                </button>
-              </div>
-              <ul className="space-y-3">
-                {results.map((hit, i) => (
-                  <ChunkHit
-                    key={`${hit.id ?? i}-${i}`}
-                    hit={hit}
-                    rank={i + 1}
-                  />
-                ))}
-              </ul>
-            </div>
-          )}
+          <SearchResultsSection
+            searching={searching}
+            results={results}
+            onClear={() => setResults(null)}
+          />
 
           {ask.data && <AskAnswerCard answer={ask.data} asking={asking} />}
         </section>
@@ -257,18 +261,59 @@ export default function RagSearchPage() {
   );
 }
 
-function ChunkHit({ hit, rank }: { hit: RagChunkView; rank: number }) {
+// Bloc de résultats de recherche : état chargement / vide / liste. Extrait de
+// RagSearchPage pour éviter la ternaire imbriquée et garder la complexité
+// cognitive du composant principal sous le seuil autorisé.
+function SearchResultsSection({
+  searching,
+  results,
+  onClear,
+}: {
+  readonly searching: boolean;
+  readonly results: RagChunkView[] | null;
+  readonly onClear: () => void;
+}) {
+  if (searching) return <LoadingState label="Recherche sémantique en cours…" />;
+  if (results === null) return <IdleState />;
+  if (results.length === 0) return <EmptyState />;
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-foreground">
+          {results.length} extrait{results.length > 1 ? "s" : ""}{" "}
+          pertinent{results.length > 1 ? "s" : ""}
+        </h2>
+        <button
+          type="button"
+          onClick={onClear}
+          className="text-xs text-muted-foreground hover:text-foreground"
+        >
+          Effacer
+        </button>
+      </div>
+      <ul className="space-y-3">
+        {results.map((hit, i) => (
+          <ChunkHit key={`${hit.id ?? i}-${i}`} hit={hit} rank={i + 1} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// Couleur du score de pertinence — if/else plutôt que ternaires imbriquées.
+function scoreToneClass(score: number | null | undefined): string {
+  if (score == null) return "text-muted-foreground";
+  if (score >= 0.75) return "text-emerald-600";
+  if (score >= 0.5) return "text-sky-600";
+  return "text-amber-600";
+}
+
+function ChunkHit({ hit, rank }: { readonly hit: RagChunkView; readonly rank: number }) {
   const [expanded, setExpanded] = useState(false);
   const score = hit.score;
   const scorePct = formatScore(score);
-  const scoreTone =
-    score == null
-      ? "text-muted-foreground"
-      : score >= 0.75
-        ? "text-emerald-600"
-        : score >= 0.5
-          ? "text-sky-600"
-          : "text-amber-600";
+  const scoreTone = scoreToneClass(score);
 
   return (
     <li className="rounded-2xl border border-border bg-card p-4 shadow-sm">
@@ -484,13 +529,13 @@ function DocumentsCard({
           <RefreshCw className={cn("h-4 w-4", isFetching && "animate-spin")} />
         </button>
       </div>
-      {isLoading ? (
-        <p className="text-xs text-muted-foreground">Chargement…</p>
-      ) : documents.length === 0 ? (
+      {isLoading && <p className="text-xs text-muted-foreground">Chargement…</p>}
+      {!isLoading && documents.length === 0 && (
         <p className="text-xs text-muted-foreground">
           Aucun document indexé pour ce tenant.
         </p>
-      ) : (
+      )}
+      {!isLoading && documents.length > 0 && (
         <ul className="space-y-2">
           {documents.map((doc) => (
             <DocumentRow key={doc.id} doc={doc} />
@@ -576,7 +621,7 @@ function DocumentRow({ doc }: { readonly doc: RagDocument }) {
   );
 }
 
-function Detail({ label, value }: { readonly label: string; value: string }) {
+function Detail({ label, value }: { readonly label: string; readonly value: string }) {
   return (
     <div>
       <dt className="text-muted-foreground">{label}</dt>

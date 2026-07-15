@@ -82,7 +82,7 @@ export default function AnalysePage() {
           </div>
         </div>
 
-        {isError ? (
+        {isError && (
           <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-sm text-red-600">
             Impossible de récupérer le statut du job.
             <pre className="mt-2 text-xs whitespace-pre-wrap font-mono">
@@ -94,11 +94,13 @@ export default function AnalysePage() {
               )}
             </pre>
           </div>
-        ) : isFailed ? (
+        )}
+        {!isError && isFailed && (
           <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-sm text-red-600">
             {data?.error ?? "Une erreur est survenue pendant l'analyse."}
           </div>
-        ) : (
+        )}
+        {!isError && !isFailed && (
           <>
             <div>
               <div className="flex justify-between text-xs text-muted-foreground mb-2">

@@ -31,7 +31,9 @@ import {
 // rendu texte brut.
 
 function str(v: unknown): string {
-  return typeof v === "string" ? v : v == null ? "" : String(v);
+  if (typeof v === "string") return v;
+  if (v == null) return "";
+  return String(v);
 }
 
 type ParsedProposal = {
@@ -410,7 +412,7 @@ export default function ResultatPage() {
   );
 }
 
-function Prose({ text, className }: { text: string; className?: string }) {
+function Prose({ text, className }: { readonly text: string; readonly className?: string }) {
   const paragraphs = text
     .split(/\n{2,}/)
     .map((s) => s.trim())

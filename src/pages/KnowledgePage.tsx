@@ -277,20 +277,21 @@ function SignalsPanel() {
         </div>
       )}
 
-      {signalsQuery.isLoading ? (
-        <LoadingState label="Chargement des signaux…" />
-      ) : signalsQuery.isError ? (
+      {signalsQuery.isLoading && <LoadingState label="Chargement des signaux…" />}
+      {!signalsQuery.isLoading && signalsQuery.isError && (
         <ErrorState
           message={extractBackendError(signalsQuery.error)}
           onRetry={() => signalsQuery.refetch()}
         />
-      ) : signals.length === 0 ? (
+      )}
+      {!signalsQuery.isLoading && !signalsQuery.isError && signals.length === 0 && (
         <EmptyState
           icon={<AlertTriangle className="h-8 w-8" />}
           title="Aucun signal"
           message="Aucun signal ne correspond à ces filtres. Lancez un scan côté serveur ou élargissez les critères."
         />
-      ) : (
+      )}
+      {!signalsQuery.isLoading && !signalsQuery.isError && signals.length > 0 && (
         <div className="grid gap-3 lg:grid-cols-2">
           {signals.map((signal) => (
             <SignalCard
@@ -426,7 +427,7 @@ function EntitiesPanel() {
 
   const entities = useMemo(() => entitiesQuery.data ?? [], [entitiesQuery.data]);
 
-  function submitSearch(e: React.FormEvent) {
+  function submitSearch(e: React.SubmitEvent) {
     e.preventDefault();
     setAppliedSearch(search);
   }
@@ -493,20 +494,21 @@ function EntitiesPanel() {
         </div>
       )}
 
-      {entitiesQuery.isLoading ? (
-        <LoadingState label="Chargement des entités…" />
-      ) : entitiesQuery.isError ? (
+      {entitiesQuery.isLoading && <LoadingState label="Chargement des entités…" />}
+      {!entitiesQuery.isLoading && entitiesQuery.isError && (
         <ErrorState
           message={extractBackendError(entitiesQuery.error)}
           onRetry={() => entitiesQuery.refetch()}
         />
-      ) : entities.length === 0 ? (
+      )}
+      {!entitiesQuery.isLoading && !entitiesQuery.isError && entities.length === 0 && (
         <EmptyState
           icon={<Tag className="h-8 w-8" />}
           title="Aucune entité"
           message="Aucune entité ne correspond à ces filtres."
         />
-      ) : (
+      )}
+      {!entitiesQuery.isLoading && !entitiesQuery.isError && entities.length > 0 && (
         <div className="grid gap-3 lg:grid-cols-2">
           {entities.map((entity) => (
             <EntityCard
@@ -650,7 +652,7 @@ function EntityCard({
 
 // ─── États partagés ─────────────────────────────────────────────────────────
 
-function LoadingState({ label }: { label: string }) {
+function LoadingState({ label }: { readonly label: string }) {
   return (
     <div className="flex items-center justify-center gap-3 rounded-2xl border border-border bg-card p-10 text-sm text-muted-foreground shadow-sm">
       <Loader2 className="h-5 w-5 animate-spin" />

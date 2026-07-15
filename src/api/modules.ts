@@ -89,6 +89,15 @@ export function useDetectMetier(codeNaf: string | null | undefined) {
 // Exécute un module métier → livrable markdown. La mutation n'invalide aucun
 // cache par défaut : l'appelant décide s'il archive le livrable (Documents)
 // et invalide alors les queries documents via useUploadDocumentDirect.
+// Extrait le contenu markdown de la réponse — le backend peut renvoyer le
+// texte sous l'une de ces trois clés selon le module exécuté.
+function extractExecuteMarkdown(data: Record<string, unknown> | undefined): string {
+	if (typeof data?.markdown === "string") return data.markdown;
+	if (typeof data?.content === "string") return data.content;
+	if (typeof data?.text === "string") return data.text;
+	return "";
+}
+
 export function useExecuteModule() {
 	return useMutation({
 		mutationFn: async (request: ExecuteModuleRequest) => {
@@ -96,14 +105,7 @@ export function useExecuteModule() {
 				"/api/pme/execute",
 				request,
 			);
-			const markdown =
-				typeof data?.markdown === "string"
-					? (data.markdown as string)
-					: typeof data?.content === "string"
-						? (data.content as string)
-						: typeof data?.text === "string"
-							? (data.text as string)
-							: "";
+			const markdown = extractExecuteMarkdown(data);
 			const meta =
 				data?.meta && typeof data.meta === "object" && !Array.isArray(data.meta)
 					? (data.meta as Record<string, unknown>)
