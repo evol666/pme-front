@@ -579,6 +579,16 @@ function AlertCard({
 	);
 }
 
+// Classe du bouton d'action selon son ton — if/else plutôt que ternaires
+// imbriquées.
+function actionButtonToneClass(tone: "neutral" | "primary" | "destructive"): string {
+	if (tone === "primary")
+		return "bg-primary text-primary-foreground hover:bg-primary/90 border-transparent";
+	if (tone === "destructive")
+		return "border-destructive/40 text-destructive hover:bg-destructive/10";
+	return "border-border text-foreground hover:bg-accent";
+}
+
 function ActionButton({
 	icon: Icon,
 	label,
@@ -592,12 +602,7 @@ function ActionButton({
 	readonly disabled?: boolean;
 	readonly tone?: "neutral" | "primary" | "destructive";
 }) {
-	const cls =
-		tone === "primary"
-			? "bg-primary text-primary-foreground hover:bg-primary/90 border-transparent"
-			: tone === "destructive"
-				? "border-destructive/40 text-destructive hover:bg-destructive/10"
-				: "border-border text-foreground hover:bg-accent";
+	const cls = actionButtonToneClass(tone);
 	return (
 		<button
 			type="button"
@@ -717,15 +722,15 @@ function KpisTab() {
 				)}
 			</div>
 
-			{isLoading ? (
-				<LoadingState label="Chargement des KPIs…" />
-			) : !data || data.length === 0 ? (
+			{isLoading && <LoadingState label="Chargement des KPIs…" />}
+			{!isLoading && (!data || data.length === 0) && (
 				<EmptyState
 					icon={Gauge}
 					title="Aucun KPI"
 					hint="Aucun instantané enregistré."
 				/>
-			) : (
+			)}
+			{!isLoading && data && data.length > 0 && (
 				<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
 					{data.map((k) => (
 						<KpiCard key={k.id} kpi={k} />
