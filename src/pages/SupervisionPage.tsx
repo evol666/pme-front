@@ -841,15 +841,15 @@ function UsageTab() {
 				</div>
 			</div>
 
-			{isLoading ? (
-				<LoadingState label="Chargement de l’usage IA…" />
-			) : usages.length === 0 ? (
+			{isLoading && <LoadingState label="Chargement de l’usage IA…" />}
+			{!isLoading && usages.length === 0 && (
 				<EmptyState
 					icon={BarChart3}
 					title="Aucune consommation"
 					hint="Aucun appel modèle enregistré ne correspond aux filtres."
 				/>
-			) : (
+			)}
+			{!isLoading && usages.length > 0 && (
 				<div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
 					<table className="w-full text-sm">
 						<thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
@@ -875,13 +875,15 @@ function UsageTab() {
 	);
 }
 
+// Couleur du statut d'un appel IA — if/else plutôt que ternaires imbriquées.
+function usageStatusToneClass(status: string): string {
+	if (status === "ok" || status === "success") return "bg-emerald-500/10 text-emerald-600";
+	if (status === "error" || status === "failed") return "bg-red-500/10 text-red-600";
+	return "bg-muted text-muted-foreground";
+}
+
 function UsageRow({ usage }: { readonly usage: AiUsage }) {
-	const statusTone =
-		usage.status === "ok" || usage.status === "success"
-			? "bg-emerald-500/10 text-emerald-600"
-			: usage.status === "error" || usage.status === "failed"
-				? "bg-red-500/10 text-red-600"
-				: "bg-muted text-muted-foreground";
+	const statusTone = usageStatusToneClass(usage.status);
 	return (
 		<tr className="hover:bg-accent/40">
 			<td className="px-4 py-3 font-medium text-foreground">
