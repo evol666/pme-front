@@ -225,11 +225,11 @@ function BundleCard({
   toggling,
   deleting,
 }: {
-  bundle: StudioBundle;
-  onToggle: () => void;
-  onDelete: () => void;
-  toggling: boolean;
-  deleting: boolean;
+  readonly bundle: StudioBundle;
+  readonly onToggle: () => void;
+  readonly onDelete: () => void;
+  readonly toggling: boolean;
+  readonly deleting: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const manifest = useMemo(() => parseBundleManifest(bundle.manifest), [bundle.manifest]);

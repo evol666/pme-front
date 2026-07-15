@@ -17,8 +17,8 @@ function fmtTime(iso: string | null): string {
 }
 
 interface Props {
-  status: ProactiveStatus | null;
-  scheduler: SchedulerStatus | null;
+  readonly status: ProactiveStatus | null;
+  readonly scheduler: SchedulerStatus | null;
 }
 
 export default function MonitoringHeader({ status, scheduler }: Props) {

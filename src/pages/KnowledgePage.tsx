@@ -157,9 +157,9 @@ function TabButton({
   onClick,
   children,
 }: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
+  readonly active: boolean;
+  readonly onClick: () => void;
+  readonly children: React.ReactNode;
 }) {
   return (
     <button
@@ -319,11 +319,11 @@ function SignalCard({
   resolving,
   deleting,
 }: {
-  signal: KnowledgeSignal;
-  onResolve: (id: number) => void;
-  onDelete: (id: number) => void;
-  resolving: boolean;
-  deleting: boolean;
+  readonly signal: KnowledgeSignal;
+  readonly onResolve: (id: number) => void;
+  readonly onDelete: (id: number) => void;
+  readonly resolving: boolean;
+  readonly deleting: boolean;
 }) {
   const entityIds = parseJsonArray(signal.entityIds);
   const isOpen = signal.status !== "resolved";
@@ -535,11 +535,11 @@ function EntityCard({
   onDelete,
   deleting,
 }: {
-  entity: KnowledgeEntity;
-  selected: boolean;
-  onSelect: () => void;
-  onDelete: (id: number) => void;
-  deleting: boolean;
+  readonly entity: KnowledgeEntity;
+  readonly selected: boolean;
+  readonly onSelect: () => void;
+  readonly onDelete: (id: number) => void;
+  readonly deleting: boolean;
 }) {
   const tags = parseJsonArray(entity.tags);
 
@@ -663,8 +663,8 @@ function ErrorState({
   message,
   onRetry,
 }: {
-  message: string;
-  onRetry: () => void;
+  readonly message: string;
+  readonly onRetry: () => void;
 }) {
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-8 text-center">
@@ -686,9 +686,9 @@ function EmptyState({
   title,
   message,
 }: {
-  icon: React.ReactNode;
-  title: string;
-  message: string;
+  readonly icon: React.ReactNode;
+  readonly title: string;
+  readonly message: string;
 }) {
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-card p-10 text-center">

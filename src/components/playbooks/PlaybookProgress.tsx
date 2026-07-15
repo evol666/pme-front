@@ -1,8 +1,8 @@
 import type { PlaybookRun, StepStatus } from '@/api/playbooks';
 
 type Props = {
-  run: PlaybookRun;
-  compact?: boolean;
+  readonly run: PlaybookRun;
+  readonly compact?: boolean;
 };
 
 function statusCount(run: PlaybookRun, status: StepStatus): number {

@@ -252,8 +252,8 @@ function EntityForm({
   onCreate,
   creating,
 }: {
-  onCreate: (values: { kind: string; label: string; externalRef?: string | null }) => void;
-  creating: boolean;
+  readonly onCreate: (values: { kind: string; label: string; externalRef?: string | null }) => void;
+  readonly creating: boolean;
 }) {
   const [kind, setKind] = useState("client");
   const [label, setLabel] = useState("");
@@ -319,9 +319,9 @@ function EntityCard({
   onDelete,
   deleting,
 }: {
-  entity: BusinessEntity;
-  onDelete: () => void;
-  deleting: boolean;
+  readonly entity: BusinessEntity;
+  readonly onDelete: () => void;
+  readonly deleting: boolean;
 }) {
   const attrs = useMemo(() => parseJsonObject(entity.attributes), [entity.attributes]);
   return (
@@ -472,9 +472,9 @@ function ConnectionCard({
   onDelete,
   deleting,
 }: {
-  connection: Connection;
-  onDelete: () => void;
-  deleting: boolean;
+  readonly connection: Connection;
+  readonly onDelete: () => void;
+  readonly deleting: boolean;
 }) {
   const hasTokens = Boolean(connection.accessToken || connection.refreshToken);
   return (
@@ -628,9 +628,9 @@ function InsightCard({
   onDelete,
   deleting,
 }: {
-  insight: NetworkInsight;
-  onDelete: () => void;
-  deleting: boolean;
+  readonly insight: NetworkInsight;
+  readonly onDelete: () => void;
+  readonly deleting: boolean;
 }) {
   return (
     <article className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-sm transition hover:shadow-md">
@@ -748,9 +748,9 @@ function EmptyState({
   title,
   hint,
 }: {
-  icon: typeof Network;
-  title: string;
-  hint: string;
+  readonly icon: typeof Network;
+  readonly title: string;
+  readonly hint: string;
 }) {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center">

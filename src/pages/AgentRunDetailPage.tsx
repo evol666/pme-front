@@ -333,9 +333,9 @@ function HeaderCard({
   icon,
   children,
 }: {
-  label: string;
-  icon?: React.ReactNode;
-  children: React.ReactNode;
+  readonly label: string;
+  readonly icon?: React.ReactNode;
+  readonly children: React.ReactNode;
 }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm space-y-1.5">
@@ -348,7 +348,7 @@ function HeaderCard({
   );
 }
 
-function MessagesTimeline({ runId }: { runId: number }) {
+function MessagesTimeline({ runId }: { readonly runId: number }) {
   const messages = useAgentMessages(runId);
 
   const grouped = useMemo(() => {
@@ -431,7 +431,7 @@ function MessagesTimeline({ runId }: { runId: number }) {
   );
 }
 
-function ReasoningSection({ runId }: { runId: number }) {
+function ReasoningSection({ runId }: { readonly runId: number }) {
   const reasoning = useAgentReasoningSteps(runId);
 
   return (
@@ -569,9 +569,9 @@ function ErrorState({
   onBack,
   onRetry,
 }: {
-  message: string;
-  onBack: () => void;
-  onRetry?: () => void;
+  readonly message: string;
+  readonly onBack: () => void;
+  readonly onRetry?: () => void;
 }) {
   return (
     <div className="space-y-4">

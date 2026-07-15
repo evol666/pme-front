@@ -6,8 +6,8 @@ import { iconForPlaybook } from './icons';
 import PlaybookProgress from './PlaybookProgress';
 
 type Props = {
-  run: PlaybookRun;
-  playbookIcon?: string | null;
+  readonly run: PlaybookRun;
+  readonly playbookIcon?: string | null;
 };
 
 function shortDate(iso?: string | null): string {

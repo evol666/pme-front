@@ -407,9 +407,9 @@ function OnboardStep({
   title,
   text,
 }: {
-  step: string;
-  title: string;
-  text: string;
+  readonly step: string;
+  readonly title: string;
+  readonly text: string;
 }) {
   return (
     <li className="flex gap-3">
@@ -446,8 +446,8 @@ function ComponentCard({
   kind,
   item,
 }: {
-  kind: SectionKind;
-  item: ComponentItem;
+  readonly kind: SectionKind;
+  readonly item: ComponentItem;
 }) {
   const iconByKind: Record<SectionKind, typeof Sparkles> = {
     prompt: FileText,

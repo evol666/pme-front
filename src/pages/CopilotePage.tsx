@@ -103,9 +103,9 @@ function InsightCard({
   onAction,
   pending,
 }: {
-  insight: CopilotInsight;
-  onAction: (id: number, action: AlertAction) => void;
-  pending: boolean;
+  readonly insight: CopilotInsight;
+  readonly onAction: (id: number, action: AlertAction) => void;
+  readonly pending: boolean;
 }) {
   return (
     <li className="bg-card border border-border/50 rounded-xl p-3 space-y-2 shadow-sm">
@@ -177,15 +177,15 @@ function ChatHistorySidebar({
   isMobile,
   createPending,
 }: {
-  chats: CopilotChat[];
-  currentChatId: string | null;
-  showArchived: boolean;
-  onToggleArchived: () => void;
-  onNewChat: () => void;
-  onChatSelect: (id: string) => void;
-  onClose: () => void;
-  isMobile: boolean;
-  createPending: boolean;
+  readonly chats: CopilotChat[];
+  readonly currentChatId: string | null;
+  readonly showArchived: boolean;
+  readonly onToggleArchived: () => void;
+  readonly onNewChat: () => void;
+  readonly onChatSelect: (id: string) => void;
+  readonly onClose: () => void;
+  readonly isMobile: boolean;
+  readonly createPending: boolean;
 }) {
   const archive = useArchiveChat();
   const unarchive = useUnarchiveChat();

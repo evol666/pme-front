@@ -243,9 +243,9 @@ function EntrepriseCard({
   onOpen,
   onDeleteRequest,
 }: {
-  entreprise: EntreprisePortefeuille;
-  onOpen: () => void;
-  onDeleteRequest: () => void;
+  readonly entreprise: EntreprisePortefeuille;
+  readonly onOpen: () => void;
+  readonly onDeleteRequest: () => void;
 }) {
   return (
     <div className="group bg-card border border-border/50 rounded-2xl p-5 shadow-sm hover:border-primary/30 transition-all flex flex-col gap-3">
@@ -328,10 +328,10 @@ function EmptyState({
   onSeed,
   isSeeding,
 }: {
-  hasFilter: boolean;
-  onAdd: () => void;
-  onSeed: () => void;
-  isSeeding: boolean;
+  readonly hasFilter: boolean;
+  readonly onAdd: () => void;
+  readonly onSeed: () => void;
+  readonly isSeeding: boolean;
 }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
@@ -386,9 +386,9 @@ function ConfirmDelete({
   onCancel,
   isPending,
 }: {
-  onConfirm: () => void;
-  onCancel: () => void;
-  isPending: boolean;
+  readonly onConfirm: () => void;
+  readonly onCancel: () => void;
+  readonly isPending: boolean;
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">

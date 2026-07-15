@@ -25,8 +25,8 @@ import { libelleTrancheEffectif } from "@/lib/trancheEffectif";
 // ---------------------------------------------------------------------------
 
 interface WizardProps {
-  onClose: () => void;
-  onSuccess: (siren: string) => void;
+  readonly onClose: () => void;
+  readonly onSuccess: (siren: string) => void;
 }
 
 type Step = 1 | 2 | 3;
@@ -266,9 +266,9 @@ function Step2Confirm({
   enriched,
   isLoading,
 }: {
-  result: EntrepriseSearchResult;
-  enriched: import("@/api/entreprises").EntrepriseEnrichie | null | undefined;
-  isLoading: boolean;
+  readonly result: EntrepriseSearchResult;
+  readonly enriched: import("@/api/entreprises").EntrepriseEnrichie | null | undefined;
+  readonly isLoading: boolean;
 }) {
   if (isLoading) {
     return (
@@ -375,10 +375,10 @@ function Step3Relation({
   notes,
   setNotes,
 }: {
-  kind: RelationType;
-  setKind: (k: RelationType) => void;
-  notes: string;
-  setNotes: (n: string) => void;
+  readonly kind: RelationType;
+  readonly setKind: (k: RelationType) => void;
+  readonly notes: string;
+  readonly setNotes: (n: string) => void;
 }) {
   const COLOR_MAP: Record<string, string> = {
     emerald: "border-emerald-500 bg-emerald-500/10 text-emerald-700",

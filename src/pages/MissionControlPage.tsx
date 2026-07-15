@@ -98,10 +98,10 @@ function PriorityCard({
   onDelete,
   pending,
 }: {
-  priority: UserPriority;
-  onStatus: (id: number, status: UserPriorityStatus) => void;
-  onDelete: (id: number) => void;
-  pending: boolean;
+  readonly priority: UserPriority;
+  readonly onStatus: (id: number, status: UserPriorityStatus) => void;
+  readonly onDelete: (id: number) => void;
+  readonly pending: boolean;
 }) {
   const status = priorityStatus(priority.status);
   return (

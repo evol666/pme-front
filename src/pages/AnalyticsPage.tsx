@@ -147,7 +147,7 @@ export default function AnalyticsPage() {
   );
 }
 
-function EventRow({ event }: { event: AnalyticsEvent }) {
+function EventRow({ event }: { readonly event: AnalyticsEvent }) {
   const [expanded, setExpanded] = useState(false);
   const props = parseAdminJsonObject(event.properties);
 
@@ -201,7 +201,7 @@ function EventRow({ event }: { event: AnalyticsEvent }) {
   );
 }
 
-function Detail({ label, value }: { label: string; value: string }) {
+function Detail({ label, value }: { readonly label: string; value: string }) {
   return (
     <div>
       <dt className="text-muted-foreground">{label}</dt>

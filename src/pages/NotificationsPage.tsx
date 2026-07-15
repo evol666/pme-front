@@ -606,12 +606,12 @@ function NotificationCard({
   onDelete,
   busy,
 }: {
-  notification: Notification;
-  onMarkRead: () => void;
-  onMarkUnread: () => void;
-  onDismiss: () => void;
-  onDelete: () => void;
-  busy: boolean;
+  readonly notification: Notification;
+  readonly onMarkRead: () => void;
+  readonly onMarkUnread: () => void;
+  readonly onDismiss: () => void;
+  readonly onDelete: () => void;
+  readonly busy: boolean;
 }) {
   const channels = parseNotificationChannels(n.channels);
   const isRead = n.status === "READ";

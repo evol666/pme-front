@@ -2,8 +2,8 @@ import { Brain, Lightbulb, MessageSquare, Sparkles, TrendingUp } from 'lucide-re
 import type { PlaybookStats, PlaybookSuggestion } from '@/api/playbooks';
 
 type Props = {
-  stats: PlaybookStats | null;
-  suggestions: PlaybookSuggestion[];
+  readonly stats: PlaybookStats | null;
+  readonly suggestions: PlaybookSuggestion[];
 };
 
 const KIND_ICON: Record<string, typeof Lightbulb> = {

@@ -29,11 +29,11 @@ const STATUS_LABEL: Record<StepStatus, string> = {
 };
 
 type Props = {
-  step: StepState;
-  position: number;
-  saving?: boolean;
-  onStatusChange: (status: StepStatus) => void;
-  onSaveNote: (note: string | null) => void;
+  readonly step: StepState;
+  readonly position: number;
+  readonly saving?: boolean;
+  readonly onStatusChange: (status: StepStatus) => void;
+  readonly onSaveNote: (note: string | null) => void;
 };
 
 export default function StepCard({ step, position, saving, onStatusChange, onSaveNote }: Props) {

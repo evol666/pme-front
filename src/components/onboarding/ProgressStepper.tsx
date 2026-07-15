@@ -2,8 +2,8 @@ import { Check } from 'lucide-react';
 import type { StepDef } from '@/api/onboarding';
 
 type Props = {
-  steps: StepDef[];
-  current: number; // 1-based
+  readonly steps: StepDef[];
+  readonly current: number; // 1-based
 };
 
 export default function ProgressStepper({ steps, current }: Props) {

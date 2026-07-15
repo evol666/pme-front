@@ -41,10 +41,10 @@ function NavSection({
   title,
   onNavigate,
 }: {
-  items: NavItem[];
-  pathname: string;
-  title?: string;
-  onNavigate?: () => void;
+  readonly items: NavItem[];
+  readonly pathname: string;
+  readonly title?: string;
+  readonly onNavigate?: () => void;
 }) {
   return (
     <>
@@ -85,7 +85,7 @@ function NavSection({
   );
 }
 
-export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+export function Sidebar({ onNavigate }: { readonly onNavigate?: () => void }) {
   const location = useLocation();
   const pathname = location.pathname;
   const roles = useAppSelector((s) => s.auth.roles);

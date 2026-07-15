@@ -320,7 +320,7 @@ export default function WorkflowExecutionPage() {
   );
 }
 
-function Metric({ label, children }: { label: string; children: React.ReactNode }) {
+function Metric({ label, children }: { readonly label: string; children: React.ReactNode }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm space-y-1">
       <div className="text-xs uppercase tracking-wide text-muted-foreground">
@@ -331,7 +331,7 @@ function Metric({ label, children }: { label: string; children: React.ReactNode 
   );
 }
 
-function StepItem({ step, idx }: { step: WorkflowStep; idx: number }) {
+function StepItem({ step, idx }: { readonly step: WorkflowStep; idx: number }) {
   const tone = STEP_TONE[step.status] ?? "bg-muted text-muted-foreground";
   const dot = STEP_DOT[step.status] ?? "bg-muted-foreground/60";
   const label = STEP_LABEL[step.status] ?? step.status;
@@ -392,7 +392,7 @@ function StepItem({ step, idx }: { step: WorkflowStep; idx: number }) {
   );
 }
 
-function BackLink({ onBack }: { onBack: () => void }) {
+function BackLink({ onBack }: { readonly onBack: () => void }) {
   return (
     <button
       type="button"

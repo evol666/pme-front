@@ -254,11 +254,11 @@ function TenantCard({
   onToggleStatus,
   onDelete,
 }: {
-  tenant: Tenant;
-  busy: boolean;
-  onCyclePlan: () => void;
-  onToggleStatus: () => void;
-  onDelete: () => void;
+  readonly tenant: Tenant;
+  readonly busy: boolean;
+  readonly onCyclePlan: () => void;
+  readonly onToggleStatus: () => void;
+  readonly onDelete: () => void;
 }) {
   return (
     <article className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-3">
@@ -332,7 +332,7 @@ function SettingsTab() {
   );
 }
 
-function SettingsCard({ settings }: { settings: TenantSettings }) {
+function SettingsCard({ settings }: { readonly settings: TenantSettings }) {
   const features = parseAdminJsonObject(settings.enabledFeatures);
   return (
     <article className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-3">
@@ -448,9 +448,9 @@ function PlanCard({
   busy,
   onToggle,
 }: {
-  plan: TenantPlanQuota;
-  busy: boolean;
-  onToggle: () => void;
+  readonly plan: TenantPlanQuota;
+  readonly busy: boolean;
+  readonly onToggle: () => void;
 }) {
   return (
     <article className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-3">
@@ -503,7 +503,7 @@ function BrandingTab() {
   );
 }
 
-function BrandingCard({ branding }: { branding: TenantBranding }) {
+function BrandingCard({ branding }: { readonly branding: TenantBranding }) {
   return (
     <article className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-3">
       <h3 className="text-sm font-semibold text-foreground">
@@ -628,9 +628,9 @@ function MemoryCard({
   busy,
   onDelete,
 }: {
-  memory: TenantMemory;
-  busy: boolean;
-  onDelete: () => void;
+  readonly memory: TenantMemory;
+  readonly busy: boolean;
+  readonly onDelete: () => void;
 }) {
   return (
     <article className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-2">
@@ -718,9 +718,9 @@ function EmptyState({
   title,
   hint,
 }: {
-  icon: typeof Building2;
-  title: string;
-  hint: string;
+  readonly icon: typeof Building2;
+  readonly title: string;
+  readonly hint: string;
 }) {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center">

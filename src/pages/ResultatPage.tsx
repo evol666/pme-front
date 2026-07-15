@@ -447,9 +447,9 @@ function Section({
   icon,
   content,
 }: {
-  title: string;
-  icon: React.ReactNode;
-  content: string | null;
+  readonly title: string;
+  readonly icon: React.ReactNode;
+  readonly content: string | null;
 }) {
   return (
     <Card title={title} icon={icon}>
@@ -471,9 +471,9 @@ function Card({
   icon,
   children,
 }: {
-  title: string;
-  icon?: React.ReactNode;
-  children: React.ReactNode;
+  readonly title: string;
+  readonly icon?: React.ReactNode;
+  readonly children: React.ReactNode;
 }) {
   return (
     <section className="bg-card border border-border/50 rounded-2xl p-6 shadow-sm">

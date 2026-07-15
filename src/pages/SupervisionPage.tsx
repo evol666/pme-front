@@ -208,7 +208,7 @@ function SireneTab() {
   );
 }
 
-function SireneProgress({ status }: { status: SireneImportStatus }) {
+function SireneProgress({ status }: { readonly status: SireneImportStatus }) {
   return (
     <div className="rounded-lg border border-border/60 bg-muted/30 p-4 space-y-2 text-sm">
       <div className="flex items-center gap-2 font-medium text-foreground">
@@ -330,9 +330,9 @@ function StatusPill({
   value,
   tone,
 }: {
-  label: string;
-  value: string;
-  tone: string;
+  readonly label: string;
+  readonly value: string;
+  readonly tone: string;
 }) {
   return (
     <div className="flex items-center justify-between rounded-lg border border-border bg-background p-3">
@@ -441,11 +441,11 @@ function AlertCard({
   onActed,
   onDismiss,
 }: {
-  alert: AiAlert;
-  busy: boolean;
-  onSeen: () => void;
-  onActed: () => void;
-  onDismiss: () => void;
+  readonly alert: AiAlert;
+  readonly busy: boolean;
+  readonly onSeen: () => void;
+  readonly onActed: () => void;
+  readonly onDismiss: () => void;
 }) {
   const acted = alert.status === "acted";
   const dismissed = alert.status === "dismissed";
@@ -535,11 +535,11 @@ function ActionButton({
   disabled,
   tone = "neutral",
 }: {
-  icon: typeof Check;
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-  tone?: "neutral" | "primary" | "destructive";
+  readonly icon: typeof Check;
+  readonly label: string;
+  readonly onClick: () => void;
+  readonly disabled?: boolean;
+  readonly tone?: "neutral" | "primary" | "destructive";
 }) {
   const cls =
     tone === "primary"
@@ -577,9 +577,9 @@ function FilterChip({
   label,
   onClick,
 }: {
-  active: boolean;
-  label: string;
-  onClick: () => void;
+  readonly active: boolean;
+  readonly label: string;
+  readonly onClick: () => void;
 }) {
   return (
     <button
@@ -673,7 +673,7 @@ function KpisTab() {
   );
 }
 
-function KpiCard({ kpi }: { kpi: KpiSnapshot }) {
+function KpiCard({ kpi }: { readonly kpi: KpiSnapshot }) {
   const delta =
     kpi.valuePrev != null ? ((kpi.value - kpi.valuePrev) / (kpi.valuePrev || 1)) * 100 : null;
   const meta = parseAdminJsonObject(kpi.metadataJson);
@@ -855,9 +855,9 @@ function EmptyState({
   title,
   hint,
 }: {
-  icon: typeof Activity;
-  title: string;
-  hint: string;
+  readonly icon: typeof Activity;
+  readonly title: string;
+  readonly hint: string;
 }) {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center">

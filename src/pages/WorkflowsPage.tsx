@@ -337,10 +337,10 @@ function RunCard({
   onDelete,
   deleting,
 }: {
-  run: WorkflowRun;
-  onOpen: () => void;
-  onDelete: () => void;
-  deleting: boolean;
+  readonly run: WorkflowRun;
+  readonly onOpen: () => void;
+  readonly onDelete: () => void;
+  readonly deleting: boolean;
 }) {
   const outputs = parseJsonObject(run.outputs);
   const outputKeys = outputs ? Object.keys(outputs) : [];

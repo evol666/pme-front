@@ -236,9 +236,9 @@ function RunCard({
   onDelete,
   deleting,
 }: {
-  run: AgentRun;
-  onDelete: () => void;
-  deleting: boolean;
+  readonly run: AgentRun;
+  readonly onDelete: () => void;
+  readonly deleting: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const agentIds = useMemo(() => parseJsonArray(run.agentIds), [run.agentIds]);
@@ -344,7 +344,7 @@ function RunCard({
   );
 }
 
-function RunDetail({ runId }: { runId: number }) {
+function RunDetail({ runId }: { readonly runId: number }) {
   const messages = useAgentMessages(runId);
   const reasoning = useAgentReasoningSteps(runId);
   const memory = useAgentSharedMemory(runId);

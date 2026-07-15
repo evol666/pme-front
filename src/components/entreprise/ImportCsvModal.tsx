@@ -12,8 +12,8 @@ import { useImportCsv, downloadTemplate, type ImportReport } from "@/api/portefe
 import { cn } from "@/lib/utils";
 
 interface Props {
-  onClose: () => void;
-  onSuccess: (report: ImportReport) => void;
+  readonly onClose: () => void;
+  readonly onSuccess: (report: ImportReport) => void;
 }
 
 export function ImportCsvModal({ onClose, onSuccess }: Props) {
@@ -189,7 +189,7 @@ export function ImportCsvModal({ onClose, onSuccess }: Props) {
   );
 }
 
-function ImportReportView({ report }: { report: ImportReport }) {
+function ImportReportView({ report }: { readonly report: ImportReport }) {
   return (
     <div className="space-y-3">
       {/* Résumé */}

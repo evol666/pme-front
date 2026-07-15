@@ -12,7 +12,7 @@ import { usePersonaStore } from "@/stores/personaStore";
 import { EntrepriseSearchBar } from "@/components/recherche/EntrepriseSearchBar";
 import { cn } from "@/lib/utils";
 
-export function AppHeader({ onMenuClick }: { onMenuClick?: () => void }) {
+export function AppHeader({ onMenuClick }: { readonly onMenuClick?: () => void }) {
   const { username } = useAppSelector((s) => s.auth);
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -97,7 +97,7 @@ export function AppHeader({ onMenuClick }: { onMenuClick?: () => void }) {
 
 // Cloche de notifications avec badge du nombre de non lues (refresh 60s géré
 // côté hook useUnreadNotificationCount). Clic → page /notifications.
-function NotificationBell({ onClick }: { onClick: () => void }) {
+function NotificationBell({ onClick }: { readonly onClick: () => void }) {
   const { data } = useUnreadNotificationCount();
   const count = data?.unreadCount ?? 0;
   return (

@@ -442,7 +442,7 @@ export default function EntrepriseDetailPage() {
 function TabIdentite({
 	enriched,
 }: {
-	enriched: import("@/api/entreprises").EntrepriseEnrichie;
+	readonly enriched: import("@/api/entreprises").EntrepriseEnrichie;
 }) {
 	const { identite, scoring, bodacc, geolocalisation, synthese } = enriched;
 
@@ -673,9 +673,9 @@ function PlanRow({
 	index,
 	onCta,
 }: {
-	etape: ConsultantPlanEtape;
-	index: number;
-	onCta: () => void;
+	readonly etape: ConsultantPlanEtape;
+	readonly index: number;
+	readonly onCta: () => void;
 }) {
 	const statut = (etape.statut ?? "a_faire").toLowerCase() as keyof typeof STATUS_MAP;
 	const status = STATUS_MAP[statut] ?? STATUS_MAP.a_faire;
@@ -816,11 +816,11 @@ function ScenarioRow({
 	help,
 	accent = false,
 }: {
-	icon: React.ReactNode;
-	label: string;
-	value: string;
-	help: string;
-	accent?: boolean;
+	readonly icon: React.ReactNode;
+	readonly label: string;
+	readonly value: string;
+	readonly help: string;
+	readonly accent?: boolean;
 }) {
 	return (
 		<div className="flex items-start gap-3 py-2.5 border-b last:border-0 border-border/30">
@@ -850,9 +850,9 @@ function ProjectionBlock({
 	avec,
 	sans,
 }: {
-	visAvant: number;
-	avec: ConsultantScenario;
-	sans: ConsultantScenario;
+	readonly visAvant: number;
+	readonly avec: ConsultantScenario;
+	readonly sans: ConsultantScenario;
 }) {
 	const deltaAvec = avec.visibilite - visAvant;
 	const deltaSans = sans.visibilite - visAvant;
@@ -963,15 +963,15 @@ function ConsultantDiagnosticSection({
 	onRefresh,
 	isRefreshing,
 }: {
-	siren: string;
-	isPending: boolean;
-	isError: boolean;
-	error: unknown;
-	data: ContextualDiagnosticResponse | undefined;
-	onGenerate: () => void;
-	onLaunchModule: (item: any) => void;
-	onRefresh?: () => void;
-	isRefreshing?: boolean;
+	readonly siren: string;
+	readonly isPending: boolean;
+	readonly isError: boolean;
+	readonly error: unknown;
+	readonly data: ContextualDiagnosticResponse | undefined;
+	readonly onGenerate: () => void;
+	readonly onLaunchModule: (item: any) => void;
+	readonly onRefresh?: () => void;
+	readonly isRefreshing?: boolean;
 }) {
 	const diag = data?.diagnostic;
 	const delta = diag ? diag.scoreGlobal - diag.scorePrecedent : 0;
@@ -1251,9 +1251,9 @@ function TabAnalyses({
 	goTo,
 	onLaunchModule,
 }: {
-	siren: string;
-	goTo: (id: TabId, module?: string) => void;
-	onLaunchModule: (item: any) => void;
+	readonly siren: string;
+	readonly goTo: (id: TabId, module?: string) => void;
+	readonly onLaunchModule: (item: any) => void;
 }) {
 	const navigate = useNavigate();
 	const { data: analyses, isLoading, refetch, isFetching } = useAnalyses(siren);
@@ -1386,8 +1386,8 @@ function TabFinances({
 	finances,
 	raisonSociale,
 }: {
-	finances: FinancesData | null;
-	raisonSociale: string;
+	readonly finances: FinancesData | null;
+	readonly raisonSociale: string;
 }) {
 	const proc = finances?.procedure_collective;
 	const exercices = (finances?.exercices ?? []).slice(0, 6); // max 6 colonnes
@@ -1613,9 +1613,9 @@ function ModuleCard({
 	variant,
 	onLaunch,
 }: {
-	item: CatalogItem;
-	variant: "module" | "tool";
-	onLaunch: (item: CatalogItem) => void;
+	readonly item: CatalogItem;
+	readonly variant: "module" | "tool";
+	readonly onLaunch: (item: CatalogItem) => void;
 }) {
 	const hasPromptId = !!item.prompt_id;
 	const categorie = "categorie" in item ? item.categorie : null;
@@ -1675,16 +1675,16 @@ function ModuleLivrableDrawer({
 	onArchive,
 	onExport,
 }: {
-	open: boolean;
-	item: CatalogItem | null;
-	raisonSociale: string;
-	isPending: boolean;
-	livrable: ExecuteModuleResponse | null;
-	error: unknown;
-	archived: boolean;
-	onClose: () => void;
-	onArchive: (markdown: string, item: CatalogItem) => void;
-	onExport: (format: "pdf" | "docx", markdown: string) => void;
+	readonly open: boolean;
+	readonly item: CatalogItem | null;
+	readonly raisonSociale: string;
+	readonly isPending: boolean;
+	readonly livrable: ExecuteModuleResponse | null;
+	readonly error: unknown;
+	readonly archived: boolean;
+	readonly onClose: () => void;
+	readonly onArchive: (markdown: string, item: CatalogItem) => void;
+	readonly onExport: (format: "pdf" | "docx", markdown: string) => void;
 }) {
 	const [copied, setCopied] = useState(false);
 	if (!open || !item) return null;
@@ -1821,10 +1821,10 @@ function TabRecommandations({
 	raisonSociale,
 	onLaunchModule,
 }: {
-	siren: string;
-	identite: Identite;
-	raisonSociale: string;
-	onLaunchModule: (item: any) => void;
+	readonly siren: string;
+	readonly identite: Identite;
+	readonly raisonSociale: string;
+	readonly onLaunchModule: (item: any) => void;
 }) {
 	// Recommandations propres à l'entreprise : on récupère les analyses du SIREN,
 	// puis les recommandations rattachées à ces jobId.
@@ -2101,9 +2101,9 @@ function TabCopilote({
 	raisonSociale,
 	goTo,
 }: {
-	siren: string;
-	raisonSociale: string;
-	goTo: (id: TabId, module?: string) => void;
+	readonly siren: string;
+	readonly raisonSociale: string;
+	readonly goTo: (id: TabId, module?: string) => void;
 }) {
 	const converse = useCopilotConverse();
 	const { data: health } = useCopilotHealth();
@@ -2334,9 +2334,9 @@ function TabModules({
 	activeModule,
 	goTo,
 }: {
-	siren: string;
-	activeModule: string | null;
-	goTo: (id: TabId, module?: string) => void;
+	readonly siren: string;
+	readonly activeModule: string | null;
+	readonly goTo: (id: TabId, module?: string) => void;
 }) {
 	const { data: analyses } = useAnalyses(siren);
 	const lastAnalysis = (analyses ?? [])[0];
@@ -2600,7 +2600,7 @@ function AxeRow({ axeKey, axe }: { axeKey: string; axe: ScoreAxe }) {
 function IdentiteCard({
 	identite,
 }: {
-	identite: import("@/api/entreprises").Identite;
+	readonly identite: import("@/api/entreprises").Identite;
 }) {
 	const rows = [
 		{
@@ -2655,9 +2655,9 @@ function EmptyTab({
 	title,
 	action,
 }: {
-	icon: React.ElementType;
-	title: string;
-	action?: { label: string; onClick: () => void };
+	readonly icon: React.ElementType;
+	readonly title: string;
+	readonly action?: { label: string; onClick: () => void };
 }) {
 	return (
 		<div className="flex flex-col items-center justify-center py-14 gap-4 text-center bg-card border border-border/50 rounded-2xl">
@@ -2682,8 +2682,8 @@ function ErrorView({
 	message,
 	onBack,
 }: {
-	message: string;
-	onBack?: () => void;
+	readonly message: string;
+	readonly onBack?: () => void;
 }) {
 	return (
 		<div className="flex flex-col items-center justify-center min-h-64 gap-3 text-muted-foreground">

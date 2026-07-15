@@ -3,7 +3,7 @@ import { Activity, Loader2, UserRound } from 'lucide-react';
 import { useRunDiagnostic, type DiagnosticResult } from '@/api/onboarding';
 import ScoreGauge from './ScoreGauge';
 
-function Tags({ label, items }: { label: string; items: string[] }) {
+function Tags({ label, items }: { readonly label: string; items: string[] }) {
   if (!items || items.length === 0) return null;
   return (
     <div>

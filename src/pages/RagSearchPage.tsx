@@ -316,8 +316,8 @@ function AskAnswerCard({
   answer,
   asking,
 }: {
-  answer: NonNullable<ReturnType<typeof useRagAsk>["data"]>;
-  asking: boolean;
+  readonly answer: NonNullable<ReturnType<typeof useRagAsk>["data"]>;
+  readonly asking: boolean;
 }) {
   const citations = answer.citations ?? [];
   return (
@@ -395,10 +395,10 @@ function StatsCard({
   isFetching,
   onRefresh,
 }: {
-  stats: ReturnType<typeof useRagStats>["data"];
-  isLoading: boolean;
-  isFetching: boolean;
-  onRefresh: () => void;
+  readonly stats: ReturnType<typeof useRagStats>["data"];
+  readonly isLoading: boolean;
+  readonly isFetching: boolean;
+  readonly onRefresh: () => void;
 }) {
   const byKind = stats?.by_source_kind ?? {};
   const kinds = Object.entries(byKind).sort(([a], [b]) => a.localeCompare(b));
@@ -463,10 +463,10 @@ function DocumentsCard({
   isFetching,
   onRefresh,
 }: {
-  documents: RagDocument[];
-  isLoading: boolean;
-  isFetching: boolean;
-  onRefresh: () => void;
+  readonly documents: RagDocument[];
+  readonly isLoading: boolean;
+  readonly isFetching: boolean;
+  readonly onRefresh: () => void;
 }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm space-y-3">
@@ -501,7 +501,7 @@ function DocumentsCard({
   );
 }
 
-function DocumentRow({ doc }: { doc: RagDocument }) {
+function DocumentRow({ doc }: { readonly doc: RagDocument }) {
   const [expanded, setExpanded] = useState(false);
   const attrs = parseRagJsonObject(doc.attributes);
   const tags = doc.tags
@@ -576,7 +576,7 @@ function DocumentRow({ doc }: { doc: RagDocument }) {
   );
 }
 
-function Detail({ label, value }: { label: string; value: string }) {
+function Detail({ label, value }: { readonly label: string; value: string }) {
   return (
     <div>
       <dt className="text-muted-foreground">{label}</dt>
@@ -585,7 +585,7 @@ function Detail({ label, value }: { label: string; value: string }) {
   );
 }
 
-function LoadingState({ label }: { label: string }) {
+function LoadingState({ label }: { readonly label: string }) {
   return (
     <div className="flex items-center justify-center rounded-2xl border border-border bg-card p-12 text-muted-foreground">
       <Loader2 className="mr-2 h-5 w-5 animate-spin" />

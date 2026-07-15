@@ -9,7 +9,7 @@ interface OnboardingState {
   onboarding_completed: boolean;
 }
 
-export default function RequireAuth({ children }: { children: React.ReactNode }) {
+export default function RequireAuth({ children }: { readonly children: React.ReactNode }) {
   const { isAuthenticated, sessionChecked } = useSelector((s: RootState) => s.auth);
   const navigate = useNavigate();
   const location = useLocation();

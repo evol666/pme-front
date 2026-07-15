@@ -22,11 +22,11 @@ function Tile({
   hint,
   icon: Icon,
 }: {
-  to: string;
-  label: string;
-  value: number | string;
-  hint: string;
-  icon: LucideIcon;
+  readonly to: string;
+  readonly label: string;
+  readonly value: number | string;
+  readonly hint: string;
+  readonly icon: LucideIcon;
 }) {
   return (
     <Link

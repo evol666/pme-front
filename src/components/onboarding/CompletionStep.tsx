@@ -4,7 +4,7 @@ import type { OnboardingSummary } from '@/api/onboarding';
 import ScoreGauge from './ScoreGauge';
 
 type Props = {
-  summary: OnboardingSummary | null;
+  readonly summary: OnboardingSummary | null;
 };
 
 export default function CompletionStep({ summary }: Props) {

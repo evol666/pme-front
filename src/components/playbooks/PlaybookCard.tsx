@@ -18,8 +18,8 @@ const TONE_DOT: Record<string, string> = {
 };
 
 type Props = {
-  playbook: PlaybookCatalogItem;
-  onStart?: (key: string) => void;
+  readonly playbook: PlaybookCatalogItem;
+  readonly onStart?: (key: string) => void;
 };
 
 export default function PlaybookCard({ playbook, onStart }: Props) {

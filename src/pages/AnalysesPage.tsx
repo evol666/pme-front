@@ -19,7 +19,7 @@ const STATUS_LABEL: Record<string, string> = {
   error: "Erreur",
 };
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status }: { readonly status: string }) {
   const label = STATUS_LABEL[status] ?? status;
   const tone = cn(
     "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold",

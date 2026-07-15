@@ -448,9 +448,9 @@ function WebhookCard({
   onDelete,
   deleting,
 }: {
-  webhook: ConnectorWebhook;
-  onDelete: () => void;
-  deleting: boolean;
+  readonly webhook: ConnectorWebhook;
+  readonly onDelete: () => void;
+  readonly deleting: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const payload = useMemo(
@@ -599,9 +599,9 @@ function EmptyState({
   title,
   hint,
 }: {
-  icon: typeof Plug;
-  title: string;
-  hint: string;
+  readonly icon: typeof Plug;
+  readonly title: string;
+  readonly hint: string;
 }) {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center">

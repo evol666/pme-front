@@ -48,8 +48,8 @@ const KIND_LABEL: Record<string, string> = {
 };
 
 interface Props {
-  insight: DirectorInsight;
-  onDismiss: (id: string) => void;
+  readonly insight: DirectorInsight;
+  readonly onDismiss: (id: string) => void;
 }
 
 export default function DirectorInsightCard({ insight, onDismiss }: Props) {

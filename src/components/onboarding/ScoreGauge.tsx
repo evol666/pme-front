@@ -1,10 +1,10 @@
 // ScoreGauge — jauge ronde SVG autonome (0-100) pour le diagnostic et l'écran final.
 
 type Props = {
-  score: number;
-  level?: string | null;
-  size?: number;
-  caption?: string;
+  readonly score: number;
+  readonly level?: string | null;
+  readonly size?: number;
+  readonly caption?: string;
 };
 
 function colorForScore(score: number): string {
