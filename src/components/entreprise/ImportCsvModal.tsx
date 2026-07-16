@@ -69,9 +69,17 @@ export function ImportCsvModal({ onClose, onSuccess }: Props) {
 
 	return (
 		<div
+			role="button"
+			tabIndex={0}
 			aria-label="Fermer la fenêtre d’import"
 			className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
 			onClick={(e) => e.target === e.currentTarget && onClose()}
+			onKeyDown={(e) => {
+				if (e.key === "Enter" || e.key === " ") {
+					e.preventDefault();
+					onClose();
+				}
+			}}
 		>
 			<div className="w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl flex flex-col max-h-[85vh]">
 				{/* Header */}

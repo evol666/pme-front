@@ -87,9 +87,17 @@ export function WizardAjoutEntreprise({ onClose, onSuccess }: WizardProps) {
 
 	return (
 		<div
+			role="button"
+			tabIndex={0}
 			aria-label="Fermer l’assistant d’ajout d’entreprise"
 			className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
 			onClick={(e) => e.target === e.currentTarget && onClose()}
+			onKeyDown={(e) => {
+				if (e.key === "Enter" || e.key === " ") {
+					e.preventDefault();
+					onClose();
+				}
+			}}
 		>
 			<div className="w-full max-w-2xl bg-card border border-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
 				{/* Header */}
@@ -103,8 +111,7 @@ export function WizardAjoutEntreprise({ onClose, onSuccess }: WizardProps) {
 								Ajouter une entreprise
 							</h2>
 							<p className="text-xs text-muted-foreground">
-								Étape {step} sur 3 —{" "}
-								{WIZARD_STEP_LABEL[step] ?? ""}
+								Étape {step} sur 3 — {WIZARD_STEP_LABEL[step] ?? ""}
 							</p>
 						</div>
 					</div>
@@ -341,8 +348,10 @@ function Step2Confirm({
 	const score = enriched?.scoring?.score_global;
 	const severity = enriched?.scoring?.severity;
 	let severityClass = "bg-red-500/10 text-red-500";
-	if (severity === "faible") severityClass = "bg-emerald-500/10 text-emerald-600";
-	else if (severity === "modéré") severityClass = "bg-amber-500/10 text-amber-500";
+	if (severity === "faible")
+		severityClass = "bg-emerald-500/10 text-emerald-600";
+	else if (severity === "modéré")
+		severityClass = "bg-amber-500/10 text-amber-500";
 
 	return (
 		<div className="space-y-5">
@@ -492,15 +501,11 @@ function Step3Relation({
 
 	return (
 		<div className="space-y-6">
-			<div>
-				<span className="block text-sm font-semibold text-foreground mb-3">
+			<fieldset className="border-0 p-0 m-0">
+				<legend className="block text-sm font-semibold text-foreground mb-3">
 					Type de relation
-				</span>
-				<div
-					role="group"
-					aria-label="Type de relation"
-					className="grid grid-cols-2 sm:grid-cols-3 gap-2"
-				>
+				</legend>
+				<div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
 					{RELATION_TYPES.map((r) => (
 						<button
 							key={r.value}
@@ -519,7 +524,7 @@ function Step3Relation({
 						</button>
 					))}
 				</div>
-			</div>
+			</fieldset>
 
 			<div>
 				<label className="block text-sm font-semibold text-foreground mb-2">
