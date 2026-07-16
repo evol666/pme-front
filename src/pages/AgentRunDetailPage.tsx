@@ -103,7 +103,7 @@ function parseJsonObject(
 export default function AgentRunDetailPage() {
   const { runId } = useParams<{ runId: string }>();
   const navigate = useNavigate();
-  const parsedId = runId ? Number(runId) : NaN;
+  const parsedId = runId ? Number(runId) : Number.NaN;
   const runIdNumber = Number.isFinite(parsedId) ? parsedId : null;
 
   const runQuery = useAgentRun(runIdNumber);

@@ -7,7 +7,7 @@ import {
 	Upload,
 	X,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
 	downloadTemplate,
 	type ImportReport,
@@ -36,6 +36,14 @@ export function ImportCsvModal({ onClose, onSuccess }: Props) {
 
 	const importMutation = useImportCsv();
 
+	useEffect(() => {
+		function handleKeyDown(e: KeyboardEvent) {
+			if (e.key === "Escape") onClose();
+		}
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [onClose]);
+
 	function handleFile(f: File) {
 		if (!f.name.endsWith(".csv") && f.type !== "text/csv") {
 			alert("Le fichier doit être au format CSV.");
@@ -61,14 +69,9 @@ export function ImportCsvModal({ onClose, onSuccess }: Props) {
 
 	return (
 		<div
-			role="button"
-			tabIndex={0}
 			aria-label="Fermer la fenêtre d’import"
 			className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
 			onClick={(e) => e.target === e.currentTarget && onClose()}
-			onKeyDown={(e) => {
-				if (e.key === "Enter" || e.key === "Escape") onClose();
-			}}
 		>
 			<div className="w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl flex flex-col max-h-[85vh]">
 				{/* Header */}
@@ -142,9 +145,8 @@ export function ImportCsvModal({ onClose, onSuccess }: Props) {
 
 					{/* Zone de dépôt */}
 					{!report && (
-						<div
-							role="button"
-							tabIndex={0}
+						<button
+							type="button"
 							aria-label="Déposer un fichier CSV ou cliquer pour parcourir"
 							onDragOver={(e) => {
 								e.preventDefault();
@@ -153,11 +155,8 @@ export function ImportCsvModal({ onClose, onSuccess }: Props) {
 							onDragLeave={() => setDragOver(false)}
 							onDrop={handleDrop}
 							onClick={() => inputRef.current?.click()}
-							onKeyDown={(e) => {
-								if (e.key === "Enter") inputRef.current?.click();
-							}}
 							className={cn(
-								"relative flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-xl cursor-pointer transition-all",
+								"relative flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-xl cursor-pointer transition-all w-full",
 								dropzoneClass(dragOver, file),
 							)}
 						>
@@ -196,7 +195,7 @@ export function ImportCsvModal({ onClose, onSuccess }: Props) {
 									</div>
 								</>
 							)}
-						</div>
+						</button>
 					)}
 
 					{/* Rapport */}

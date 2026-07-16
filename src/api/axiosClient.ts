@@ -3,7 +3,7 @@ import { store } from '../store';
 import { logout } from '../features/auth/authSlice';
 
 const axiosClient = axios.create({
-  baseURL: window.location.origin,
+  baseURL: globalThis.location.origin,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
 });
@@ -16,9 +16,9 @@ const AUTH_PATHS = new Set(['/api/account', '/api/logout', '/api/auth-info']);
 
 // Lit un cookie par nom (document.cookie est "name=value; name2=value2").
 function readCookie(name: string): string | null {
-  const match = document.cookie.match(
-    new RegExp(`(?:^|; )${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}=([^;]*)`),
-  );
+  const match = new RegExp(
+    `(?:^|; )${name.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)}=([^;]*)`,
+  ).exec(document.cookie);
   return match ? decodeURIComponent(match[1]) : null;
 }
 
@@ -55,13 +55,13 @@ axiosClient.interceptors.response.use(
       //   boucle : on laisse alors le 401 remonter pour que l'UI l'affiche.
       const reqUrl = error.config?.url ?? '';
       const isAuthProbe = AUTH_PATHS.has(reqUrl);
-      const alreadyRedirecting = window.location.pathname.startsWith('/oauth2/');
+      const alreadyRedirecting = globalThis.location.pathname.startsWith('/oauth2/');
       const lastRedirect = Number(sessionStorage.getItem('authRedirectAt') ?? '0');
       const recentlyRedirected = Date.now() - lastRedirect < 10_000;
       if (!isAuthProbe && !alreadyRedirecting && !recentlyRedirected) {
         sessionStorage.setItem('authRedirectAt', String(Date.now()));
         store.dispatch(logout());
-        window.location.href = '/oauth2/authorization/pme';
+        globalThis.location.href = '/oauth2/authorization/pme';
       }
     }
     return Promise.reject(error);

@@ -207,9 +207,10 @@ export default function NotificationsPage() {
   };
 
   const handleDelete = async (n: Notification) => {
+    const titleLabel = n.title ?? `#${n.id}`;
     if (
       !globalThis.confirm(
-        `Supprimer la notification « ${n.title ?? `#${n.id}`} » ? Cette action est définitive.`,
+        `Supprimer la notification « ${titleLabel} » ? Cette action est définitive.`,
       )
     ) {
       return;

@@ -590,7 +590,7 @@ function BrandingCard({ branding }: { readonly branding: TenantBranding }) {
 							className="h-2 w-2 rounded-full"
 							style={{ backgroundColor: branding.primaryColor }}
 						/>
-						Primaire
+						{"Primaire"}
 					</span>
 				)}
 				{branding.accentColor && (
@@ -602,7 +602,7 @@ function BrandingCard({ branding }: { readonly branding: TenantBranding }) {
 							className="h-2 w-2 rounded-full"
 							style={{ backgroundColor: branding.accentColor }}
 						/>
-						Accent
+						{"Accent"}
 					</span>
 				)}
 				{branding.theme && (

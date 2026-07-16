@@ -287,33 +287,30 @@ function ChatHistorySidebar({
 					<div
 						key={chat.id}
 						className={cn(
-							"group flex items-start gap-2 w-full rounded-xl px-3 py-2.5 text-left transition-colors cursor-pointer",
+							"group flex items-start gap-2 w-full rounded-xl px-3 py-2.5 transition-colors",
 							currentChatId === chat.id ? "bg-primary/10" : "hover:bg-accent",
 						)}
-						role="button"
-						tabIndex={0}
-						onClick={() => {
-							onChatSelect(chat.id);
-							if (isMobile) onClose();
-						}}
-						onKeyDown={(e) => {
-							if (e.key === "Enter") {
+					>
+						<button
+							type="button"
+							className="flex items-start gap-2 flex-1 min-w-0 text-left cursor-pointer bg-transparent"
+							onClick={() => {
 								onChatSelect(chat.id);
 								if (isMobile) onClose();
-							}
-						}}
-					>
-						<Bot className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
-						<div className="flex-1 min-w-0">
-							<p className="text-xs font-medium truncate text-foreground">
-								{chat.title}
-							</p>
-							<p className="text-[10px] text-muted-foreground">
-								{format(new Date(chat.lastActivity), "d MMM HH:mm", {
-									locale: fr,
-								})}
-							</p>
-						</div>
+							}}
+						>
+							<Bot className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+							<div className="flex-1 min-w-0">
+								<p className="text-xs font-medium truncate text-foreground">
+									{chat.title}
+								</p>
+								<p className="text-[10px] text-muted-foreground">
+									{format(new Date(chat.lastActivity), "d MMM HH:mm", {
+										locale: fr,
+									})}
+								</p>
+							</div>
+						</button>
 						<button
 							type="button"
 							title={showArchived ? "Désarchiver" : "Archiver"}
@@ -400,6 +397,16 @@ export default function CopilotePage() {
 		}
 	}, [chats, currentChatId]);
 
+	// Close mobile history overlay on Escape
+	useEffect(() => {
+		if (!isMobile || !isHistoryOpen) return;
+		function handleKeyDown(e: KeyboardEvent) {
+			if (e.key === "Escape") setIsHistoryOpen(false);
+		}
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [isMobile, isHistoryOpen]);
+
 	const handleNewChat = async () => {
 		const chat = await createChat.mutateAsync("Nouvelle conversation");
 		setCurrentChatId(chat.id);
@@ -458,15 +465,9 @@ export default function CopilotePage() {
 					<>
 						{isMobile && isHistoryOpen && (
 							<div
-								role="button"
-								tabIndex={0}
-								aria-label="Fermer l’historique"
+								aria-hidden="true"
 								className="fixed inset-0 z-40 bg-background/60 backdrop-blur-sm"
 								onClick={() => setIsHistoryOpen(false)}
-								onKeyDown={(e) => {
-									if (e.key === "Enter" || e.key === "Escape")
-										setIsHistoryOpen(false);
-								}}
 							/>
 						)}
 						{chatsLoading ? (

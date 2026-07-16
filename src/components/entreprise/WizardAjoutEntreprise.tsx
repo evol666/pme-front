@@ -51,6 +51,14 @@ export function WizardAjoutEntreprise({ onClose, onSuccess }: WizardProps) {
 
 	const addMutation = useAddEntreprise();
 
+	useEffect(() => {
+		function handleKeyDown(e: KeyboardEvent) {
+			if (e.key === "Escape") onClose();
+		}
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [onClose]);
+
 	// Enrichissement au step 2
 	const { data: enriched, isLoading: enrichLoading } = useEntreprise(
 		step >= 2 ? selected?.siren : null,
@@ -79,14 +87,9 @@ export function WizardAjoutEntreprise({ onClose, onSuccess }: WizardProps) {
 
 	return (
 		<div
-			role="button"
-			tabIndex={0}
 			aria-label="Fermer l’assistant d’ajout d’entreprise"
 			className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
 			onClick={(e) => e.target === e.currentTarget && onClose()}
-			onKeyDown={(e) => {
-				if (e.key === "Enter" || e.key === "Escape") onClose();
-			}}
 		>
 			<div className="w-full max-w-2xl bg-card border border-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
 				{/* Header */}
@@ -224,13 +227,17 @@ function Step1Search({
 	return (
 		<div className="space-y-4">
 			<div>
-				<label className="block text-sm font-semibold text-foreground mb-2">
+				<label
+					htmlFor="wizard-entreprise-search"
+					className="block text-sm font-semibold text-foreground mb-2"
+				>
 					SIREN ou nom de l'entreprise
 				</label>
 				<div className="relative">
 					<Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
 					<input
 						ref={inputRef}
+						id="wizard-entreprise-search"
 						type="text"
 						value={query}
 						onChange={(e) => setQuery(e.target.value)}
@@ -486,10 +493,14 @@ function Step3Relation({
 	return (
 		<div className="space-y-6">
 			<div>
-				<label className="block text-sm font-semibold text-foreground mb-3">
+				<span className="block text-sm font-semibold text-foreground mb-3">
 					Type de relation
-				</label>
-				<div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+				</span>
+				<div
+					role="group"
+					aria-label="Type de relation"
+					className="grid grid-cols-2 sm:grid-cols-3 gap-2"
+				>
 					{RELATION_TYPES.map((r) => (
 						<button
 							key={r.value}

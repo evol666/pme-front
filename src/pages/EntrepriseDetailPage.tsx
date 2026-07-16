@@ -1545,7 +1545,7 @@ function TabFinances({
 						>
 							registre-national-entreprises.inpi.fr
 						</a>
-						).
+						{")."}
 					</p>
 				</div>
 			)}
@@ -1583,9 +1583,10 @@ function buildContexteEntreprise(
 ): string {
 	const lignes = [`Entreprise : ${raisonSociale}`, `SIREN : ${siren}`];
 	if (identite.code_naf) {
-		lignes.push(
-			`Code NAF : ${identite.code_naf}${identite.libelle_naf ? ` — ${identite.libelle_naf}` : ""}`,
-		);
+		const libelleSuffix = identite.libelle_naf
+			? ` — ${identite.libelle_naf}`
+			: "";
+		lignes.push(`Code NAF : ${identite.code_naf}${libelleSuffix}`);
 	}
 	if (identite.ville) lignes.push(`Ville : ${identite.ville}`);
 	if (identite.effectif_tranche)
@@ -2414,10 +2415,14 @@ function TabModules({
 					entreprise, elles nourrissent analyses et recommandations.
 				</p>
 				<div className="mt-3 flex items-center gap-2">
-					<label className="text-xs text-muted-foreground">
+					<label
+						htmlFor="entreprise-bundle-override"
+						className="text-xs text-muted-foreground"
+					>
 						Élargir au secteur :
 					</label>
 					<select
+						id="entreprise-bundle-override"
 						value={bundleOverride ?? ""}
 						onChange={(e) => setBundleOverride(e.target.value || null)}
 						className="text-xs border border-border rounded-md px-2 py-1 bg-card text-foreground"

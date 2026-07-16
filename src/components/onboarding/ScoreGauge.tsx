@@ -36,7 +36,6 @@ export default function ScoreGauge({ score, level, size = 140, caption }: Props)
         width={size}
         height={size}
         viewBox={`0 0 ${size} ${size}`}
-        role="img"
         aria-label={`Score de maturité ${clamped} sur 100`}
       >
         <circle cx={cx} cy={cx} r={r} fill="none" stroke="hsl(var(--border))" strokeWidth={strokeW} />

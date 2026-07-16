@@ -9,7 +9,7 @@ import {
 	Menu,
 	Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@/api/auth";
 import { useUnreadNotificationCount } from "@/api/notifications";
@@ -35,6 +35,15 @@ export function AppHeader({
 	const handleLogout = () => {
 		logout();
 	};
+
+	useEffect(() => {
+		if (!dropdownOpen) return;
+		function handleKeyDown(e: KeyboardEvent) {
+			if (e.key === "Escape") setDropdownOpen(false);
+		}
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [dropdownOpen]);
 
 	return (
 		<header className="h-16 bg-background border-b border-border flex items-center justify-between px-4 lg:px-6 z-40 sticky top-0 transition-colors shadow-sm">
@@ -87,15 +96,9 @@ export function AppHeader({
 					{dropdownOpen && (
 						<>
 							<div
-								role="button"
-								tabIndex={0}
-								aria-label="Fermer le menu utilisateur"
+								aria-hidden="true"
 								className="fixed inset-0 z-40"
 								onClick={() => setDropdownOpen(false)}
-								onKeyDown={(e) => {
-									if (e.key === "Enter" || e.key === "Escape")
-										setDropdownOpen(false);
-								}}
 							/>
 							<div className="absolute right-0 top-full mt-2 w-56 bg-card border border-border rounded-lg shadow-lg py-1 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
 								<div className="px-4 py-2 border-b border-border">
@@ -132,7 +135,9 @@ function NotificationBell({ onClick }: { readonly onClick: () => void }) {
 			onClick={onClick}
 			className="relative p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 			title="Notifications"
-			aria-label={`Notifications${count > 0 ? ` (${count} non lues)` : ""}`}
+			aria-label={
+				count > 0 ? `Notifications (${count} non lues)` : "Notifications"
+			}
 		>
 			<Bell className="w-5 h-5" />
 			{count > 0 && (
@@ -151,6 +156,15 @@ function PersonaSwitcher() {
 	const { data: personas, isLoading } = usePersonas();
 	const activePersonaId = usePersonaStore((s) => s.activePersonaId);
 	const setActivePersona = usePersonaStore((s) => s.setActivePersona);
+
+	useEffect(() => {
+		if (!open) return;
+		function handleKeyDown(e: KeyboardEvent) {
+			if (e.key === "Escape") setOpen(false);
+		}
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [open]);
 
 	// Pas de switcher si la liste est vide ou en cours de chargement initial.
 	if (isLoading || !personas || personas.length === 0) return null;
@@ -175,14 +189,9 @@ function PersonaSwitcher() {
 			{open && (
 				<>
 					<div
-						role="button"
-						tabIndex={0}
-						aria-label="Fermer le menu des contextes"
+						aria-hidden="true"
 						className="fixed inset-0 z-40"
 						onClick={() => setOpen(false)}
-						onKeyDown={(e) => {
-							if (e.key === "Enter" || e.key === "Escape") setOpen(false);
-						}}
 					/>
 					<div className="absolute right-0 top-full mt-2 w-60 bg-card border border-border rounded-lg shadow-lg py-1 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
 						<div className="px-3 py-2 border-b border-border">

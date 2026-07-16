@@ -21,9 +21,12 @@ import {
 } from "@/api/connectors";
 import { cn } from "@/lib/utils";
 
+// Filtre tri-état pour le champ "traité" des webhooks : "" (tous), "true" ou "false".
+type TristateFilter = "" | "true" | "false";
+
 // Traduit un filtre "" | "true" | "false" en booléen optionnel pour l'API —
 // if/else plutôt que ternaires imbriquées.
-function tristateFilterToBoolean(filter: "" | "true" | "false"): boolean | undefined {
+function tristateFilterToBoolean(filter: TristateFilter): boolean | undefined {
   if (filter === "true") return true;
   if (filter === "false") return false;
   return undefined;
@@ -344,7 +347,7 @@ function SyncsTab() {
 
 // --- Onglet Webhooks ---
 
-const WEBHOOK_FILTERS: { key: "" | "true" | "false"; label: string }[] = [
+const WEBHOOK_FILTERS: { key: TristateFilter; label: string }[] = [
   { key: "", label: "Tous" },
   { key: "true", label: "Traités" },
   { key: "false", label: "En attente" },
@@ -352,7 +355,7 @@ const WEBHOOK_FILTERS: { key: "" | "true" | "false"; label: string }[] = [
 
 function WebhooksTab() {
   const [provider, setProvider] = useState("");
-  const [processedFilter, setProcessedFilter] = useState<"" | "true" | "false">("");
+  const [processedFilter, setProcessedFilter] = useState<TristateFilter>("");
   const [error, setError] = useState<string | null>(null);
 
   const processed = tristateFilterToBoolean(processedFilter);

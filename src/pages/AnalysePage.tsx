@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 // (refetchInterval 3000ms géré par le hook) et redirige vers /resultat
 // dès que le job atteint l'état "completed".
 
-const TERMINAL_FAILED = ["failed", "error"];
+const TERMINAL_FAILED = new Set(["failed", "error"]);
 
 const STEP_LABEL: Record<string, string> = {
   pending: "En attente de traitement",
@@ -29,7 +29,7 @@ export default function AnalysePage() {
 
   const status = data?.status ?? "pending";
   const isCompleted = status === "completed";
-  const isFailed = TERMINAL_FAILED.includes(status);
+  const isFailed = TERMINAL_FAILED.has(status);
 
   // Redirection automatique vers le résultat une fois terminé.
   useEffect(() => {

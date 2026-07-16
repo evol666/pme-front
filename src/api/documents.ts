@@ -14,7 +14,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export type RagDocumentStatus = "PENDING" | "INDEXING" | "INDEXED" | "ERROR";
 
-const TERMINAL_STATUSES: ReadonlyArray<RagDocumentStatus> = ["INDEXED", "ERROR"];
+const TERMINAL_STATUSES: ReadonlySet<RagDocumentStatus> = new Set([
+  "INDEXED",
+  "ERROR",
+]);
 
 // --- Types (match exact avec le wire backend, camelCase) ---
 
@@ -103,7 +106,7 @@ export function useDocument(id: number | null | undefined) {
     // jusqu'à un état terminal (INDEXED ou ERROR).
     refetchInterval: (query) => {
       const status = query.state.data?.status;
-      return status && !TERMINAL_STATUSES.includes(status) ? 3000 : false;
+      return status && !TERMINAL_STATUSES.has(status) ? 3000 : false;
     },
     queryFn: async () => {
       const { data } = await axiosClient.get<RagDocument>(

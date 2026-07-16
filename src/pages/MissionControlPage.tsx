@@ -284,10 +284,14 @@ export default function MissionControlPage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
-            <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label
+              htmlFor="mission-control-priority-label"
+              className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5"
+            >
               Libellé
             </label>
             <input
+              id="mission-control-priority-label"
               type="text"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
@@ -296,10 +300,14 @@ export default function MissionControlPage() {
             />
           </div>
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label
+              htmlFor="mission-control-priority-kind"
+              className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5"
+            >
               Type
             </label>
             <select
+              id="mission-control-priority-kind"
               value={kind}
               onChange={(e) => setKind(e.target.value as UserPriorityKind)}
               className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
@@ -312,10 +320,14 @@ export default function MissionControlPage() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label
+              htmlFor="mission-control-priority-horizon"
+              className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5"
+            >
               Horizon
             </label>
             <select
+              id="mission-control-priority-horizon"
               value={horizon}
               onChange={(e) => setHorizon(e.target.value as UserPriorityHorizon)}
               className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"

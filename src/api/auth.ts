@@ -17,5 +17,5 @@ export async function fetchAuthInfo(): Promise<void> {
 
 export function logout(): void {
   store.dispatch(logoutAction());
-  window.location.href = '/api/logout';
+  globalThis.location.href = '/api/logout';
 }

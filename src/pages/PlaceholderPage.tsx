@@ -14,8 +14,11 @@ export default function PlaceholderPage() {
       </div>
       <h1 className="text-2xl font-bold text-foreground">En construction</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Route <code className="px-1.5 py-0.5 rounded bg-accent font-mono text-foreground">{pathname}</code>
-        — page à migrer (Phase 3+).
+        Route{" "}
+        <code className="px-1.5 py-0.5 rounded bg-accent font-mono text-foreground">
+          {pathname}
+        </code>
+        {"— page à migrer (Phase 3+)."}
       </p>
     </div>
   );

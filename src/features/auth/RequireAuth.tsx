@@ -28,7 +28,7 @@ export default function RequireAuth({ children }: { readonly children: React.Rea
 
   useEffect(() => {
     if (sessionChecked && !isAuthenticated) {
-      window.location.href = '/oauth2/authorization/pme';
+      globalThis.location.href = '/oauth2/authorization/pme';
     }
   }, [isAuthenticated, sessionChecked]);
 

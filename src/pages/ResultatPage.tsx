@@ -33,6 +33,7 @@ import {
 function str(v: unknown): string {
   if (typeof v === "string") return v;
   if (v == null) return "";
+  if (typeof v === "object") return JSON.stringify(v);
   return String(v);
 }
 

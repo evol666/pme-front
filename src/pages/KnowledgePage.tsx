@@ -437,8 +437,8 @@ function EntitiesPanel() {
     try {
       await deleteMutation.mutateAsync(id);
       if (selectedId === id) setSelectedId(null);
-    } catch (e2) {
-      setError(extractBackendError(e2));
+    } catch (error_) {
+      setError(extractBackendError(error_));
     }
   }
 
