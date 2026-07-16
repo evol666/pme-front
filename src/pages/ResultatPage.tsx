@@ -109,7 +109,7 @@ function buildProposal(
 function companyName(status: AnalysisStatus): string | undefined {
   const c = status.company;
   if (c && typeof c === "object") {
-    const name = (c as Record<string, unknown>).name;
+    const name = c.name;
     if (typeof name === "string" && name) return name;
   }
   return undefined;
@@ -118,7 +118,7 @@ function companyName(status: AnalysisStatus): string | undefined {
 function metierLabel(status: AnalysisStatus): string | undefined {
   const b = status.detected_business;
   if (b && typeof b === "object") {
-    const label = (b as Record<string, unknown>).label;
+    const label = b.label;
     if (typeof label === "string" && label) return label;
   }
   return undefined;
@@ -285,7 +285,7 @@ export default function ResultatPage() {
             (exportMutation.error as {
               response?: { data?: { error?: { message?: string } } };
             })?.response?.data?.error?.message ??
-              (exportMutation.error as Error)?.message,
+              exportMutation.error?.message,
           )}
         </div>
       )}
@@ -316,7 +316,7 @@ export default function ResultatPage() {
               <ul className="space-y-3">
                 {p.recommendations.map((r, i) => (
                   <li
-                    key={i}
+                    key={`${r.titre ?? ""}-${r.description ?? ""}`}
                     className="rounded-xl border border-border/50 p-4 bg-background"
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -348,7 +348,7 @@ export default function ResultatPage() {
             <Card title="Plan d'action" icon={<ListChecks className="w-4 h-4" />}>
               <ol className="relative space-y-5 before:absolute before:left-[15px] before:top-1 before:bottom-1 before:w-px before:bg-border">
                 {p.actionPlan.map((step, i) => (
-                  <li key={i} className="relative flex gap-4">
+                  <li key={`${step.titre ?? ""}-${step.description ?? ""}`} className="relative flex gap-4">
                     <span className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shadow-sm">
                       {i + 1}
                     </span>
@@ -430,9 +430,9 @@ function Prose({ text, className }: { readonly text: string; readonly className?
   }
   return (
     <div className="space-y-3">
-      {paragraphs.map((para, i) => (
+      {paragraphs.map((para) => (
         <p
-          key={i}
+          key={para}
           className={`text-sm leading-relaxed ${
             className ?? "text-muted-foreground"
           }`}

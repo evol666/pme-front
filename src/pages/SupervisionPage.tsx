@@ -743,9 +743,9 @@ function KpisTab() {
 
 function KpiCard({ kpi }: { readonly kpi: KpiSnapshot }) {
 	const delta =
-		kpi.valuePrev != null
-			? ((kpi.value - kpi.valuePrev) / (kpi.valuePrev || 1)) * 100
-			: null;
+		kpi.valuePrev == null
+			? null
+			: ((kpi.value - kpi.valuePrev) / (kpi.valuePrev || 1)) * 100;
 	const meta = parseAdminJsonObject(kpi.metadataJson);
 
 	return (
@@ -906,7 +906,7 @@ function UsageRow({ usage }: { readonly usage: AiUsage }) {
 				{usage.totalTokens ?? "—"}
 			</td>
 			<td className="px-4 py-3 text-right tabular-nums text-foreground">
-				{usage.latencyMs != null ? `${usage.latencyMs} ms` : "—"}
+				{usage.latencyMs == null ? "—" : `${usage.latencyMs} ms`}
 			</td>
 			<td className="px-4 py-3 text-right tabular-nums text-foreground">
 				{usage.estimatedCostMicroUsd?.toLocaleString("fr-FR") ?? "—"}

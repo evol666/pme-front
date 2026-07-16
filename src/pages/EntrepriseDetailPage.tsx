@@ -514,9 +514,9 @@ function TabIdentite({
 						<h2 className="text-sm font-bold">Dirigeants</h2>
 					</div>
 					<div className="divide-y divide-border/50">
-						{identite.dirigeants.map((d, i) => (
+						{identite.dirigeants.map((d) => (
 							<div
-								key={i}
+								key={`${d.prenoms ?? ""}-${d.nom ?? ""}-${d.qualite ?? ""}`}
 								className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0"
 							>
 								<div className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold flex-shrink-0">
@@ -550,9 +550,9 @@ function TabIdentite({
 					)}
 				</div>
 				<div className="space-y-1">
-					{bodacc.evenements.slice(0, 5).map((ev, i) => (
+					{bodacc.evenements.slice(0, 5).map((ev) => (
 						<div
-							key={i}
+							key={`${ev.date}-${ev.type}`}
 							className="flex items-start gap-3 px-3 py-2 rounded-lg bg-muted/30 text-xs"
 						>
 							<span className="text-muted-foreground w-20 flex-shrink-0">
@@ -1137,9 +1137,9 @@ function ConsultantDiagnosticSection({
 											Actions secondaires
 										</p>
 										<div className="divide-y divide-border/40 border-t border-border/40">
-											{actionsSecondaires.map((act, idx) => (
+											{actionsSecondaires.map((act) => (
 												<div
-													key={idx}
+													key={act.titre}
 													className="flex items-center justify-between gap-4 py-2.5 first:pt-0 last:pb-0"
 												>
 													<div className="min-w-0">
@@ -1181,8 +1181,8 @@ function ConsultantDiagnosticSection({
 					{/* 2. AXES D'ANALYSE (KPIs) — 3 cartes en ligne */}
 					{diag.kpis.length > 0 && (
 						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-							{diag.kpis.map((k, i) => (
-								<KpiCard key={i} kpi={k} />
+							{diag.kpis.map((k) => (
+								<KpiCard key={k.label} kpi={k} />
 							))}
 						</div>
 					)}
@@ -1202,7 +1202,7 @@ function ConsultantDiagnosticSection({
 							<ul className="space-y-3.5 pt-2">
 								{diag.plan.map((etape, i) => (
 									<PlanRow
-										key={i}
+										key={etape.titre}
 										etape={etape}
 										index={i + 1}
 										onCta={() =>
@@ -2101,6 +2101,7 @@ function TabJournal({ siren }: { readonly siren: string }) {
 type CopilotSource = Record<string, unknown>;
 
 interface CopilotChatMessage {
+	id: string;
 	role: "user" | "assistant";
 	content: string;
 	sources?: CopilotSource[];
@@ -2155,7 +2156,10 @@ function TabCopilote({
 			content: m.content,
 		}));
 
-		setMessages((prev) => [...prev, { role: "user", content: message }]);
+		setMessages((prev) => [
+			...prev,
+			{ id: crypto.randomUUID(), role: "user", content: message },
+		]);
 		setInput("");
 
 		try {
@@ -2169,6 +2173,7 @@ function TabCopilote({
 			setMessages((prev) => [
 				...prev,
 				{
+					id: crypto.randomUUID(),
 					role: "assistant",
 					content: reply.text,
 					sources: reply.sources,
@@ -2187,7 +2192,7 @@ function TabCopilote({
 				"Le copilote ne répond pas pour le moment.";
 			setMessages((prev) => [
 				...prev,
-				{ role: "assistant", content: msg, error: true },
+				{ id: crypto.randomUUID(), role: "assistant", content: msg, error: true },
 			]);
 		}
 	};
@@ -2254,9 +2259,9 @@ function TabCopilote({
 							</p>
 						</div>
 					) : (
-						messages.map((m, i) => (
+						messages.map((m) => (
 							<div
-								key={i}
+								key={m.id}
 								className={cn(
 									"flex",
 									m.role === "user" ? "justify-end" : "justify-start",
@@ -2274,9 +2279,9 @@ function TabCopilote({
 										m.sources &&
 										m.sources.length > 0 && (
 											<div className="mt-2 flex flex-wrap gap-1.5">
-												{m.sources.map((src, j) => (
+												{m.sources.map((src) => (
 													<button
-														key={j}
+														key={sourceLabel(src)}
 														type="button"
 														onClick={() => onSourceClick(src)}
 														className="inline-flex items-center gap-1 h-6 px-2 rounded-md bg-primary/10 text-primary text-[11px] font-semibold hover:bg-primary/20 transition-colors"

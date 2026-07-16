@@ -111,7 +111,7 @@ export function useAgentRuns(topic?: string, status?: AgentRunStatus, mode?: str
 // Détail d'un run (GET /api/agent-runs/{id}). Renvoie null si l'ID est absent/ invalide.
 export function useAgentRun(id: number | null) {
   return useQuery({
-    queryKey: id != null ? agentsKeys.run(id) : ["agents", "runs", "detail", "none"],
+    queryKey: id == null ? ["agents", "runs", "detail", "none"] : agentsKeys.run(id),
     enabled: id != null,
     queryFn: async () => {
       const { data } = await axiosClient.get<AgentRun>(`/api/agent-runs/${id}`);

@@ -57,11 +57,11 @@ export default function SuggestionsPanel({ stats, suggestions }: Props) {
             Suggestions d'amélioration
           </header>
           <ul className="space-y-3">
-            {suggestions.map((s, i) => {
+            {suggestions.map((s) => {
               const Icon = KIND_ICON[s.kind] || Lightbulb;
               const dots = IMPACT_DOTS[s.impact] || 2;
               return (
-                <li key={i} className="flex items-start gap-2">
+                <li key={s.label} className="flex items-start gap-2">
                   <span className="grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
                     <Icon className="h-3 w-3" strokeWidth={2.3} />
                   </span>

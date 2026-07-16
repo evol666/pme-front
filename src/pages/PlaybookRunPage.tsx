@@ -62,9 +62,9 @@ export default function PlaybookRunPage() {
 
   const isOpen = run.status === 'active';
   const alignPct =
-    run.alignment_score != null
-      ? Math.round(Math.max(0, Math.min(1, run.alignment_score)) * 100)
-      : null;
+    run.alignment_score == null
+      ? null
+      : Math.round(Math.max(0, Math.min(1, run.alignment_score)) * 100);
 
   const onStepStatus = (stepKey: string, status: StepStatus) => {
     patchStep.mutate({ runId: run.id, stepKey, payload: { status } });

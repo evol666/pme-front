@@ -22,18 +22,18 @@ export default function CompletionStep({ summary }: Props) {
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card p-5">
-          {summary?.maturity_score != null ? (
+          {summary?.maturity_score == null ? (
+            <>
+              <Sparkles className="h-7 w-7 text-primary" />
+              <p className="mt-2 text-sm text-muted-foreground">Diagnostic à affiner</p>
+            </>
+          ) : (
             <ScoreGauge
               score={summary.maturity_score}
               level={summary.maturity_level}
               size={120}
               caption="Maturité"
             />
-          ) : (
-            <>
-              <Sparkles className="h-7 w-7 text-primary" />
-              <p className="mt-2 text-sm text-muted-foreground">Diagnostic à affiner</p>
-            </>
           )}
         </div>
 
@@ -60,8 +60,8 @@ export default function CompletionStep({ summary }: Props) {
             Prochaines actions recommandées
           </p>
           <ul className="space-y-2">
-            {summary.next_actions.map((a, i) => (
-              <li key={i}>
+            {summary.next_actions.map((a) => (
+              <li key={a.label}>
                 <button
                   type="button"
                   onClick={() => a.deep_route && navigate(a.deep_route)}

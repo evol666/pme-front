@@ -28,6 +28,11 @@ export default function ModeDirecteurPage() {
     dismiss.mutate(id);
   };
 
+  const pluralSuffix = status && status.active_count > 1 ? 's' : '';
+  const monitoringLabel = status
+    ? `${status.active_count} élément${pluralSuffix} sous surveillance`
+    : 'Analyse en cours…';
+
   return (
     <div className="space-y-8 pb-16">
       <header>
@@ -50,9 +55,7 @@ export default function ModeDirecteurPage() {
 
       <div className="mt-6 flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {status
-            ? `${status.active_count} élément${status.active_count > 1 ? 's' : ''} sous surveillance`
-            : 'Analyse en cours…'}
+          {monitoringLabel}
         </p>
         <button
           type="button"

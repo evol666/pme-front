@@ -129,8 +129,8 @@ export default function DirectorInsightCard({ insight, onDismiss }: Props) {
               <p className="leading-relaxed">{insight.rationale}</p>
               {insight.signals.length > 0 && (
                 <ul className="mt-2 space-y-1">
-                  {insight.signals.map((s, i) => (
-                    <li key={i} className="flex items-start gap-1.5">
+                  {insight.signals.map((s) => (
+                    <li key={s} className="flex items-start gap-1.5">
                       <span className="mt-1.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                       <span>{s}</span>
                     </li>

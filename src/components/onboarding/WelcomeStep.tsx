@@ -65,9 +65,8 @@ export default function WelcomeStep() {
     const nextName = id.raison_sociale || companyName;
     const nextSecteur = id.libelle_naf || id.section_naf || secteur;
     const nextHeadcount = effectifToHeadcount(id.effectif_estime) || headcount;
-    const nextActivity = id.libelle_naf
-      ? `${id.libelle_naf}${id.ville ? ` — ${id.ville}` : ''}`
-      : activity;
+    const villeSuffix = id.ville ? ` — ${id.ville}` : '';
+    const nextActivity = id.libelle_naf ? `${id.libelle_naf}${villeSuffix}` : activity;
 
     setCompanyName(nextName); // eslint-disable-line react-hooks/set-state-in-effect
     setSecteur(nextSecteur);  

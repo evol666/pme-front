@@ -59,9 +59,9 @@ export default function AnalysePage() {
 
   const progress = data?.progress ?? 0;
   const stepLabel =
-    data?.current_step != null
-      ? (STEP_LABEL[data.current_step] ?? data.current_step)
-      : "Initialisation…";
+    data?.current_step == null
+      ? "Initialisation…"
+      : (STEP_LABEL[data.current_step] ?? data.current_step);
 
   return (
     <div className="max-w-2xl mx-auto py-12">
@@ -90,7 +90,7 @@ export default function AnalysePage() {
                 (error as {
                   response?: { data?: { error?: { message?: string } } };
                 })?.response?.data?.error?.message ??
-                  (error as Error)?.message,
+                  error?.message,
               )}
             </pre>
           </div>

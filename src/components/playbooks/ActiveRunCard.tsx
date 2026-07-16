@@ -22,9 +22,9 @@ function shortDate(iso?: string | null): string {
 export default function ActiveRunCard({ run, playbookIcon }: Props) {
   const iconEl = React.createElement(iconForPlaybook(playbookIcon), { className: 'h-3.5 w-3.5', strokeWidth: 2.2 });
   const align =
-    run.alignment_score != null
-      ? Math.round(Math.max(0, Math.min(1, run.alignment_score)) * 100)
-      : null;
+    run.alignment_score == null
+      ? null
+      : Math.round(Math.max(0, Math.min(1, run.alignment_score)) * 100);
 
   return (
     <Link
@@ -54,7 +54,7 @@ export default function ActiveRunCard({ run, playbookIcon }: Props) {
           <Target className="h-3 w-3" />
           <span>
             {run.mission_aligned_goal}
-            {align != null ? ` · ${align}%` : ''}
+            {align == null ? '' : ` · ${align}%`}
           </span>
         </p>
       )}

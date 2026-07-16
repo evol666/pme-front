@@ -394,9 +394,9 @@ function Step2Confirm({
 						{
 							label: "Ancienneté",
 							value:
-								enriched.synthese?.points_cles?.anciennete_ans != null
-									? `${enriched.synthese.points_cles.anciennete_ans} ans`
-									: null,
+								enriched.synthese?.points_cles?.anciennete_ans == null
+									? null
+									: `${enriched.synthese.points_cles.anciennete_ans} ans`,
 						},
 						{
 							label: "Effectif",
@@ -408,19 +408,19 @@ function Step2Confirm({
 						{
 							label: "Signaux BODACC risque",
 							value:
-								enriched.synthese?.points_cles?.signaux_bodacc_risque != null
-									? String(enriched.synthese.points_cles.signaux_bodacc_risque)
-									: null,
+								enriched.synthese?.points_cles?.signaux_bodacc_risque == null
+									? null
+									: String(enriched.synthese.points_cles.signaux_bodacc_risque),
 						},
 						{
 							label: "Signaux BODACC croissance",
 							value:
-								enriched.synthese?.points_cles?.signaux_bodacc_croissance !=
+								enriched.synthese?.points_cles?.signaux_bodacc_croissance ==
 								null
-									? String(
+									? null
+									: String(
 											enriched.synthese.points_cles.signaux_bodacc_croissance,
-										)
-									: null,
+										),
 						},
 					]
 						.filter((r) => r.value)

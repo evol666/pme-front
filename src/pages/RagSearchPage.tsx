@@ -378,7 +378,7 @@ function AskAnswerCard({
           ) : null}
         </h2>
         <span className="text-xs text-muted-foreground tabular-nums">
-          {answer.elapsed_ms != null ? `${answer.elapsed_ms} ms` : "—"}
+          {answer.elapsed_ms == null ? "—" : `${answer.elapsed_ms} ms`}
           {answer.model ? ` · ${answer.model}` : ""}
         </span>
       </div>

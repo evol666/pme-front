@@ -184,7 +184,7 @@ function EventRow({ event }: { readonly event: AnalyticsEvent }) {
 					{event.valueNum?.toLocaleString("fr-FR") ?? "—"}
 				</td>
 				<td className="px-4 py-3 text-right tabular-nums text-foreground">
-					{event.durationMs != null ? `${event.durationMs} ms` : "—"}
+					{event.durationMs == null ? "—" : `${event.durationMs} ms`}
 				</td>
 				<td className="px-4 py-3 text-xs text-muted-foreground">
 					{formatDateTime(event.occurredAt)}

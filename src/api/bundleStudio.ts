@@ -198,7 +198,7 @@ export function useStudioProjects(filters: {
 export function useStudioProject(id: number | null) {
   return useQuery({
     queryKey:
-      id != null ? studioKeys.projectDetail(id) : ["studio", "projects", "detail", "none"],
+      id == null ? ["studio", "projects", "detail", "none"] : studioKeys.projectDetail(id),
     enabled: id != null,
     queryFn: async () => {
       const { data } = await axiosClient.get<StudioProject>(`/api/studio-projects/${id}`);
@@ -300,7 +300,7 @@ export function useStudioAgents(filters: {
 export function useStudioAgent(id: number | null) {
   return useQuery({
     queryKey:
-      id != null ? studioKeys.agentDetail(id) : ["studio", "agents", "detail", "none"],
+      id == null ? ["studio", "agents", "detail", "none"] : studioKeys.agentDetail(id),
     enabled: id != null,
     queryFn: async () => {
       const { data } = await axiosClient.get<StudioAgent>(`/api/studio-agents/${id}`);
@@ -377,7 +377,7 @@ export function useStudioPrompts(filters: {
 export function useStudioPrompt(id: number | null) {
   return useQuery({
     queryKey:
-      id != null ? studioKeys.promptDetail(id) : ["studio", "prompts", "detail", "none"],
+      id == null ? ["studio", "prompts", "detail", "none"] : studioKeys.promptDetail(id),
     enabled: id != null,
     queryFn: async () => {
       const { data } = await axiosClient.get<StudioPrompt>(`/api/studio-prompts/${id}`);
@@ -453,7 +453,7 @@ export function useStudioPages(filters: {
 
 export function useStudioPage(id: number | null) {
   return useQuery({
-    queryKey: id != null ? studioKeys.pageDetail(id) : ["studio", "pages", "detail", "none"],
+    queryKey: id == null ? ["studio", "pages", "detail", "none"] : studioKeys.pageDetail(id),
     enabled: id != null,
     queryFn: async () => {
       const { data } = await axiosClient.get<StudioPage>(`/api/studio-pages/${id}`);
@@ -531,7 +531,7 @@ export function useStudioApiRoutes(filters: {
 export function useStudioApiRoute(id: number | null) {
   return useQuery({
     queryKey:
-      id != null ? studioKeys.apiRouteDetail(id) : ["studio", "api-routes", "detail", "none"],
+      id == null ? ["studio", "api-routes", "detail", "none"] : studioKeys.apiRouteDetail(id),
     enabled: id != null,
     queryFn: async () => {
       const { data } = await axiosClient.get<StudioApiRoute>(`/api/studio-api-routes/${id}`);
@@ -609,7 +609,7 @@ export function useStudioWorkflows(filters: {
 export function useStudioWorkflow(id: number | null) {
   return useQuery({
     queryKey:
-      id != null ? studioKeys.workflowDetail(id) : ["studio", "workflows", "detail", "none"],
+      id == null ? ["studio", "workflows", "detail", "none"] : studioKeys.workflowDetail(id),
     enabled: id != null,
     queryFn: async () => {
       const { data } = await axiosClient.get<StudioWorkflow>(`/api/studio-workflows/${id}`);
@@ -685,7 +685,7 @@ export function useStudioGenerationRuns(filters: {
 
 export function useStudioGenerationRun(id: number | null) {
   return useQuery({
-    queryKey: id != null ? studioKeys.runDetail(id) : ["studio", "runs", "detail", "none"],
+    queryKey: id == null ? ["studio", "runs", "detail", "none"] : studioKeys.runDetail(id),
     enabled: id != null,
     queryFn: async () => {
       const { data } = await axiosClient.get<StudioGenerationRun>(

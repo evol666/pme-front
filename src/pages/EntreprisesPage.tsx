@@ -113,7 +113,7 @@ export default function EntreprisesPage() {
           <p className="text-xs font-bold uppercase tracking-widest text-primary">Portefeuille</p>
           <h1 className="text-2xl font-extrabold text-foreground mt-0.5">Entreprises</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {(entreprises ?? []).length} entreprise{(entreprises ?? []).length !== 1 ? "s" : ""} suivie{(entreprises ?? []).length !== 1 ? "s" : ""}
+            {(entreprises ?? []).length} entreprise{(entreprises ?? []).length === 1 ? "" : "s"} suivie{(entreprises ?? []).length === 1 ? "" : "s"}
           </p>
         </div>
         <div className="flex gap-2">
