@@ -11,6 +11,7 @@ export default defineConfig(({ command }) => {
     base: basename,
     plugins: [react(), tailwindcss()],
     resolve: {
+      preserveSymlinks: true,
       alias: {
         '@': path.resolve(__dirname, './src'),
         buffer: 'buffer',

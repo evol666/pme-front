@@ -1,7 +1,6 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
-import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createTestWrapper } from '@athanor/test-utils';
 import axiosClient from './axiosClient';
 import {
   entreprisesKeys,
@@ -17,14 +16,8 @@ vi.mock('./axiosClient', () => ({
   },
 }));
 
-function createWrapper() {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
-  });
-  return function Wrapper({ children }: { children: ReactNode }) {
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
-  };
-}
+const createWrapper = () => createTestWrapper();
+
 
 describe('entreprisesKeys', () => {
   it('builds stable, distinguishable query keys', () => {

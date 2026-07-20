@@ -1,13 +1,20 @@
 import '@testing-library/jest-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
-import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { TestProviders, createTestQueryClient } from '@athanor/test-utils';
 import axiosClient from '@/api/axiosClient';
 import authReducer from './authSlice';
 import RequireAuth from './RequireAuth';
+
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router-dom')>();
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 vi.mock('@/api/axiosClient', () => ({
   default: {
@@ -30,22 +37,17 @@ function renderWithProviders(preloadedAuth: {
       },
     },
   });
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false } },
-  });
+  const queryClient = createTestQueryClient();
 
   return render(
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/']}>
-          <RequireAuth>
-            <div>protected content</div>
-          </RequireAuth>
-        </MemoryRouter>
-      </QueryClientProvider>
-    </Provider>,
+    <TestProviders store={store} queryClient={queryClient}>
+      <RequireAuth>
+        <div>protected content</div>
+      </RequireAuth>
+    </TestProviders>,
   );
 }
+
 
 describe('RequireAuth', () => {
   const originalLocation = globalThis.location;
@@ -85,4 +87,13 @@ describe('RequireAuth', () => {
     await waitFor(() => expect(screen.getByText('protected content')).toBeInTheDocument());
     expect(globalThis.location.href).toBe('');
   });
+
+  it('redirects to onboarding if onboarding is not completed', async () => {
+    vi.mocked(axiosClient.get).mockResolvedValueOnce({
+      data: { onboarding_completed: false },
+    });
+    renderWithProviders({ isAuthenticated: true, sessionChecked: true });
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/onboarding', { replace: true }));
+  });
 });
+
