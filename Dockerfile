@@ -5,7 +5,7 @@ FROM node:lts-alpine AS builder
 WORKDIR /app
 
 # Add node_modules/.bin to PATH
-ENV PATH /app/node_modules/.bin:$PATH
+ENV PATH="/app/node_modules/.bin:$PATH"
 
 ARG GITHUB_TOKEN
 ENV GITHUB_TOKEN=$GITHUB_TOKEN
@@ -30,9 +30,9 @@ COPY .npmrc .npmrc
 COPY package*.json ./
 
 # Install dependencies with clean install
-RUN --mount=type=cache,id=npm-cache,target=/root/.npm \
-    npm ci --prefer-offline
+RUN npm ci --prefer-offline
 RUN rm .npmrc
+
 
 # Copy source code
 COPY . .
