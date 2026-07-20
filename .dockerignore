@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-ssr
+coverage
+playwright-report
+test-results
+.git
+.vscode
+.idea
+*.log
+npm-debug.log*
+.env
+.env.local
+__pycache__
