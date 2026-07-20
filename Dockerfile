@@ -30,7 +30,8 @@ COPY .npmrc .npmrc
 COPY package*.json ./
 
 # Install dependencies with clean install
-RUN npm ci --prefer-offline
+RUN --mount=type=cache,id=npm-cache,target=/root/.npm \
+    npm ci --prefer-offline
 RUN rm .npmrc
 
 
