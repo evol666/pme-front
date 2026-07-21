@@ -1,7 +1,7 @@
-import sonarqubeScanner from 'sonarqube-scanner';
+import { scan } from "@sonar/scan";
 import 'dotenv/config';
 
-sonarqubeScanner.scan(
+await scan(
   {
     serverUrl: process.env.SONAR_HOST_URL || 'http://localhost:9210',
     token: process.env.SONAR_TOKEN,
@@ -18,5 +18,4 @@ sonarqubeScanner.scan(
       'sonar.exclusions': 'src/components/ui/**/*',
     },
   },
-  () => process.exit(),
 );
