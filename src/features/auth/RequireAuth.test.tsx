@@ -1,23 +1,30 @@
 import '@testing-library/jest-dom';
 import { screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { renderWithProviders as renderWithTestProviders, mockUseNavigate, createMockAxiosClient } from '@athanor/test-utils';
+import { renderWithProviders as renderWithTestProviders } from '@athanor/test-utils';
 import axiosClient from '@/api/axiosClient';
 import authReducer from './authSlice';
 import RequireAuth from './RequireAuth';
 
 const mockNavigate = vi.fn();
+
+// vi.mock factories are hoisted above every import in this file, so referencing
+// mockUseNavigate/createMockAxiosClient via a static import would hit them before
+// @athanor/test-utils (which itself pulls in react/redux/react-query) has finished
+// initializing. A dynamic import inside each factory sidesteps that ordering issue.
 vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react-router-dom')>();
+  const { mockUseNavigate } = await import('@athanor/test-utils');
   return {
     ...actual,
     ...mockUseNavigate(mockNavigate),
   };
 });
 
-vi.mock('@/api/axiosClient', () => ({
-  default: createMockAxiosClient(),
-}));
+vi.mock('@/api/axiosClient', async () => {
+  const { createMockAxiosClient } = await import('@athanor/test-utils');
+  return { default: createMockAxiosClient() };
+});
 
 function renderWithProviders(preloadedAuth: {
   isAuthenticated: boolean;
