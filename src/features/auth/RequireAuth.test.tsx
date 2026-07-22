@@ -6,7 +6,11 @@ import axiosClient from '@/api/axiosClient';
 import authReducer from './authSlice';
 import RequireAuth from './RequireAuth';
 
-const mockNavigate = vi.fn();
+// vi.mock factories are hoisted above all module-level code, including const
+// declarations below them — referencing mockNavigate directly here throws
+// "Cannot access before initialization". vi.hoisted() runs before the hoisted
+// vi.mock calls, so the binding exists by the time the factory executes.
+const { mockNavigate } = vi.hoisted(() => ({ mockNavigate: vi.fn() }));
 
 // Import mockUseNavigate from the '@athanor/test-utils/mocks/router' subpath, NOT the
 // package barrel ('@athanor/test-utils'): the barrel re-exports wrappers.tsx, which
