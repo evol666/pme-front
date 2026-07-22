@@ -1,8 +1,7 @@
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
-import { configureStore } from '@reduxjs/toolkit';
+import { screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TestProviders, createTestQueryClient } from '@athanor/test-utils';
+import { renderWithProviders as renderWithTestProviders, mockUseNavigate, createMockAxiosClient } from '@athanor/test-utils';
 import axiosClient from '@/api/axiosClient';
 import authReducer from './authSlice';
 import RequireAuth from './RequireAuth';
@@ -12,39 +11,33 @@ vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react-router-dom')>();
   return {
     ...actual,
-    useNavigate: () => mockNavigate,
+    ...mockUseNavigate(mockNavigate),
   };
 });
 
 vi.mock('@/api/axiosClient', () => ({
-  default: {
-    get: vi.fn(),
-  },
+  default: createMockAxiosClient(),
 }));
 
 function renderWithProviders(preloadedAuth: {
   isAuthenticated: boolean;
   sessionChecked: boolean;
 }) {
-  const store = configureStore({
-    reducer: { auth: authReducer },
-    preloadedState: {
-      auth: {
-        username: null,
-        email: null,
-        roles: [],
-        ...preloadedAuth,
+  return renderWithTestProviders(
+    <RequireAuth>
+      <div>protected content</div>
+    </RequireAuth>,
+    {
+      reducers: { auth: authReducer },
+      preloadedState: {
+        auth: {
+          username: null,
+          email: null,
+          roles: [],
+          ...preloadedAuth,
+        },
       },
     },
-  });
-  const queryClient = createTestQueryClient();
-
-  return render(
-    <TestProviders store={store} queryClient={queryClient}>
-      <RequireAuth>
-        <div>protected content</div>
-      </RequireAuth>
-    </TestProviders>,
   );
 }
 
