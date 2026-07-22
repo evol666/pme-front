@@ -8,16 +8,16 @@ import RequireAuth from './RequireAuth';
 
 const mockNavigate = vi.fn();
 
-// vi.mock factories are hoisted above every import in this file, so referencing
-// mockUseNavigate via a static import would hit it before @athanor/test-utils (which
-// itself pulls in react/redux/react-query) has finished initializing. A dynamic import
-// inside the factory sidesteps that ordering issue. Kept to a single dynamic import of
-// @athanor/test-utils in this file — the axiosClient mock below stays a plain local
-// mock (it only ever needs .get) rather than a second concurrent dynamic import of the
-// same package from another vi.mock factory.
+// Import mockUseNavigate from the '@athanor/test-utils/mocks/router' subpath, NOT the
+// package barrel ('@athanor/test-utils'): the barrel re-exports wrappers.tsx, which
+// itself imports react-router-dom. Since this factory mocks react-router-dom, going
+// through the barrel here would make loading @athanor/test-utils re-enter the very
+// react-router-dom mock resolution that's still in progress — a real circular deadlock
+// (confirmed: it hangs the test file indefinitely, even in isolation). The dedicated
+// subpath only pulls in src/mocks/router.ts, which has no react-router-dom dependency.
 vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react-router-dom')>();
-  const { mockUseNavigate } = await import('@athanor/test-utils');
+  const { mockUseNavigate } = await import('@athanor/test-utils/mocks/router');
   return {
     ...actual,
     ...mockUseNavigate(mockNavigate),
