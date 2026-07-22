@@ -16,6 +16,8 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    // matchMedia / ResizeObserver / IntersectionObserver mocks shared across all Athanor fronts.
+    setupFiles: ['@athanor/test-utils/setup'],
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,jsx,tsx}'],
     exclude: ['e2e/**', 'node_modules/**'],
     passWithNoTests: true,
