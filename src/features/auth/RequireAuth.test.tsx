@@ -9,9 +9,12 @@ import RequireAuth from './RequireAuth';
 const mockNavigate = vi.fn();
 
 // vi.mock factories are hoisted above every import in this file, so referencing
-// mockUseNavigate/createMockAxiosClient via a static import would hit them before
-// @athanor/test-utils (which itself pulls in react/redux/react-query) has finished
-// initializing. A dynamic import inside each factory sidesteps that ordering issue.
+// mockUseNavigate via a static import would hit it before @athanor/test-utils (which
+// itself pulls in react/redux/react-query) has finished initializing. A dynamic import
+// inside the factory sidesteps that ordering issue. Kept to a single dynamic import of
+// @athanor/test-utils in this file — the axiosClient mock below stays a plain local
+// mock (it only ever needs .get) rather than a second concurrent dynamic import of the
+// same package from another vi.mock factory.
 vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react-router-dom')>();
   const { mockUseNavigate } = await import('@athanor/test-utils');
@@ -21,10 +24,11 @@ vi.mock('react-router-dom', async (importOriginal) => {
   };
 });
 
-vi.mock('@/api/axiosClient', async () => {
-  const { createMockAxiosClient } = await import('@athanor/test-utils');
-  return { default: createMockAxiosClient() };
-});
+vi.mock('@/api/axiosClient', () => ({
+  default: {
+    get: vi.fn(),
+  },
+}));
 
 function renderWithProviders(preloadedAuth: {
   isAuthenticated: boolean;
