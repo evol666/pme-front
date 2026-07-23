@@ -80,176 +80,177 @@ export function ImportCsvModal({ onClose, onSuccess }: Props) {
 			/>
 			<div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
 				<div className="w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl flex flex-col max-h-[85vh] pointer-events-auto">
-				{/* Header */}
-				<div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
-					<div className="flex items-center gap-3">
-						<div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-							<Upload className="w-4 h-4" />
+					{/* Header */}
+					<div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
+						<div className="flex items-center gap-3">
+							<div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+								<Upload className="w-4 h-4" />
+							</div>
+							<div>
+								<h2 className="text-sm font-bold text-foreground">
+									Importer des entreprises
+								</h2>
+								<p className="text-xs text-muted-foreground">
+									CSV — siren, kind, notes
+								</p>
+							</div>
 						</div>
-						<div>
-							<h2 className="text-sm font-bold text-foreground">
-								Importer des entreprises
-							</h2>
-							<p className="text-xs text-muted-foreground">
-								CSV — siren, kind, notes
-							</p>
-						</div>
-					</div>
-					<button
-						onClick={onClose}
-						className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-					>
-						<X className="w-4 h-4" />
-					</button>
-				</div>
-
-				<div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-					{/* Template */}
-					<div className="flex items-center justify-between p-3 bg-muted/30 rounded-xl border border-border/50">
-						<div>
-							<p className="text-xs font-semibold text-foreground">
-								Template CSV
-							</p>
-							<p className="text-xs text-muted-foreground mt-0.5">
-								Colonnes : siren, kind, notes
-							</p>
-						</div>
-						<button
-							onClick={downloadTemplate}
-							className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-semibold text-foreground hover:bg-accent transition-colors"
-						>
-							<Download className="w-3.5 h-3.5" />
-							Télécharger
-						</button>
-					</div>
-
-					{/* Format */}
-					<div className="bg-muted/20 rounded-xl p-3 font-mono text-xs text-muted-foreground space-y-0.5">
-						<p className="font-bold text-foreground">siren,kind,notes</p>
-						<p>414056309,client,Contact salon Paris</p>
-						<p>552032534,prospect,</p>
-						<p>542101803,partenaire,Accord cadre 2024</p>
-					</div>
-
-					{/* Valeurs kind */}
-					<div className="flex flex-wrap gap-1.5">
-						{[
-							"client",
-							"prospect",
-							"partenaire",
-							"concurrent",
-							"fournisseur",
-						].map((k) => (
-							<span
-								key={k}
-								className="px-2 py-0.5 bg-muted/40 rounded-md text-xs font-mono text-muted-foreground"
-							>
-								{k}
-							</span>
-						))}
-					</div>
-
-					{/* Zone de dépôt */}
-					{!report && (
-						<button
-							type="button"
-							aria-label="Déposer un fichier CSV ou cliquer pour parcourir"
-							onDragOver={(e) => {
-								e.preventDefault();
-								setDragOver(true);
-							}}
-							onDragLeave={() => setDragOver(false)}
-							onDrop={handleDrop}
-							onClick={() => inputRef.current?.click()}
-							className={cn(
-								"relative flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-xl cursor-pointer transition-all w-full",
-								dropzoneClass(dragOver, file),
-							)}
-						>
-							<input
-								ref={inputRef}
-								type="file"
-								accept=".csv,text/csv"
-								className="hidden"
-								onChange={(e) => {
-									const f = e.target.files?.[0];
-									if (f) handleFile(f);
-								}}
-							/>
-							{file ? (
-								<>
-									<FileText className="w-8 h-8 text-emerald-600" />
-									<div className="text-center">
-										<p className="text-sm font-semibold text-foreground">
-											{file.name}
-										</p>
-										<p className="text-xs text-muted-foreground mt-0.5">
-											{(file.size / 1024).toFixed(1)} Ko — cliquer pour changer
-										</p>
-									</div>
-								</>
-							) : (
-								<>
-									<Upload className="w-8 h-8 text-muted-foreground/40" />
-									<div className="text-center">
-										<p className="text-sm font-medium text-foreground">
-											Déposer le fichier CSV ici
-										</p>
-										<p className="text-xs text-muted-foreground mt-0.5">
-											ou cliquer pour parcourir
-										</p>
-									</div>
-								</>
-							)}
-						</button>
-					)}
-
-					{/* Rapport */}
-					{report && <ImportReportView report={report} />}
-				</div>
-
-				{/* Footer */}
-				<div className="flex items-center justify-between px-6 py-4 border-t border-border flex-shrink-0 bg-muted/20">
-					{report ? (
 						<button
 							onClick={onClose}
-							className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
+							className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
 						>
-							Fermer
+							<X className="w-4 h-4" />
 						</button>
-					) : (
-						<>
+					</div>
+
+					<div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+						{/* Template */}
+						<div className="flex items-center justify-between p-3 bg-muted/30 rounded-xl border border-border/50">
+							<div>
+								<p className="text-xs font-semibold text-foreground">
+									Template CSV
+								</p>
+								<p className="text-xs text-muted-foreground mt-0.5">
+									Colonnes : siren, kind, notes
+								</p>
+							</div>
 							<button
-								onClick={onClose}
-								className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+								onClick={downloadTemplate}
+								className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-semibold text-foreground hover:bg-accent transition-colors"
 							>
-								Annuler
+								<Download className="w-3.5 h-3.5" />
+								Télécharger
 							</button>
+						</div>
+
+						{/* Format */}
+						<div className="bg-muted/20 rounded-xl p-3 font-mono text-xs text-muted-foreground space-y-0.5">
+							<p className="font-bold text-foreground">siren,kind,notes</p>
+							<p>414056309,client,Contact salon Paris</p>
+							<p>552032534,prospect,</p>
+							<p>542101803,partenaire,Accord cadre 2024</p>
+						</div>
+
+						{/* Valeurs kind */}
+						<div className="flex flex-wrap gap-1.5">
+							{[
+								"client",
+								"prospect",
+								"partenaire",
+								"concurrent",
+								"fournisseur",
+							].map((k) => (
+								<span
+									key={k}
+									className="px-2 py-0.5 bg-muted/40 rounded-md text-xs font-mono text-muted-foreground"
+								>
+									{k}
+								</span>
+							))}
+						</div>
+
+						{/* Zone de dépôt */}
+						{!report && (
 							<button
-								onClick={handleImport}
-								disabled={!file || importMutation.isPending}
+								type="button"
+								aria-label="Déposer un fichier CSV ou cliquer pour parcourir"
+								onDragOver={(e) => {
+									e.preventDefault();
+									setDragOver(true);
+								}}
+								onDragLeave={() => setDragOver(false)}
+								onDrop={handleDrop}
+								onClick={() => inputRef.current?.click()}
 								className={cn(
-									"flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-colors",
-									file && !importMutation.isPending
-										? "bg-primary text-primary-foreground hover:bg-primary/90"
-										: "bg-muted text-muted-foreground cursor-not-allowed",
+									"relative flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-xl cursor-pointer transition-all w-full",
+									dropzoneClass(dragOver, file),
 								)}
 							>
-								{importMutation.isPending ? (
+								<input
+									ref={inputRef}
+									type="file"
+									accept=".csv,text/csv"
+									className="hidden"
+									onChange={(e) => {
+										const f = e.target.files?.[0];
+										if (f) handleFile(f);
+									}}
+								/>
+								{file ? (
 									<>
-										<Loader2 className="w-4 h-4 animate-spin" /> Import en
-										cours…
+										<FileText className="w-8 h-8 text-emerald-600" />
+										<div className="text-center">
+											<p className="text-sm font-semibold text-foreground">
+												{file.name}
+											</p>
+											<p className="text-xs text-muted-foreground mt-0.5">
+												{(file.size / 1024).toFixed(1)} Ko — cliquer pour
+												changer
+											</p>
+										</div>
 									</>
 								) : (
 									<>
-										<Upload className="w-4 h-4" /> Importer
+										<Upload className="w-8 h-8 text-muted-foreground/40" />
+										<div className="text-center">
+											<p className="text-sm font-medium text-foreground">
+												Déposer le fichier CSV ici
+											</p>
+											<p className="text-xs text-muted-foreground mt-0.5">
+												ou cliquer pour parcourir
+											</p>
+										</div>
 									</>
 								)}
 							</button>
-						</>
-					)}
+						)}
+
+						{/* Rapport */}
+						{report && <ImportReportView report={report} />}
+					</div>
+
+					{/* Footer */}
+					<div className="flex items-center justify-between px-6 py-4 border-t border-border flex-shrink-0 bg-muted/20">
+						{report ? (
+							<button
+								onClick={onClose}
+								className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
+							>
+								Fermer
+							</button>
+						) : (
+							<>
+								<button
+									onClick={onClose}
+									className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+								>
+									Annuler
+								</button>
+								<button
+									onClick={handleImport}
+									disabled={!file || importMutation.isPending}
+									className={cn(
+										"flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-colors",
+										file && !importMutation.isPending
+											? "bg-primary text-primary-foreground hover:bg-primary/90"
+											: "bg-muted text-muted-foreground cursor-not-allowed",
+									)}
+								>
+									{importMutation.isPending ? (
+										<>
+											<Loader2 className="w-4 h-4 animate-spin" /> Import en
+											cours…
+										</>
+									) : (
+										<>
+											<Upload className="w-4 h-4" /> Importer
+										</>
+									)}
+								</button>
+							</>
+						)}
+					</div>
 				</div>
-			</div>
 			</div>
 		</>
 	);
