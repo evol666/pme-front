@@ -87,17 +87,8 @@ export function WizardAjoutEntreprise({ onClose, onSuccess }: WizardProps) {
 
 	return (
 		<div
-			role="button"
-			tabIndex={0}
-			aria-label="Fermer l’assistant d’ajout d’entreprise"
 			className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
 			onClick={(e) => e.target === e.currentTarget && onClose()}
-			onKeyDown={(e) => {
-				if (e.key === "Enter" || e.key === " ") {
-					e.preventDefault();
-					onClose();
-				}
-			}}
 		>
 			<div className="w-full max-w-2xl bg-card border border-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
 				{/* Header */}
