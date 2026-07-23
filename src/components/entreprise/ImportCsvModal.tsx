@@ -68,11 +68,18 @@ export function ImportCsvModal({ onClose, onSuccess }: Props) {
 	}
 
 	return (
-		<div
-			className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
-			onClick={(e) => e.target === e.currentTarget && onClose()}
-		>
-			<div className="w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl flex flex-col max-h-[85vh]">
+		<>
+			{/* Fond décoratif : aria-hidden car purement visuel, sans contenu — le dialogue
+			    lui-même vit dans un conteneur séparé pour ne jamais être masqué de l'arbre
+			    d'accessibilité. Se ferme au clic (souris) ; clavier via Échap (cf. useEffect
+			    ci-dessus) et le bouton de fermeture explicite. */}
+			<div
+				aria-hidden="true"
+				className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"
+				onClick={onClose}
+			/>
+			<div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+				<div className="w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl flex flex-col max-h-[85vh] pointer-events-auto">
 				{/* Header */}
 				<div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
 					<div className="flex items-center gap-3">
@@ -243,7 +250,8 @@ export function ImportCsvModal({ onClose, onSuccess }: Props) {
 					)}
 				</div>
 			</div>
-		</div>
+			</div>
+		</>
 	);
 }
 

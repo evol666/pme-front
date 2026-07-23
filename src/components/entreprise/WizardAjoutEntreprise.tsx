@@ -86,11 +86,17 @@ export function WizardAjoutEntreprise({ onClose, onSuccess }: WizardProps) {
 	}
 
 	return (
-		<div
-			className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
-			onClick={(e) => e.target === e.currentTarget && onClose()}
-		>
-			<div className="w-full max-w-2xl bg-card border border-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
+		<>
+			{/* Fond décoratif : aria-hidden, purement visuel, sans contenu — le dialogue vit
+			    dans un conteneur séparé pour ne jamais être masqué de l'arbre d'accessibilité.
+			    Fermeture clavier via Échap (cf. useEffect ci-dessus) + bouton explicite. */}
+			<div
+				aria-hidden="true"
+				className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"
+				onClick={onClose}
+			/>
+			<div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+				<div className="w-full max-w-2xl bg-card border border-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh] pointer-events-auto">
 				{/* Header */}
 				<div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
 					<div className="flex items-center gap-3">
@@ -192,9 +198,10 @@ export function WizardAjoutEntreprise({ onClose, onSuccess }: WizardProps) {
 							)}
 						</button>
 					)}
+					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 }
 
