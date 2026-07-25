@@ -1,0 +1,13 @@
+# .trivyignore — Exceptions Trivy pour pme_front
+# Format : CVE-ID/GHSA-ID à ignorer, avec justification obligatoire.
+# Documentation : https://aquasecurity.github.io/trivy/latest/docs/configuration/filtering/#trivyignore
+
+# GHSA-qwww-vcr4-c8h2 (react-router — RSC Mode CSRF Bypass Allows Action Execution)
+# Raison : la faille concerne uniquement le "RSC Mode" (React Server Components) de
+# react-router en mode framework (@react-router/dev, comme Omni/xdr_front). pme_front
+# utilise react-router-dom v7 en mode librairie classique (createBrowserRouter côté
+# client, pas de RSC ni de server actions) — le chemin de code vulnérable n'est pas
+# atteignable. Le correctif n'existe que dans react-router (core) 8.3.0, une version
+# majeure incompatible avec react-router-dom 7.x utilisé sur toute la plateforme
+# (voir CLAUDE.md racine) ; forcer ce bump casserait le routing sans réduire de risque réel.
+GHSA-qwww-vcr4-c8h2
