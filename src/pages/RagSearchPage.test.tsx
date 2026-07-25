@@ -40,11 +40,16 @@ const document = {
 
 function mockGetByUrl(handlers: Record<string, unknown>) {
   vi.mocked(axiosClient.get).mockImplementation((url: string) => {
-    for (const key of Object.keys(handlers)) {
-      if (url.startsWith(key)) {
-        return Promise.resolve({ data: handlers[key] });
-      }
+    const pathname = url.split('?')[0]; // Isoler le chemin sans query params
+
+    // Cherche si une des clés du mock est contenue dans l'URL appelante
+    const matchedKey = Object.keys(handlers).find(key => pathname.endsWith(key) || pathname === key);
+
+    if (matchedKey) {
+      return Promise.resolve({ data: handlers[matchedKey] });
     }
+
+    console.error(`[Test Mock Unhandled GET] -> ${url}`);
     return Promise.reject(new Error(`unexpected url ${url}`));
   });
 }
