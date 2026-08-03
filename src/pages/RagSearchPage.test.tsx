@@ -59,7 +59,7 @@ describe('RagSearchPage', () => {
     vi.clearAllMocks();
     mockGetByUrl({
       '/api/rag/stats': { documents_total: 3, chunks_total: 42, by_source_kind: { upload: 3 } },
-      '/api/rag-documents': { items: [document], total: 1 },
+      '/api/rag/documents': { items: [document], total: 1 },
     });
   });
 

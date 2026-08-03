@@ -748,7 +748,11 @@ export function useDeleteStudioGenerationRun() {
 export function formatDateTime(iso: string | null | undefined): string {
   if (!iso) return "—";
   try {
-    return new Date(iso).toLocaleString("fr-FR", {
+    const date = new Date(iso);
+    // toLocaleString ne lève pas sur une date invalide : il renvoie
+    // "Invalid Date". On teste donc explicitement.
+    if (Number.isNaN(date.getTime())) return "—";
+    return date.toLocaleString("fr-FR", {
       dateStyle: "medium",
       timeStyle: "short",
     });

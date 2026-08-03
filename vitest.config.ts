@@ -25,6 +25,11 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'lcov', 'html'],
       reportsDirectory: './coverage',
+      // Sans `all` + `include`, v8 ne rapporte que les fichiers importés par un
+      // test : le pourcentage est flatteur mais ne reflète pas ce que Sonar
+      // analyse.
+      all: true,
+      include: ['src/**/*.{ts,tsx}'],
       exclude: [
         'node_modules/',
         'src/test/',
@@ -33,6 +38,14 @@ export default defineConfig({
         '**/dist/**',
         'e2e/**',
       ],
+      // Seuils calés juste sous la couverture atteinte : toute régression
+      // notable fait échouer le job de couverture.
+      thresholds: {
+        lines: 32,
+        functions: 32,
+        branches: 19,
+        statements: 31,
+      },
     },
   },
 });

@@ -60,9 +60,13 @@ describe('AnalysesPage', () => {
 
     renderPage();
 
-    const item = await screen.findByRole('button', {
-      name: 'Ouvrir l’analyse Boulangerie Dupont',
-    });
+    // Ce premier rendu paie le chargement des modules de la page : sous charge
+    // parallèle le délai par défaut (1 s) est trop juste.
+    const item = await screen.findByRole(
+      'button',
+      { name: 'Ouvrir l’analyse Boulangerie Dupont' },
+      { timeout: 5000 },
+    );
     expect(screen.getByText('Terminée')).toBeInTheDocument();
 
     fireEvent.click(item);
