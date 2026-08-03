@@ -324,12 +324,15 @@ export default function EntrepriseDetailPage() {
 										{identite.ville}
 									</span>
 								)}
-								{identite.date_creation && (
-									<span className="flex items-center gap-1">
-										<Calendar className="w-3.5 h-3.5" />
-										{enriched.synthese.points_cles.anciennete_ans} ans
-									</span>
-								)}
+								{/* `synthese` est optionnel côté API : sans elle, on masque
+								    l'ancienneté plutôt que de faire tomber la page. */}
+								{identite.date_creation &&
+									enriched.synthese?.points_cles?.anciennete_ans != null && (
+										<span className="flex items-center gap-1">
+											<Calendar className="w-3.5 h-3.5" />
+											{enriched.synthese.points_cles.anciennete_ans} ans
+										</span>
+									)}
 							</div>
 						</div>
 
