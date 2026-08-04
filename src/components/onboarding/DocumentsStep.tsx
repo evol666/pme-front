@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router";
 import { FileText, FolderUp, ScrollText, Workflow } from 'lucide-react';
 
 const DOC_TYPES = [

@@ -9,7 +9,7 @@ import {
   Target,
 } from "lucide-react";
 import type React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router";
 import { useAppSelector } from "@/app/hooks";
 import { logout } from "@/api/auth";
 import { cn } from "@/lib/utils";

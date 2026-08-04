@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from "react-router";
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderWithProviders } from '@athanor/test-utils';
 import axiosClient from '@/api/axiosClient';

@@ -37,7 +37,7 @@ import {
 	X,
 } from "lucide-react";
 import { useState, useMemo } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import { useAnalyses, useLaunchAnalysis } from "@/api/analyses";
 import {
 	type ConverseMessage,

@@ -10,7 +10,7 @@ import {
 	Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { logout } from "@/api/auth";
 import { useUnreadNotificationCount } from "@/api/notifications";
 import { usePersonas } from "@/api/personas";

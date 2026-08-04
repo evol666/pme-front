@@ -4,7 +4,7 @@
  * Page détail d'un run : header + progression, liste d'étapes, sidebar
  * suggestions/stats.
  */
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from "react-router";
 import {
   ArrowLeft,
   CheckCircle2,

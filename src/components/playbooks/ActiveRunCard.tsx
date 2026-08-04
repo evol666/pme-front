@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight, Target } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from "react-router";
 import type { PlaybookRun } from '@/api/playbooks';
 import { iconForPlaybook } from './icons';
 import PlaybookProgress from './PlaybookProgress';

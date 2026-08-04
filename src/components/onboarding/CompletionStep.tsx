@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router";
 import { ArrowRight, FileCheck2, PartyPopper, Sparkles } from 'lucide-react';
 import type { OnboardingSummary } from '@/api/onboarding';
 import ScoreGauge from './ScoreGauge';

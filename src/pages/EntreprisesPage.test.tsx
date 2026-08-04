@@ -6,8 +6,8 @@ import EntreprisesPage from './EntreprisesPage';
 
 const { mockNavigate } = vi.hoisted(() => ({ mockNavigate: vi.fn() }));
 
-vi.mock('react-router-dom', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('react-router-dom')>();
+vi.mock("react-router", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("react-router")>();
   const { mockUseNavigate } = await import('@athanor/test-utils/mocks/router');
   return { ...actual, ...mockUseNavigate(mockNavigate) };
 });

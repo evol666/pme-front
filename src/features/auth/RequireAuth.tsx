@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from "react-router";
 import { useQuery } from '@tanstack/react-query';
 import axiosClient from '@/api/axiosClient';
 import type { RootState } from '../../store';

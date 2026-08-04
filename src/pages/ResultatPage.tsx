@@ -13,7 +13,7 @@ import {
 	Target,
 } from "lucide-react";
 import { useMemo } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router";
 import { type AnalysisStatus, useAnalysisStatus } from "@/api/analyses";
 import {
 	type Proposal,

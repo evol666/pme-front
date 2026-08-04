@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Building2, Loader2, Search, X } from "lucide-react";
 import { useEntrepriseSearch } from "@/api/entreprises";
 import { cn } from "@/lib/utils";

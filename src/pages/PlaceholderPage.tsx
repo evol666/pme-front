@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { Construction } from "lucide-react";
 
 // Page temporaire pour les routes canoniques dont la page réelle n'est pas

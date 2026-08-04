@@ -1,6 +1,6 @@
 import { BarChart3, Loader2, Play, RefreshCw, Search } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useAnalyses, useLaunchAnalysis } from "@/api/analyses";
 import { cn } from "@/lib/utils";
 

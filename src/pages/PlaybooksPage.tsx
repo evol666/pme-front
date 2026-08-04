@@ -2,7 +2,7 @@
  * PlaybooksPage — LOT 31 (Moteur de Playbooks intelligents).
  */
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router";
 import { Compass, FlaskConical, Layers, RefreshCw } from 'lucide-react';
 import {
   usePlaybooksOverview,
