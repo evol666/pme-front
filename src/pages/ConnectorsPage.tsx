@@ -320,6 +320,7 @@ function SyncsTab() {
                         <button
                           type="button"
                           onClick={() => handleDelete(s)}
+                          aria-label={`Supprimer la synchronisation #${s.id}`}
                           disabled={
                             deleteMutation.isPending && deleteMutation.variables === s.id
                           }
@@ -500,6 +501,7 @@ function WebhookCard({
         <button
           type="button"
           onClick={onDelete}
+          aria-label={`Supprimer le webhook #${webhook.id}`}
           disabled={deleting}
           className="inline-flex items-center gap-1 rounded-lg border border-destructive/40 bg-background px-2.5 py-1 text-xs font-medium text-destructive hover:bg-destructive/10 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-ring"
         >
