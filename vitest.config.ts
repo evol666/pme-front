@@ -41,10 +41,10 @@ export default defineConfig({
       // Seuils calés juste sous la couverture atteinte : toute régression
       // notable fait échouer le job de couverture.
       thresholds: {
-        lines: 41,
-        functions: 39,
-        branches: 29,
-        statements: 39,
+        lines: 42,
+        functions: 41,
+        branches: 30,
+        statements: 40,
       },
     },
   },
