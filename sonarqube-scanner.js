@@ -15,7 +15,7 @@ await scan(
       'sonar.javascript.lcov.reportPaths': 'coverage/lcov.info',
       'sonar.sourceEncoding': 'UTF-8',
       'sonar.project.creation': 'true',
-      'sonar.exclusions': 'src/components/ui/**/*',
+      'sonar.exclusions': 'src/components/ui/**/*,src/test/**/*',
     },
   },
 );
