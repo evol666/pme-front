@@ -294,7 +294,9 @@ describe('Détail bundle — activation', () => {
       expect(toggle.mutateAsync).toHaveBeenCalledWith({ id: 4, isActive: true }),
     );
     expect(toastMock.success).toHaveBeenCalledWith('Bundle activé');
-    expect(screen.getByRole('button', { name: /Bundle activé/ })).toBeDisabled();
+    // `setActivated` suit la résolution de la mutation : on attend le re-rendu
+    // plutôt que de supposer qu'il a déjà eu lieu.
+    expect(await screen.findByRole('button', { name: /Bundle activé/ })).toBeDisabled();
   });
 
   it('affiche l’échec de l’activation à l’écran et en notification', async () => {
