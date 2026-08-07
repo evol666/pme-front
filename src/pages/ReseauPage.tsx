@@ -358,6 +358,7 @@ function EntityCard({
 					type="button"
 					onClick={onDelete}
 					disabled={deleting}
+					aria-label={`Supprimer l’entité ${entity.label}`}
 					className="inline-flex items-center gap-1 rounded-lg border border-destructive/40 bg-background px-2.5 py-1 text-xs font-medium text-destructive hover:bg-destructive/10 disabled:opacity-60"
 				>
 					{deleting ? (
@@ -545,6 +546,7 @@ function ConnectionCard({
 					type="button"
 					onClick={onDelete}
 					disabled={deleting}
+					aria-label={`Supprimer la connexion ${connection.provider}`}
 					className="inline-flex items-center gap-1 rounded-lg border border-destructive/40 bg-background px-2.5 py-1 text-xs font-medium text-destructive hover:bg-destructive/10 disabled:opacity-60"
 				>
 					{deleting ? (
@@ -719,6 +721,7 @@ function InsightCard({
 						type="button"
 						onClick={onDelete}
 						disabled={deleting}
+						aria-label={`Supprimer l’insight ${insight.title}`}
 						className="inline-flex items-center gap-1 rounded-lg border border-destructive/40 bg-background px-2.5 py-1 text-xs font-medium text-destructive hover:bg-destructive/10 disabled:opacity-60"
 					>
 						{deleting ? (

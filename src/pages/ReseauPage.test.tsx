@@ -254,3 +254,134 @@ describe('insights et synchronisation', () => {
     expect(screen.getByRole('button', { name: /Entités/ })).toBeInTheDocument();
   });
 });
+
+describe('suppressions et filtres', () => {
+  /** Les trois suppressions passent par `confirm` : on l'accepte par défaut. */
+  const accepter = () => vi.spyOn(globalThis, 'confirm').mockReturnValue(true);
+
+  it('supprime une entité après confirmation', async () => {
+    accepter();
+    const suppression = mutation();
+    hooks.useDeleteBusinessEntity.mockReturnValue(suppression);
+    renderWithProviders(<ReseauPage />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Supprimer l.entité/ }));
+
+    await waitFor(() => expect(suppression.mutateAsync).toHaveBeenCalledWith(1));
+    vi.restoreAllMocks();
+  });
+
+  it('ne supprime aucune entité si la confirmation est refusée', () => {
+    vi.spyOn(globalThis, 'confirm').mockReturnValue(false);
+    const suppression = mutation();
+    hooks.useDeleteBusinessEntity.mockReturnValue(suppression);
+    renderWithProviders(<ReseauPage />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Supprimer l.entité/ }));
+
+    expect(suppression.mutateAsync).not.toHaveBeenCalled();
+    vi.restoreAllMocks();
+  });
+
+  it('remonte l’échec de suppression d’une entité', async () => {
+    accepter();
+    hooks.useDeleteBusinessEntity.mockReturnValue({
+      ...mutation(),
+      mutateAsync: vi.fn().mockRejectedValue({
+        response: { data: { error: { message: 'Entité référencée' } } },
+      }),
+    });
+    renderWithProviders(<ReseauPage />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Supprimer l.entité/ }));
+
+    expect(await screen.findByText('Entité référencée')).toBeInTheDocument();
+    vi.restoreAllMocks();
+  });
+
+  it('supprime une connexion après confirmation', async () => {
+    accepter();
+    const suppression = mutation();
+    hooks.useDeleteConnection.mockReturnValue(suppression);
+    renderWithProviders(<ReseauPage />);
+    goTo('Connexions');
+
+    fireEvent.click(screen.getByRole('button', { name: /Supprimer la connexion/ }));
+
+    await waitFor(() => expect(suppression.mutateAsync).toHaveBeenCalledWith(2));
+    vi.restoreAllMocks();
+  });
+
+  it('retombe sur un message générique quand la suppression d’une connexion échoue', async () => {
+    accepter();
+    hooks.useDeleteConnection.mockReturnValue({
+      ...mutation(),
+      mutateAsync: vi.fn().mockRejectedValue(new Error('offline')),
+    });
+    renderWithProviders(<ReseauPage />);
+    goTo('Connexions');
+
+    fireEvent.click(screen.getByRole('button', { name: /Supprimer la connexion/ }));
+
+    expect(
+      await screen.findByText('Une erreur est survenue. Réessayez.'),
+    ).toBeInTheDocument();
+    vi.restoreAllMocks();
+  });
+
+  it('supprime un insight après confirmation', async () => {
+    accepter();
+    const suppression = mutation();
+    hooks.useDeleteNetworkInsight.mockReturnValue(suppression);
+    renderWithProviders(<ReseauPage />);
+    goTo('Insights');
+
+    fireEvent.click(screen.getByRole('button', { name: /Supprimer l.insight/ }));
+
+    await waitFor(() => expect(suppression.mutateAsync).toHaveBeenCalledWith(3));
+    vi.restoreAllMocks();
+  });
+
+  it('filtre les connexions par provider et par statut', () => {
+    renderWithProviders(<ReseauPage />);
+    goTo('Connexions');
+
+    fireEvent.change(screen.getByPlaceholderText('google, microsoft…'), {
+      target: { value: 'microsoft' },
+    });
+    expect(hooks.useConnections).toHaveBeenLastCalledWith('microsoft', undefined);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Erreurs' }));
+    expect(hooks.useConnections).toHaveBeenLastCalledWith('microsoft', 'ERROR');
+  });
+
+  it('propose les types d’insight présents en filtre', () => {
+    setLists({ insights: [insight, { ...insight, id: 9, kind: 'upsell' }] });
+    renderWithProviders(<ReseauPage />);
+    goTo('Insights');
+
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'upsell' } });
+
+    expect(hooks.useNetworkInsights).toHaveBeenLastCalledWith('upsell');
+  });
+
+  it('signale le chargement de chaque onglet', () => {
+    hooks.useConnections.mockReturnValue(query(undefined, { isLoading: true }));
+    renderWithProviders(<ReseauPage />);
+
+    goTo('Connexions');
+
+    expect(screen.getByText('Chargement des connexions…')).toBeInTheDocument();
+  });
+
+  it('recharge les états de synchronisation', () => {
+    const refetch = vi.fn();
+    hooks.useNetworkSyncStates.mockReturnValue(query([syncState], { refetch }));
+    renderWithProviders(<ReseauPage />);
+    goTo('Synchronisation');
+
+    fireEvent.click(screen.getByRole('button', { name: /Actualiser/ }));
+
+    expect(refetch).toHaveBeenCalled();
+  });
+});
