@@ -14,6 +14,11 @@ export default defineConfig({
     },
   },
   test: {
+    // Sans ce rapporteur, SonarQube n'affiche aucun test pour ce module : la
+    // couverture remonte par lcov.info, mais le nombre de tests, leur duree et
+    // l'historique des echecs restaient invisibles.
+    reporters: ['default', 'vitest-sonar-reporter'],
+    outputFile: { 'vitest-sonar-reporter': './coverage/test-report.xml' },
     globals: true,
     environment: 'jsdom',
     // matchMedia / ResizeObserver / IntersectionObserver mocks shared across all Athanor fronts.
