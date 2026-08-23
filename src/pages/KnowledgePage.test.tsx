@@ -141,7 +141,7 @@ describe('Mémoire — signaux', () => {
     afficher();
 
     // « Élevé » figure aussi dans le sélecteur de sévérité.
-    expect(screen.getAllByText('Élevé').length).toBe(2);
+    expect(screen.getAllByText('Élevé')).toHaveLength(2);
     expect(screen.getByText('risk')).toBeInTheDocument();
     expect(screen.getByText('Score 0.82')).toBeInTheDocument();
     expect(screen.getByText('2 entité(s) liée(s)')).toBeInTheDocument();
@@ -305,7 +305,7 @@ describe('Mémoire — entités', () => {
     ouvrir();
 
     // « Entreprise » figure aussi dans le sélecteur de type.
-    expect(screen.getAllByText('Entreprise').length).toBe(2);
+    expect(screen.getAllByText('Entreprise')).toHaveLength(2);
     expect(screen.getByText('Translog')).toBeInTheDocument();
     expect(screen.getByText('client')).toBeInTheDocument();
     expect(screen.getByText('Score 0.66')).toBeInTheDocument();

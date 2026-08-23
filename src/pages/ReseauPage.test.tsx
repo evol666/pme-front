@@ -162,9 +162,7 @@ describe('entités métier', () => {
       .find((b) => /ajouter|nouvelle|créer/i.test(b.textContent ?? ''));
     if (ajouter) fireEvent.click(ajouter);
 
-    await waitFor(() =>
-      expect(screen.getByPlaceholderText('Nom de l’entité')).toBeInTheDocument(),
-    );
+    expect(await screen.findByPlaceholderText('Nom de l’entité')).toBeInTheDocument();
   });
 
   it('crée une entité depuis le formulaire', async () => {
@@ -185,7 +183,7 @@ describe('entités métier', () => {
       .find((b) => /enregistrer|valider|créer/i.test(b.textContent ?? ''));
     if (valider) fireEvent.click(valider);
 
-    await waitFor(() => expect(screen.getByPlaceholderText('Nom de l’entité')).toBeDefined());
+    expect(await screen.findByPlaceholderText('Nom de l’entité')).toBeDefined();
   });
 });
 

@@ -92,7 +92,7 @@ describe('RequireAuth', () => {
 
   it('renders children once the user is authenticated and the session is checked', async () => {
     renderWithProviders({ isAuthenticated: true, sessionChecked: true });
-    await waitFor(() => expect(screen.getByText('protected content')).toBeInTheDocument());
+    expect(await screen.findByText('protected content')).toBeInTheDocument();
     expect(globalThis.location.href).toBe('');
   });
 

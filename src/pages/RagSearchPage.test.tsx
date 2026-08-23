@@ -156,6 +156,6 @@ describe('RagSearchPage', () => {
 
     fireEvent.click(title);
 
-    await waitFor(() => expect(screen.getByText('abc123')).toBeInTheDocument());
+    expect(await screen.findByText('abc123')).toBeInTheDocument();
   });
 });

@@ -166,7 +166,7 @@ describe('EntreprisesPage', () => {
       }
     }
 
-    await waitFor(() => expect(screen.getByText('assistant ajout')).toBeInTheDocument());
+    expect(await screen.findByText('assistant ajout')).toBeInTheDocument();
   });
 
   it("ouvre l'import CSV", async () => {
@@ -180,7 +180,7 @@ describe('EntreprisesPage', () => {
       }
     }
 
-    await waitFor(() => expect(screen.getByText('import CSV')).toBeInTheDocument());
+    expect(await screen.findByText('import CSV')).toBeInTheDocument();
   });
 
   it('affiche un état de chargement', () => {

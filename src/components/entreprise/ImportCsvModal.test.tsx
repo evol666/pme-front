@@ -196,7 +196,7 @@ describe('Import CSV — envoi', () => {
     fireEvent.click(screen.getByRole('button', { name: /Importer/ }));
 
     // Un import intégralement en échec ne doit pas déclencher de rafraîchissement.
-    await waitFor(() => expect(screen.getByText('Fermer')).toBeInTheDocument());
+    expect(await screen.findByText('Fermer')).toBeInTheDocument();
     expect(onSuccess).not.toHaveBeenCalled();
   });
 

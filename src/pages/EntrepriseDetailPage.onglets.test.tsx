@@ -518,7 +518,7 @@ describe('Fiche entreprise — onglet Analyses', () => {
       .find((b) => /diagnostic|générer/i.test(b.textContent ?? ''));
     if (bouton) fireEvent.click(bouton);
 
-    await waitFor(() => expect(screen.getByText('Historique des analyses')).toBeInTheDocument());
+    expect(await screen.findByText('Historique des analyses')).toBeInTheDocument();
   });
 
   it('reprend un diagnostic déjà enregistré', () => {
