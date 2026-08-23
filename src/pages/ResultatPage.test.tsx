@@ -181,30 +181,27 @@ describe('Livrable — rendu structuré', () => {
     expect(screen.getByText('Valider le plan en comité.')).toBeInTheDocument();
   });
 
-  it('accepte les variantes de nommage du backend', () => {
+  // Trois cas de même forme : même montage, puis vérification que des libellés
+  // attendus sont rendus. Les intitulés sont conservés tels quels — ce sont eux
+  // qui portent l'intention de chaque cas.
+  it.each([
+    [
+      // `name`/`rationale`/`priority` sont acceptés au même titre que
+      // `titre`/`description`/`priorite`.
+      'accepte les variantes de nommage du backend',
+      ['Renégocier les délais', 'Auprès des fournisseurs.', 'Suivre le DSO'],
+    ],
+    ['distingue les trois niveaux de priorité', ['haute', 'medium', 'basse']],
+    [
+      'numérote les étapes du plan et affiche leur durée',
+      ['1', '1 semaine', '2 semaines'],
+    ],
+  ])('%s', (_intitule, libelles) => {
     ouvrirStructure();
 
-    // `name`/`rationale`/`priority` sont acceptés au même titre que
-    // `titre`/`description`/`priorite`.
-    expect(screen.getByText('Renégocier les délais')).toBeInTheDocument();
-    expect(screen.getByText('Auprès des fournisseurs.')).toBeInTheDocument();
-    expect(screen.getByText('Suivre le DSO')).toBeInTheDocument();
-  });
-
-  it('distingue les trois niveaux de priorité', () => {
-    ouvrirStructure();
-
-    expect(screen.getByText('haute')).toBeInTheDocument();
-    expect(screen.getByText('medium')).toBeInTheDocument();
-    expect(screen.getByText('basse')).toBeInTheDocument();
-  });
-
-  it('numérote les étapes du plan et affiche leur durée', () => {
-    ouvrirStructure();
-
-    expect(screen.getByText('1')).toBeInTheDocument();
-    expect(screen.getByText('1 semaine')).toBeInTheDocument();
-    expect(screen.getByText('2 semaines')).toBeInTheDocument();
+    for (const libelle of libelles) {
+      expect(screen.getByText(libelle)).toBeInTheDocument();
+    }
   });
 
   it('numérote les entrées sans titre', () => {

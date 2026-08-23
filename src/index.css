@@ -1,4 +1,13 @@
 @import "tailwindcss";
+/* Import Sovereign Industrial design system.
+   Les @import doivent preceder toute autre regle : place plus bas, un
+   @import est ignore par les navigateurs (css:S8778). */
+@import "@athanor/design-system/styles/tokens.css";
+@import "@athanor/design-system/styles/typography.css";
+@import "@athanor/design-system/styles/utilities.css";
+@import "@athanor/design-system/styles/animations.css";
+@import "@athanor/design-system/styles/scrollbar.css";
+
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
@@ -50,12 +59,6 @@
 	--color-threat-info: var(--color-threat-info);
 }
 
-/* Import Sovereign Industrial design system */
-@import "@athanor/design-system/styles/tokens.css";
-@import "@athanor/design-system/styles/typography.css";
-@import "@athanor/design-system/styles/utilities.css";
-@import "@athanor/design-system/styles/animations.css";
-@import "@athanor/design-system/styles/scrollbar.css";
 
 @layer base {
 	* {
