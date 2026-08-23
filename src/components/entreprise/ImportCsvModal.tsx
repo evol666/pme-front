@@ -95,7 +95,7 @@ export function ImportCsvModal({ onClose, onSuccess }: Props) {
 								</p>
 							</div>
 						</div>
-						<button
+						<button type="button"
 							onClick={onClose}
 							className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
 						>
@@ -220,13 +220,13 @@ export function ImportCsvModal({ onClose, onSuccess }: Props) {
 							</button>
 						) : (
 							<>
-								<button
+								<button type="button"
 									onClick={onClose}
 									className="text-sm text-muted-foreground hover:text-foreground transition-colors"
 								>
 									Annuler
 								</button>
-								<button
+								<button type="button"
 									onClick={handleImport}
 									disabled={!file || importMutation.isPending}
 									className={cn(

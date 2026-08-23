@@ -28,7 +28,7 @@ export function EmptyTab({
 			</div>
 			<p className="text-sm text-muted-foreground">{title}</p>
 			{action && (
-				<button
+				<button type="button"
 					onClick={action.onClick}
 					className="flex items-center gap-1.5 px-3 py-2 bg-primary text-primary-foreground rounded-lg text-xs font-semibold hover:bg-primary/90 transition-colors"
 				>
@@ -52,7 +52,7 @@ export function ErrorView({
 			<AlertTriangle className="w-8 h-8 text-destructive" />
 			<p className="text-sm font-medium">{message}</p>
 			{onBack && (
-				<button
+				<button type="button"
 					onClick={onBack}
 					className="text-xs text-primary hover:underline flex items-center gap-1"
 				>

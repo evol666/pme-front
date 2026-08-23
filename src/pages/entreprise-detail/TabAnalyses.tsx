@@ -84,7 +84,7 @@ export function TabAnalyses({
 			<div className="flex items-center justify-between pt-4 border-t border-border/40">
 				<h2 className="text-sm font-bold text-foreground">Historique des analyses</h2>
 				<div className="flex gap-2">
-					<button
+					<button type="button"
 						onClick={() => refetch()}
 						disabled={isFetching}
 						className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
@@ -93,7 +93,7 @@ export function TabAnalyses({
 							className={cn("w-4 h-4", isFetching && "animate-spin")}
 						/>
 					</button>
-					<button
+					<button type="button"
 						onClick={handleLaunch}
 						disabled={launch.isPending}
 						className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-60"

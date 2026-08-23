@@ -182,7 +182,7 @@ export function WizardAjoutEntreprise({ onClose, onSuccess }: WizardProps) {
 							Suivant <ArrowRight className="w-4 h-4" />
 						</button>
 					) : (
-						<button
+						<button type="button"
 							onClick={handleConfirm}
 							disabled={addMutation.isPending}
 							className="flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-60"
@@ -262,7 +262,7 @@ function Step1Search({
 			{results.length > 0 && (
 				<div className="border border-border rounded-xl overflow-hidden divide-y divide-border/50">
 					{results.map((r) => (
-						<button
+						<button type="button"
 							key={r.siren}
 							onClick={() => onSelect(r)}
 							className="w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-accent transition-colors"
@@ -505,7 +505,7 @@ function Step3Relation({
 				</legend>
 				<div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
 					{RELATION_TYPES.map((r) => (
-						<button
+						<button type="button"
 							key={r.value}
 							onClick={() => setKind(r.value)}
 							className={cn(

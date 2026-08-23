@@ -16,7 +16,7 @@ export function TabPlaybooks() {
 					Automatisations et workflows d'action pour cette entreprise.
 				</p>
 			</div>
-			<button
+			<button type="button"
 				onClick={() => navigate("/playbooks")}
 				className="flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors"
 			>

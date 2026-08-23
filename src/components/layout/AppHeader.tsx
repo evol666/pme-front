@@ -80,7 +80,7 @@ export function AppHeader({
 				</div>
 
 				<div className="relative flex items-center gap-3 pl-2 border-l border-border">
-					<button
+					<button type="button"
 						onClick={() => setDropdownOpen(!dropdownOpen)}
 						className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
 					>
@@ -131,7 +131,7 @@ function NotificationBell({ onClick }: { readonly onClick: () => void }) {
 	const { data } = useUnreadNotificationCount();
 	const count = data?.unreadCount ?? 0;
 	return (
-		<button
+		<button type="button"
 			onClick={onClick}
 			className="relative p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 			title="Notifications"
@@ -174,7 +174,7 @@ function PersonaSwitcher() {
 
 	return (
 		<div className="relative">
-			<button
+			<button type="button"
 				onClick={() => setOpen(!open)}
 				className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-accent transition-colors text-xs font-medium text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 				title="Changer de persona"
@@ -199,7 +199,7 @@ function PersonaSwitcher() {
 								Contexte d'affichage
 							</p>
 						</div>
-						<button
+						<button type="button"
 							onClick={() => {
 								setActivePersona(null);
 								setOpen(false);
@@ -217,7 +217,7 @@ function PersonaSwitcher() {
 							)}
 						</button>
 						{personas.map((persona) => (
-							<button
+							<button type="button"
 								key={persona.id}
 								onClick={() => {
 									setActivePersona(persona.id);
