@@ -136,6 +136,7 @@ export function Sidebar({ onNavigate }: { readonly onNavigate?: () => void }) {
           </div>
         </div>
         <button
+          type="button"
           onClick={() => logout()}
           className="w-full mt-2 flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
         >

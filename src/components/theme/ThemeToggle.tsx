@@ -19,6 +19,7 @@ export function ThemeToggle() {
 
 	return (
 		<button
+			type="button"
 			onClick={cycleTheme}
 			className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
 			aria-label="Changer de thème"

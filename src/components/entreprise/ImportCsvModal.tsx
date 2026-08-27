@@ -115,6 +115,7 @@ export function ImportCsvModal({ onClose, onSuccess }: Props) {
 								</p>
 							</div>
 							<button
+								type="button"
 								onClick={downloadTemplate}
 								className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-semibold text-foreground hover:bg-accent transition-colors"
 							>
@@ -213,6 +214,7 @@ export function ImportCsvModal({ onClose, onSuccess }: Props) {
 					<div className="flex items-center justify-between px-6 py-4 border-t border-border flex-shrink-0 bg-muted/20">
 						{report ? (
 							<button
+								type="button"
 								onClick={onClose}
 								className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
 							>

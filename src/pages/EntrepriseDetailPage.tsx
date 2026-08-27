@@ -189,6 +189,7 @@ export default function EntrepriseDetailPage() {
 				<div className="px-6 pt-5 pb-4">
 					{/* Breadcrumb */}
 					<button
+						type="button"
 						onClick={() => navigate("/entreprises")}
 						className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-4"
 					>
@@ -214,6 +215,7 @@ export default function EntrepriseDetailPage() {
 								)}
 								{enriched.finances?.procedure_collective && (
 									<button
+										type="button"
 										onClick={() => setTab("finances")}
 										className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/10 text-red-600 text-xs font-bold border border-red-500/20 hover:bg-red-500/20 transition-colors"
 										title={enriched.finances.procedure_collective.libelle}
@@ -269,6 +271,7 @@ export default function EntrepriseDetailPage() {
 								</div>
 							)}
 							<button
+								type="button"
 								onClick={() => refresh.mutate(siren)}
 								disabled={refresh.isPending}
 								className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
@@ -289,6 +292,7 @@ export default function EntrepriseDetailPage() {
 						const isActive = activeTab === tab.id;
 						return (
 							<button
+								type="button"
 								key={tab.id}
 								onClick={() => setTab(tab.id)}
 								className={cn(

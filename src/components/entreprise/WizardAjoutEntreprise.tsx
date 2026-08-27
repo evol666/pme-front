@@ -113,6 +113,7 @@ export function WizardAjoutEntreprise({ onClose, onSuccess }: WizardProps) {
 						</div>
 					</div>
 					<button
+						type="button"
 						onClick={onClose}
 						className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
 					>
@@ -159,6 +160,7 @@ export function WizardAjoutEntreprise({ onClose, onSuccess }: WizardProps) {
 				<div className="flex items-center justify-between px-6 py-4 border-t border-border flex-shrink-0 bg-muted/20">
 					{step > 1 ? (
 						<button
+							type="button"
 							onClick={() => setStep((s) => (s - 1) as Step)}
 							className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
 						>
@@ -170,6 +172,7 @@ export function WizardAjoutEntreprise({ onClose, onSuccess }: WizardProps) {
 
 					{step < 3 ? (
 						<button
+							type="button"
 							onClick={() => setStep((s) => (s + 1) as Step)}
 							disabled={step === 1 ? !selected : false}
 							className={cn(

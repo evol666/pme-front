@@ -118,6 +118,7 @@ export default function EntreprisesPage() {
         </div>
         <div className="flex gap-2">
           <button
+            type="button"
             onClick={() => setShowImport(true)}
             className="flex items-center gap-2 px-4 py-2.5 border border-border rounded-xl text-sm font-semibold text-foreground hover:bg-accent transition-colors"
           >
@@ -125,6 +126,7 @@ export default function EntreprisesPage() {
             Importer CSV
           </button>
           <button
+            type="button"
             onClick={() => setShowWizard(true)}
             className="flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm"
           >
@@ -137,6 +139,7 @@ export default function EntreprisesPage() {
       {/* Filtres type de relation */}
       <div className="flex flex-wrap gap-2">
         <button
+          type="button"
           onClick={() => setFilterKind("")}
           className={cn(
             "px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors",
@@ -149,6 +152,7 @@ export default function EntreprisesPage() {
         </button>
         {RELATION_TYPES.map((r) => (
           <button
+            type="button"
             key={r.value}
             onClick={() => setFilterKind(filterKind === r.value ? "" : r.value)}
             className={cn(
@@ -303,12 +307,14 @@ function EntrepriseCard({
       {/* Actions */}
       <div className="flex items-center gap-2 mt-auto pt-1">
         <button
+          type="button"
           onClick={onOpen}
           className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-primary/8 text-primary text-sm font-semibold hover:bg-primary/15 transition-colors"
         >
           Ouvrir la fiche <ChevronRight className="w-4 h-4" />
         </button>
         <button
+          type="button"
           onClick={onDeleteRequest}
           className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
           title="Retirer du portefeuille"
@@ -353,6 +359,7 @@ function EmptyState({
       {!hasFilter && (
         <div className="flex flex-col sm:flex-row gap-3">
           <button
+            type="button"
             onClick={onAdd}
             disabled={isSeeding}
             className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-60"
@@ -406,12 +413,14 @@ function ConfirmDelete({
         </div>
         <div className="flex gap-3">
           <button
+            type="button"
             onClick={onCancel}
             className="flex-1 py-2 rounded-lg border border-border text-sm font-semibold text-foreground hover:bg-accent transition-colors"
           >
             Annuler
           </button>
           <button
+            type="button"
             onClick={onConfirm}
             disabled={isPending}
             className="flex-1 py-2 rounded-lg bg-destructive text-destructive-foreground text-sm font-semibold hover:bg-destructive/90 transition-colors disabled:opacity-60"

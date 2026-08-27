@@ -117,6 +117,7 @@ export function EntrepriseSearchBar() {
           )}
           {!isFetching && query.length > 0 && (
             <button
+              type="button"
               onClick={clear}
               className="text-muted-foreground hover:text-foreground transition-colors"
               tabIndex={-1}
@@ -139,6 +140,7 @@ export function EntrepriseSearchBar() {
 
           {results.map((r, i) => (
             <button
+              type="button"
               key={r.siren}
               onClick={() => goTo(r.siren)}
               onMouseEnter={() => setActiveIdx(i)}

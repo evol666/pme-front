@@ -50,6 +50,7 @@ export function AppHeader({
 			<div className="flex items-center gap-2 lg:gap-4">
 				{/* Mobile menu trigger */}
 				<button
+					type="button"
 					onClick={onMenuClick}
 					className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-all lg:hidden"
 					title="Ouvrir le menu"
@@ -110,6 +111,7 @@ export function AppHeader({
 									</p>
 								</div>
 								<button
+									type="button"
 									onClick={handleLogout}
 									className="w-full flex items-center px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors font-bold cursor-pointer text-left border-none"
 								>
