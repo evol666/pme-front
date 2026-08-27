@@ -11,6 +11,12 @@ ARG GITHUB_TOKEN
 ENV GITHUB_TOKEN=$GITHUB_TOKEN
 
 # Install git (requis pour cloner les dépendances git)
+# DL3018 ignore volontairement : Alpine ne conserve que la derniere version de
+# chaque paquet dans ses depots. Epingler (curl=8.21.0-r0) casse le build des
+# qu'Alpine publie un correctif : la base eclipse-temurin:21-jre-alpine est deja
+# passee d'Alpine v3.23 (curl 8.20.0-r0) a v3.24 (8.21.0-r0). On veut la version
+# patchee la plus recente.
+# hadolint ignore=DL3018
 RUN apk add --no-cache git
 
 # Forcer Git à utiliser HTTPS au lieu de SSH pour GitHub
@@ -62,6 +68,12 @@ RUN --mount=type=secret,id=SONAR_TOKEN \
 
 # Production stage
 FROM nginx:stable-alpine AS front
+# DL3018 ignore volontairement : Alpine ne conserve que la derniere version de
+# chaque paquet dans ses depots. Epingler (curl=8.21.0-r0) casse le build des
+# qu'Alpine publie un correctif : la base eclipse-temurin:21-jre-alpine est deja
+# passee d'Alpine v3.23 (curl 8.20.0-r0) a v3.24 (8.21.0-r0). On veut la version
+# patchee la plus recente.
+# hadolint ignore=DL3018
 RUN apk update && apk upgrade --no-cache && apk add --no-cache curl && rm -rf /var/cache/apk/*
 
 # Copy nginx configuration
