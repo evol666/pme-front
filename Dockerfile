@@ -54,7 +54,8 @@ FROM tester AS sonar
 ARG SONAR_HOST_URL
 RUN --mount=type=secret,id=SONAR_TOKEN \
     if [ -f /run/secrets/SONAR_TOKEN ]; then \
-      export SONAR_TOKEN=$(cat /run/secrets/SONAR_TOKEN); \
+      SONAR_TOKEN="$(cat /run/secrets/SONAR_TOKEN)"; \
+      export SONAR_TOKEN; \
       export SONAR_HOST_URL=${SONAR_HOST_URL}; \
       npm run sonar; \
     fi
