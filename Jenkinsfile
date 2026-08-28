@@ -11,10 +11,17 @@ athanorPipeline(
   githubPatCredentialId: 'github-pat',
   sonarDockerTarget: 'sonar',
 
+  // Politique de scan explicitee dans chaque module (defauts lib : gitleaks/trivy bloquants,
+  // hadolint non bloquant). Toute valeur a false doit rester temporaire et justifiee.
+  gitleaksBlocking: true,
+  trivyFsBlocking: true,
+  hadolintBlocking: false,
+
   plainEnvVars: [
     DOCKER_REGISTRY: '$DOCKER_REGISTRY',
     DOCKER_USERNAME: '$DOCKER_USERNAME',
     IMAGE_TAG: 'v$COMMIT_ID'
   ],
-  secretEnvVars: [ : ]
+
+  secretEnvVars: [:]
 )
